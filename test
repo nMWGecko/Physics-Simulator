@@ -213,8 +213,6 @@ public class Ui extends Application {
         Pane wavesPane = new Pane();
         wavesPane.setPrefWidth(960);
         wavesPane.setPrefHeight(320);
-        System.out.println("x:: "+ wavesPane.getWidth());
-        System.out.println("Y:: "+ wavesPane.getHeight());
 
         //Setting up the Cartesian Plane
         Line xAxis = new Line();
