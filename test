@@ -1,4 +1,4 @@
-package djangounchained.physics;
+package com.example.demo;
 
 import javafx.animation.*;
 import javafx.application.Application;
@@ -12,16 +12,12 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import javafx.util.Duration;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -30,30 +26,45 @@ public class Ui extends Application {
 
     static String menuPic, homePic, helpPic;
     static Circle c;
-    static ArrayList<Circle> circleList = new ArrayList<>();
-    static ArrayList<Timeline> timerArray = new ArrayList<>();
+
+    static ArrayList<Circle> standList = new ArrayList<>();
+    static ArrayList<Circle> travelList = new ArrayList<>();
+    static ArrayList<Circle> reTravelList = new ArrayList<>();
+
+    //static ArrayList<Timeline> timerArray = new ArrayList<>(); <--leave static timeline for pause
+
     static Timeline timeline;
+    static Timer timer;
     static SequentialTransition sequentialTransition;
     static ArrayList<SequentialTransition> seqTransList = new ArrayList<>();
     static double delay = 0.0;
     static Label xL, yL;
     static Line xIndic, yIndic;
     static int startPauseCounter = 0;
-    static double amplitude;
+    static double A, f, T, omega, lambda, k, xPos, timeElapsed;
     static int stringLength = 490;
     static double timeToReachEnd = 4.9;
-    static double waveSpeed = 100;
-    static double freq, period, angularFrequency, wavelength, angularWaveNumber;
+    static double v = 100;
 
     @Override
+
     public void start(Stage stage) {
+
         /**
+
          * JSON file
+
          */
+
         JSONParser jsonParser = new JSONParser();
+
         try {
-            Object o = jsonParser.parse(new FileReader(this.getClass().getClassLoader().getResource("index.json").getFile()));
+
+            Object o = jsonParser.parse(new FileReader(this.getClass().getClassLoader().getResource("index.json")
+                       .getFile()));
+
             JSONObject jsonObject = (JSONObject) o;
+
             menuPic = (String) jsonObject.get("menuIcon");
             homePic = (String) jsonObject.get("homeIcon");
             helpPic = (String) jsonObject.get("newtonSecondStagePic");
@@ -63,316 +74,548 @@ public class Ui extends Application {
         }
 
         /**
+
          * Setting up the Main Page
+
          */
+
         BorderPane root = new BorderPane();
         root.setPadding(new Insets(10));
-//        StackPane sPane = new StackPane();
-//        sPane.getStyleClass().add("sPane");
-//        ImageView shulkNo = new ImageView(new Image("https://www.siliconera.com/wp-content/uploads/2020/03/xbc-de-16.jpg"));
-//        sPane.getChildren().add(shulkNo);
-//        shulkNo.setFitWidth(960);
-//        shulkNo.setFitHeight(610);
-//        System.out.println(shulkNo.getLayoutX());
-//        System.out.println(shulkNo.getLayoutY());
-//        root.setCenter(sPane);
 
         /**
-         * Navigation Button
-         */
-        HBox nagivationHBox = new HBox(230);
 
+         * Navigation Button
+
+         */
+
+        HBox nagivationHBox = new HBox(230);
         nagivationHBox.setPadding(new Insets(10, 5, 5, 5));
         Pane menuPane = new Pane();
 
+
+
         Menu metricSystem = new Menu("Toggle Incident/Reflected Rays");
+
         CheckMenuItem raysOn = new CheckMenuItem("On");
+
         CheckMenuItem raysOff = new CheckMenuItem("Off");
+
         raysOn.setSelected(true);
+
         metricSystem.getItems().addAll(raysOff, raysOn);
+
         Menu objects = new Menu("Toggle Grid");
+
         CheckMenuItem gridOn = new CheckMenuItem("On");
+
         CheckMenuItem gridOff = new CheckMenuItem("Off");
+
         gridOn.setSelected(true);
+
         objects.getItems().addAll(gridOn, gridOff);
+
         Menu mode = new Menu("Mode");
+
         CheckMenuItem lightMode = new CheckMenuItem("Light Mode");
+
         CheckMenuItem darkMode = new CheckMenuItem("Dark Mode");
+
         lightMode.setSelected(true);
+
         mode.getItems().addAll(lightMode,darkMode);
+
         Menu showForces = new Menu("Time");
+
         CheckMenuItem showForcesOn = new CheckMenuItem("Slow Motion");
+
         CheckMenuItem showForcesOff = new CheckMenuItem("Normal");
+
         CheckMenuItem fastMotion = new CheckMenuItem("Fast Motion");
+
         showForcesOff.setSelected(true);
+
         showForces.getItems().addAll(showForcesOn, showForcesOff, fastMotion);
+
         MenuItem menuHelp = new MenuItem("Help");
+
         MenuItem exitProgram = new MenuItem("Exit Program");
+
         MenuButton menuBtn = new MenuButton("Menu", null, metricSystem,mode, objects, showForces, menuHelp, exitProgram);
+
         Image menuIcon = new Image(menuPic);
+
         ImageView menuView = new ImageView(menuIcon);
+
         menuView.setPreserveRatio(true);
+
         menuView.setFitHeight(25);
+
         menuBtn.setGraphic(menuView);
+
         menuBtn.setId("navigation");
+
         menuPane.getChildren().addAll(menuBtn);
 
+
+
         //Menu Settings
+
         Image homeIcon = new Image(homePic);
+
         ImageView homeView = new ImageView(homeIcon);
+
         homeView.setPreserveRatio(true);
+
         homeView.setFitHeight(80);
+
         Button homeBtn = new Button();
+
         homeBtn.setGraphic(homeView);
+
         homeBtn.setId("navigation");
 
+
+
         //Home Button settings
+
         Label warning = new Label();
+
         warning.setId("warning");
+
         warning.setVisible(false);
+
         nagivationHBox.getChildren().addAll(homeBtn,warning, menuPane);
+
         nagivationHBox.setAlignment(Pos.CENTER);
 
+
+
         //Pop-Up Text
+
         Label instructionsTxt = new Label("Insert Text Here");
+
         Pane helpPane = new Pane();
+
         helpPane.getChildren().add(instructionsTxt);
+
         Scene helpScene = new Scene(helpPane, 1000, 650);
+
         Stage popUp1 = new Stage();
+
         popUp1.setTitle("Instructions");
+
         popUp1.setScene(helpScene);
 
+
+
         //The Top Buttons
+
         VBox controls = new VBox(10);
+
         root.setTop(controls);
+
         HBox menuCtrl = new HBox();
+
         menuCtrl.getChildren().add(nagivationHBox);
+
         controls.getChildren().add(menuCtrl);
 
+
+
         //The UI Controls
+
         HBox ui = new HBox(120);
+
         ui.setAlignment(Pos.CENTER);
+
         controls.getChildren().add(ui);
 
+
+
         /**
+
          * Sliders
+
          * Always make the waves "snap" (clear first and then implement new values)
+
          */
+
         VBox params = new VBox(5);
+
         //Frequency: "clear" the values (for a split second) then implementing the new value
-        TextField freqTf = new TextField("Frequency [Hz]");
+
+        TextField freqTf = new TextField("Frequency [in Hz]");
+
         freqTf.setAlignment(Pos.CENTER);
+
         freqTf.setEditable(false);
+
         Slider freqSldr = new Slider(0, 1, 0);
+
         freqSldr.setShowTickLabels(true);
+
         freqSldr.setShowTickMarks(true);
+
         freqSldr.setMajorTickUnit(0.1);
 
+        freqSldr.valueProperty().addListener(new ChangeListener<Number>() {
+
+            @Override
+
+            public void changed(ObservableValue<? extends Number> observableValue, Number number, Number t1) {
+
+                f = freqSldr.getValue();
+
+                freqTf.setText(String.format("%.2f", freqSldr.getValue()) + " Hz");
+
+            }
+
+        });
+
+        freqSldr.setOnMouseReleased(mouseEvent -> {
+            System.out.println(f);
+        });
+
+
+
         //Wave Speed
-        TextField wavSpdTf = new TextField("Wave Speed [m/s]");
+
+        TextField wavSpdTf = new TextField("Wave Speed [in meters/second]");
+
         wavSpdTf.setAlignment(Pos.CENTER);
+
         wavSpdTf.setEditable(false);
-        Slider wavSpdSldr = new Slider(0, 50, 0);
+
+        Slider wavSpdSldr = new Slider(0, 500, 0);
+
         wavSpdSldr.setShowTickLabels(true);
+
         wavSpdSldr.setShowTickMarks(true);
-        wavSpdSldr.setSnapToTicks(true);
+
+        wavSpdSldr.valueProperty().addListener(new ChangeListener<Number>() {
+
+            @Override
+
+            public void changed(ObservableValue<? extends Number> observableValue, Number number, Number t1) {
+
+                v = wavSpdSldr.getValue();
+
+                wavSpdTf.setText(String.format("%.2f", wavSpdSldr.getValue()) + " m/s");
+
+            }
+
+        });
 
         //Amplitude (changing the slider keeps the amp at max (snap) then implement new value)
-        TextField ampTf = new TextField("Amplitude [m]");
+        TextField ampTf = new TextField("Amplitude [in meters]");
+
         ampTf.setAlignment(Pos.CENTER);
+
         ampTf.setEditable(false);
-        Slider ampSldr = new Slider(0, 50, 0);
+
+        Slider ampSldr = new Slider(0, 500, 0);
+
         ampSldr.setShowTickMarks(true);
+
         ampSldr.setShowTickLabels(true);
-        ampSldr.setSnapToTicks(true);
+
+        ampSldr.valueProperty().addListener(new ChangeListener<Number>() {
+
+            @Override
+
+            public void changed(ObservableValue<? extends Number> observableValue, Number number, Number t1) {
+
+                A = ampSldr.getValue();
+
+                ampTf.setText(String.format("%.2f", ampSldr.getValue()) + " m");
+
+            }
+
+        });
+
 
         params.getChildren().addAll(freqTf, freqSldr, wavSpdTf, wavSpdSldr, ampTf, ampSldr);
 
+
         Button playBtn = new Button("Start");
+
         Button btn3 = new Button("Help");
+
         ui.getChildren().addAll(params, playBtn, btn3);
 
         /**
          * Displaying the waves
          */
+
         Pane wavesPane = new Pane();
+
         wavesPane.setPrefWidth(960);
+
         wavesPane.setPrefHeight(320);
+
         System.out.println("x:: "+ wavesPane.getWidth());
+
         System.out.println("Y:: "+ wavesPane.getHeight());
 
+
+
         //Setting up the Cartesian Plane
+
         Line xAxis = new Line();
+
         Line yAxis = new Line();
+
         wavesPane.getChildren().addAll(xAxis, yAxis);
+
         xAxis.setStartX(0);
+
         xAxis.setEndX(960); //600
+
         xAxis.setStartY(wavesPane.getPrefHeight()/2); //250
+
         xAxis.setEndY(wavesPane.getPrefHeight()/2); //250
+
         yAxis.setStartX(10); //50
+
         yAxis.setEndX(10); //50
+
         yAxis.setStartY(0); //150, 270
+
         yAxis.setEndY(wavesPane.getPrefHeight()); //350, 470
+
         //X-Axis indices for(int i = 0; i <= 500; i += 50)
+
         for(int i = 50; i <= 960; i += 50) {
+
             xL = new Label("" + i);
+
             xIndic = new Line(i, xAxis.getStartY()-10, i, xAxis.getStartY()+10);
+
             wavesPane.getChildren().addAll(xL, xIndic);
+
             xL.setLayoutX(i + 47.5);
+
             xL.setLayoutY(260);
+
         }
+
         //Y-Axis indices for(int i = 250; i >= 150; i -= 25)
+
         for(int i = 570; i >= 370; i -= 25) {
+
             yL = new Label("" + (250 - i));
+
             yIndic = new Line(yAxis.getStartX()+10, i, yAxis.getStartX()-10, i);
+
             wavesPane.getChildren().addAll(yL, yIndic);
+
             yL.setLayoutX(10);
+
             yL.setLayoutY(i - 5);
+
         }
 
-        //Creating the standing wave
-        Image asmugfo = new Image("https://pbs.twimg.com/media/DSRKq6CV4AA_GHE.png");
-        for(int i = 0; i < 980; i += 10) {
-            c = new Circle(i, wavesPane.getPrefHeight()/2, 10, Color.PURPLE);
-            circleList.add(c);
-        }
-        for(Circle c: circleList) {
-            ImageView iv = new ImageView();
-            iv.setImage(asmugfo);
-            c.setFill(new ImagePattern(asmugfo));
-            wavesPane.getChildren().addAll(c);
-        }
-
-        Text coordText = new Text("pause and hover over a point");
-        root.getChildren().add(coordText);
-        coordText.setX(200);
-        coordText.setY(550);
 
 
         /**
-         * Slider Functionality
+
+         * MATH
+
          */
-        freqSldr.valueProperty().addListener(new ChangeListener<Number>() {
-            @Override
-            public void changed(ObservableValue<? extends Number> observableValue, Number number, Number t1) {
-                freq = freqSldr.getValue();
-                for(SequentialTransition s: seqTransList) {
-                    s.stop();
-                }
-                seqTransList.clear();
-                timerArray.clear();
-                for(Circle c : circleList) {
-                    c.setCenterY(amplitude+(wavesPane.getPrefHeight()/2)); //300
-                }
-                delay = 0.0;
-                freqTf.setText(String.format("%.2f", freqSldr.getValue()) + " Hz");
+
+
+        /**
+
+         * Creating the standing wave
+
+         */
+
+
+//        Text coordText = new Text("pause and hover over a point");
+
+//        root.getChildren().add(coordText);
+
+//        coordText.setX(200);
+
+//        coordText.setY(550);
+
+
+        for(int i = 10; i < 990; i += 20) {
+            c = new Circle(i, wavesPane.getPrefHeight()/2, 10, Color.DARKMAGENTA);
+            standList.add(c);
+        }
+        for(Circle c : standList) {
+            wavesPane.getChildren().addAll(c);
+        }
+
+
+        /**
+
+         * Timer
+
+         */
+
+
+    AnimationTimer animateTimer = new AnimationTimer() {
+
+        @Override
+
+        public void handle(long l) {
+
+            for(Circle c: standList){
+                xPos = c.getCenterX();
+                omega = 2 * Math.PI * f;
+                lambda = v / f;
+                k = (2 * Math.PI) / lambda;
+                c.setCenterY(2 * A * Math.cos(omega * timer.elapsed()) * Math.sin(k * xPos) + 2*A);
             }
-        });
-        freqSldr.setOnMouseReleased(mouseEvent -> {
-            period = 1 / freq;
-            angularFrequency = 2 * Math.PI * freq;
-            wavelength = waveSpeed / freq;
-            angularWaveNumber = (2 * Math.PI) / wavelength;
+
+            }
+
+        };
+
+
+
+        /**
+
+         * Slider Functionality
+
+         */
+
+
             /**
+
              * each circle has unique tl animation
+
              * */
-            for(Circle c : circleList) {
-                timeline = new Timeline(new KeyFrame(Duration.seconds(period / 2),
-                        new KeyValue(c.centerYProperty(), 200, Interpolator.EASE_BOTH))); // amp = (centerY - endValue) / 2 = (300 - 200) / 2 = 50m
-                timeline.setCycleCount(Timeline.INDEFINITE); //makes animation go "forever"
-                timeline.setAutoReverse(true);
-                timerArray.add(timeline);
-            }
-            /**
-             * each circle moves after delay amount of seconds
-             */
-            for(Timeline t : timerArray) {
-                sequentialTransition = new SequentialTransition(new PauseTransition(Duration.seconds(delay)), t);
-                seqTransList.add(sequentialTransition);
-                delay += 0.1;
-            }
-            if(playBtn.getText() == "Pause") {
-                for (SequentialTransition s : seqTransList) {
-                    s.play();
-                }
-            }
-        });
 
-        wavSpdSldr.valueProperty().addListener(new ChangeListener<Number>() {
-            @Override
-            public void changed(ObservableValue<? extends Number> observableValue, Number number, Number t1) {
-                waveSpeed = wavSpdSldr.getValue();
-                wavSpdTf.setText(String.format("%.2f", wavSpdSldr.getValue()) + " m/s");
-            }
-        });
+//            for(Circle c : circleList) {
 
-        ampSldr.valueProperty().addListener(new ChangeListener<Number>() {
-            @Override
-            public void changed(ObservableValue<? extends Number> observableValue, Number number, Number t1) {
-                amplitude = ampSldr.getValue();
-                ampTf.setText(String.format("%.2f", ampSldr.getValue()) + " m");
-            }
-        });
+//                timeline = new Timeline(new KeyFrame(Duration.seconds(period / 2), //period/2 because the circle will only move towards A in half of a period
+
+//                new KeyValue(c.centerYProperty(), amplitude, Interpolator.EASE_BOTH))); // amp = (centerY - endValue) / 2 = (300 - 200) / 2 = 50m
+
+//                timeline.setCycleCount(Timeline.INDEFINITE); //makes animation go "forever"
+
+//                timeline.setAutoReverse(true);
+
+//                timerArray.add(timeline);
+
+//            }
+
+//            /**
+
+//             * each circle moves after delay amount of seconds
+
+//             */
+
+//            for(Timeline t : timerArray) {
+
+//                sequentialTransition = new SequentialTransition(new PauseTransition(Duration.seconds(delay)), t);
+
+//                seqTransList.add(sequentialTransition);
+
+//                delay += 0.1;
+
+//            }
+
+//            if(playBtn.getText() == "Pause") {
+
+//                for (SequentialTransition s : seqTransList) {
+
+//                    s.play();
+
+//                }
+
+//            }
+
+//        });
+
+//
 
         /** changing the "start" and "pause" texts */
+
         playBtn.setOnAction(actionEvent -> {
-            startPauseCounter += 1;
-            if(startPauseCounter % 2 == 1) {
-                playBtn.setText("Pause");
-                for(SequentialTransition s: seqTransList) {
-                    s.play();
-                }
-            }
-            if(startPauseCounter % 2 == 0) {
-                playBtn.setText("Play");
-                for(SequentialTransition s : seqTransList) {
-                    s.pause();
-                }
-                int i = 0;
-                for(Circle c: circleList) {
-                    System.out.println("(" + i + ", " + c.getCenterY() + ")");
-                    i++;
-                }
-                /**
-                 * shows position of each circle in the graph
-                 */
-                for(Circle c : circleList) {
-                    c.setOnMouseEntered(mouseEvent -> {
-                        coordText.setText("(" + circleList.indexOf(c) + "00, " + String.format("%.2f", c.getCenterY()) + ")"); //index stops at 2800
-                    });
-                }
-            }
+            timer = new Timer();
+            animateTimer.start();
         });
 
+//                /**
+
+//                 * shows position of each circle in the graph
+
+//                 */
+
+////                for(Circle c : circleList) {
+
+////                    c.setOnMouseEntered(mouseEvent -> {
+
+////                        coordText.setText("(" + circleList.indexOf(c) + "00, " + String.format("%.2f", c.getCenterY()) + ")"); //index stops at 2800
+
+////                    });
+
+////                }
+
+//            }
+
+//            timer.start();
+
+//        });
 
         Label topLeft = new Label();
+
         topLeft.setStyle("-fx-border-color: black;");
+
         topLeft.setLayoutX(0);
+
         topLeft.setLayoutY(0);
+
         topLeft.setText("(" + topLeft.getLayoutX() + ", " + topLeft.getLayoutY() + ")");
 
         Label topRight = new Label();
+
         topRight.setStyle("-fx-border-color: black;");
         topRight.setLayoutX(950);
         topRight.setLayoutY(0);
         topRight.setText("(" + topRight.getLayoutX() + ", " + topRight.getLayoutY() + ")");
 
         wavesPane.getChildren().addAll(topLeft, topRight);
-
         root.setCenter(wavesPane);
 
         /**
+
          * Brining it all together
+
          */
+
         Scene scene = new Scene(root, 1000, 650);
         scene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
+
         stage.setTitle("Physics Learning Tool");
         stage.setResizable(false);
         stage.setScene(scene);
         stage.show();
+
+    }
+
+    static class Timer { //make a separate class for both sims
+        long startTime;
+
+        public Timer() {
+            startTime = System.currentTimeMillis();
+        }
+
+        public double elapsed() {
+            long elapsed = System.currentTimeMillis();
+            return (elapsed - startTime) / 1000.0;
+        }
     }
 
     public static void main(String[] args) {
         launch();
+
     }
+
+
 }
+
