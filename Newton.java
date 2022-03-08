@@ -204,7 +204,7 @@ public class Newton extends Application {
         groundView.setY(0);
         groundView.setFitWidth(10000);
         groundView.setFitHeight(400);
-        pane.getChildren().addAll(groundView, line, objectView);
+        pane.getChildren().addAll(groundView, line);
         warning.setLayoutX(100);
         warning.setLayoutY(3500);
 
@@ -249,6 +249,7 @@ public class Newton extends Application {
             pane.getChildren().addAll(t);
             t.setVisible(false);
         }
+        pane.getChildren().add(objectView);
 
         Rectangle arrowTail = new Rectangle(50, 15);
         Polygon arrowHead = new Polygon();
@@ -709,7 +710,7 @@ public class Newton extends Application {
         carObject.setOnAction(actionEvent -> {
             objectView.setY(10);
             objectView.setX(50);
-                objectView.setImage(dayCarImg);
+            objectView.setImage(dayCarImg);
 
             skateboardObject.setSelected(false);
             godObject.setSelected(false);
@@ -784,7 +785,7 @@ public class Newton extends Application {
         });
         homeBtn.setOnAction(actionEvent -> {
             primaryStage.close();
-            MainPage m = new MainPage();
+            Main m = new Main();
             m.start(new Stage());
 
         });
@@ -804,7 +805,7 @@ public class Newton extends Application {
             arrowForceLabel.setVisible(false);
         });
     }
-    class Timer {
+    static class Timer {
         long startTime;
 
         public Timer() {
