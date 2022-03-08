@@ -741,29 +741,30 @@ public class Newton extends Application {
                 The momentum of a body is equal to:
                 the product of its mass and its velocity. F=m*a
                 
-                Furthermore, the First law dictates that:
-                If a body is at rest/moving at a constant speed in a straight line
+                Furthermore, Newton's First law states:
+                If a body is at rest/moving at a constant speed in a straight line,
                 it will remain at rest or keep moving in a straight line
-                at constant speed unless it is acted upon by a force
-                The Friction force is what allows the object to come to a stop.
+                at a constant speed unless it is acted upon by a force. In this
+                case, the friction force is what allows the object to come to a
+                stop.
                 
                 The user can change the force, mass and friction force based on
                 their desired values, omitting decimal values and
                 within the accepted values within this simulator, by typing them
-                into the respective text bubbles.
+                into the respective text fields.
                 
                 Upon the clicking the start button, the simulation will apply the
-                aforementioned laws and slide the image across the screen forgo any
-                unaccepted values.
+                aforementioned laws and slide the object across the screen,
+                given that no unaccepted values are given by the user.
                 
-                1% of error is to be expected as Java does a poor job tracking time.
-                
+                NOTE: An error of <0.5% is to be expected, as due to factors 
+                such as code architecture and decimal rounding, Java does not 
+                provide a perfect, consistent way of tracking time.
                 
                 Accepted values:
-                F: Force (100 to 1000 N)
+                F: Force (100 to 1000N)
                 m: Mass  (1 to 10 kg)
                 Friction Force: (100 to 1000N)
-                
                 """);
         textPane.getChildren().add(text);
         text.setY(40);
