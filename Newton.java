@@ -54,7 +54,6 @@ public class Newton extends Application {
             helpPic = (String) jsonObject.get("newtonSecondStagePic");
             dusk = (String) jsonObject.get("dusk");
             dayCar = (String) jsonObject.get("dayCar");
-            nightCar = (String) jsonObject.get("nightCar");
             day = (String) jsonObject.get("day");
             god = (String) jsonObject.get("god");
             skateboard = (String) jsonObject.get("board");
@@ -144,30 +143,27 @@ public class Newton extends Application {
         navigationHBox.setAlignment(Pos.CENTER);
 
         Label forceLabel = new Label("Applied Force (N):");
-        TextField forceTextField = new TextField();
-        forceLabel.setId("lid");
+        TextField forceTextField = new TextField();;
         appliedForceHBox.getChildren().addAll(forceLabel,forceTextField);
 //forceHBoxSettings
-        Label massLabel = new Label("Mass (kg):");
+        Label massLabel = new Label("Mass (kg):             ");
         TextField massTextField = new TextField();
-        massLabel.setId("lid");
         massHBox.getChildren().addAll(massLabel,massTextField);
 //massHBoxSettings
         Label surfaceLabel = new Label("Friction Force (N):");
         TextField frictionForceTextField = new TextField();
-        surfaceLabel.setId("lid");
         frictionForceHBox.getChildren().addAll(surfaceLabel,frictionForceTextField);
         tfVbox.getChildren().addAll(appliedForceHBox,massHBox,frictionForceHBox);
 //tfVBoxSettings
-        Label velocityDisplayLabel = new Label("Velocity: 0.00km/h");
+        Label velocityDisplayLabel = new Label("Velocity: 0.00km/h       ");
         velocityDisplayLabel.setTextFill(Color.RED);
         Label accelerationDisplayLabel = new Label("Acceleration: 0.00m/s²");
-        accelerationDisplayLabel.setId("acc");
+
         accelerationDisplayLabel.setTextFill(Color.ORANGE);
-        Label timeDisplayLabel = new Label("Time: 0.00s");
+        Label timeDisplayLabel = new Label("Time: 0.00s                   ");
         Color color = Color.web("#9784ed");
         timeDisplayLabel.setTextFill(color);
-        Label distanceDisplayLabel = new Label("Distance: 0.00m");
+        Label distanceDisplayLabel = new Label("Distance: 0.00m           ");
         Color omori = Color.web("#6c0ffe");
         distanceDisplayLabel.setTextFill(omori);
         labelVBox.getChildren().addAll(velocityDisplayLabel,accelerationDisplayLabel,timeDisplayLabel,distanceDisplayLabel);
@@ -186,14 +182,14 @@ public class Newton extends Application {
 
 
         Image dayCarImg = new Image(dayCar);
-        Image nightCarImg =new Image(nightCar);
         Image godImg = new Image(god);
         Image skateboardImg = new Image(skateboard);
         ImageView objectView = new ImageView(dayCarImg);
         objectView.setPreserveRatio(true);
         objectView.setFitHeight(80);
         objectView.setLayoutY(300);
-
+        objectView.setY(10);
+        objectView.setX(50);
         Line line = new Line();
         line.setStroke(Color.color(0,0,0,0));
         line.setStartY(300);
@@ -632,9 +628,9 @@ public class Newton extends Application {
         imperial.setOnAction(actionEvent -> {
             metric.setSelected(false);
             imperial.setSelected(true);
-            velocityDisplayLabel.setText("Velocity: 0.00mi/h");
+            velocityDisplayLabel.setText("Velocity: 0.00mi/h        ");
             accelerationDisplayLabel.setText("Acceleration: 0.00ft/s²");
-            distanceDisplayLabel.setText("Distance: 0.00yd");
+            distanceDisplayLabel.setText("Distance: 0.00yd           ");
 
             for (Line l : distanceLineArrayList) {
                 l.setVisible(false);
@@ -655,9 +651,9 @@ public class Newton extends Application {
         metric.setOnAction(actionEvent -> {
             metric.setSelected(true);
             imperial.setSelected(false);
-            velocityDisplayLabel.setText("Velocity: 0.00km/h");
+            velocityDisplayLabel.setText("Velocity: 0.00km/h       ");
             accelerationDisplayLabel.setText("Acceleration: 0.00m/s²");
-            distanceDisplayLabel.setText("Distance: 0.00m");
+            distanceDisplayLabel.setText("Distance: 0.00m           ");
             for (Line l : distanceLineArrayList) {
                 l.setVisible(true);
             }
@@ -700,31 +696,27 @@ public class Newton extends Application {
             separator.setStyle("-fx-stroke:#01014b;");
             groundView.setImage(duskImg);
             lightMode.setSelected(false);
-            if(carObject.isSelected()){
-                objectView.setImage(nightCarImg);
-            }
 
         });
         exitProgram.setOnAction(actionEvent -> exit());
         godObject.setOnAction(actionEvent -> {
+            objectView.setX(70);
             objectView.setY(0);
             objectView.setImage(godImg);
             carObject.setSelected(false);
             skateboardObject.setSelected(false);
         });
         carObject.setOnAction(actionEvent -> {
-            objectView.setY(0);
-            if(darkMode.isSelected()){
-                objectView.setImage(nightCarImg);
-
-            }else{
+            objectView.setY(10);
+            objectView.setX(50);
                 objectView.setImage(dayCarImg);
-            }
+
             skateboardObject.setSelected(false);
             godObject.setSelected(false);
 
         });
         skateboardObject.setOnAction(actionEvent -> {
+            objectView.setX(120);
             objectView.setImage(skateboardImg);
             carObject.setSelected(false);
             godObject.setSelected(false);
@@ -743,7 +735,7 @@ public class Newton extends Application {
         helpImageView.setFitHeight(500);
 
         Text text = new Text("""
-                Newton's second law states:
+                Newton's Second law states:
                 Time rate of change of the momentum of a body is equal
                 in both magnitude and direction to the force imposed on it.
                 The momentum of a body is equal to:
@@ -753,10 +745,19 @@ public class Newton extends Application {
                 If a body is at rest/moving at a constant speed in a straight line
                 it will remain at rest or keep moving in a straight line
                 at constant speed unless it is acted upon by a force
-                The Friction force is what allows the object to to come to a stop.
+                The Friction force is what allows the object to come to a stop.
                 
                 The user can change the force, mass and friction force based on
-                their input within the accepted values within this simulator
+                their desired values, omitting decimal values and
+                within the accepted values within this simulator, by typing them
+                into the respective text bubbles.
+                
+                Upon the clicking the start button, the simulation will apply the
+                aforementioned laws and slide the image across the screen forgo any
+                unaccepted values.
+                
+                1% of error is to be expected as Java does a poor job tracking time.
+                
                 
                 Accepted values:
                 F: Force (100 to 1000 N)
