@@ -246,6 +246,28 @@ public class Ui extends Application {
         }
 
         /**
+         * Creating the incident traveling wave
+         */
+        for(int i = 10; i < 990; i += 20) {
+            c = new Circle(i, wavesPane.getPrefHeight()/2, 10, Color.MAROON);
+            travelList.add(c);
+        }
+        for(Circle c: travelList) {
+            wavesPane.getChildren().addAll(c);
+        }
+
+        /**
+         * Creating the reflected traveling wave
+         */
+        for(int i = 10; i < 990; i += 20) {
+            c = new Circle(i, wavesPane.getPrefHeight()/2, 10, Color.CORNFLOWERBLUE);
+            reTravelList.add(c);
+        }
+        for(Circle c: reTravelList) {
+            wavesPane.getChildren().addAll(c);
+        }
+
+        /**
          * Creating the standing wave
          */
         for(int i = 10; i < 990; i += 20) {
@@ -264,11 +286,27 @@ public class Ui extends Application {
             public void handle(long l) {
                 for(Circle c: standList){
                     timeElapsed = timer.elapsed();
-                    xPos = c.getCenterX();
+                    xPos = c.getCenterX() - 10;
                     omega = 2 * Math.PI * f;
                     lambda = v / f;
                     k = (2 * Math.PI) / lambda;
                     c.setCenterY(2 * A * Math.cos(omega * timeElapsed) * Math.sin(k * xPos) + wavesPane.getHeight()/2);
+                }
+                for(Circle c: travelList) {
+                    timeElapsed = timer.elapsed();
+                    xPos = c.getCenterX() - 10;
+                    omega = 2 * Math.PI * f;
+                    lambda = v / f;
+                    k = (2 * Math.PI) / lambda;
+                    c.setCenterY(A * Math.sin(omega * timeElapsed - k * xPos) + wavesPane.getHeight()/2);
+                }
+                for(Circle c: reTravelList) {
+                    timeElapsed = timer.elapsed();
+                    xPos = c.getCenterX() - 10;
+                    omega = 2 * Math.PI * f;
+                    lambda = v / f;
+                    k = (2 * Math.PI) / lambda;
+                    c.setCenterY(A * Math.sin(omega * timeElapsed + k * xPos) + wavesPane.getHeight()/2);
                 }
             }
         };
