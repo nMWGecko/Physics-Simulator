@@ -4,6 +4,8 @@ import javafx.animation.*;
 import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -73,11 +75,11 @@ public class Ui extends Application {
         nagivationHBox.setPadding(new Insets(10, 5, 5, 5));
         Pane menuPane = new Pane();
         //Toggling the incident and reflect rays visibility
-        Menu metricSystem = new Menu("Toggle Incident/Reflected Rays");
+        Menu raysVis = new Menu("Toggle Rays");
         CheckMenuItem raysOn = new CheckMenuItem("On");
         CheckMenuItem raysOff = new CheckMenuItem("Off");
         raysOn.setSelected(true);
-        metricSystem.getItems().addAll(raysOff, raysOn);
+        raysVis.getItems().addAll(raysOn, raysOff);
         //Toggling grid visibility
         Menu objects = new Menu("Toggle Grid");
         CheckMenuItem gridOn = new CheckMenuItem("On");
@@ -100,7 +102,7 @@ public class Ui extends Application {
         //Additional settings
         MenuItem menuHelp = new MenuItem("Help");
         MenuItem exitProgram = new MenuItem("Exit Program");
-        MenuButton menuBtn = new MenuButton("Menu", null, metricSystem,mode, objects, showForces, menuHelp, exitProgram);
+        MenuButton menuBtn = new MenuButton("Menu", null, raysVis,mode, objects, showForces, menuHelp, exitProgram);
         Image menuIcon = new Image(menuPic);
         ImageView menuView = new ImageView(menuIcon);
         menuView.setPreserveRatio(true);
@@ -170,7 +172,7 @@ public class Ui extends Application {
         });
 
         //Wave Speed
-        TextField wavSpdTf = new TextField("Wave Speed [in meters/second]");
+        TextField wavSpdTf = new TextField("Wave Speed [in centimeters/second]");
         wavSpdTf.setAlignment(Pos.CENTER);
         wavSpdTf.setEditable(false);
         Slider wavSpdSldr = new Slider(0, 500, 0);
@@ -181,12 +183,12 @@ public class Ui extends Application {
             @Override
             public void changed(ObservableValue<? extends Number> observableValue, Number number, Number t1) {
                 v = wavSpdSldr.getValue();
-                wavSpdTf.setText(String.format("%.2f", wavSpdSldr.getValue()) + " m/s");
+                wavSpdTf.setText(String.format("%.2f", wavSpdSldr.getValue()) + " cm/s");
             }
         });
 
         //Amplitude (changing the slider keeps the amp at max (snap) then implement new value)
-        TextField ampTf = new TextField("Amplitude [in meters]");
+        TextField ampTf = new TextField("Amplitude [in centimeters]");
         ampTf.setAlignment(Pos.CENTER);
         ampTf.setEditable(false);
         Slider ampSldr = new Slider(0, 90, 0);
@@ -197,7 +199,7 @@ public class Ui extends Application {
             @Override
             public void changed(ObservableValue<? extends Number> observableValue, Number number, Number t1) {
                 A = ampSldr.getValue();
-                ampTf.setText(String.format("%.2f", ampSldr.getValue()) + " m");
+                ampTf.setText(String.format("%.2f", ampSldr.getValue()) + " cm");
             }
         });
 
@@ -245,6 +247,9 @@ public class Ui extends Application {
             yL.setLayoutY(i - 5);
         }
 
+        //Grid lines
+
+
         /**
          * Creating the incident traveling wave
          */
@@ -277,6 +282,35 @@ public class Ui extends Application {
         for(Circle c: standList) {
             wavesPane.getChildren().addAll(c);
         }
+
+        /**
+         * Toggle Wave Visibility
+         */
+        raysOn.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                for(Circle c: travelList) {
+                    wavesPane.getChildren().add(c);
+                }
+                for(Circle c: reTravelList) {
+                    wavesPane.getChildren().add(c);
+                }
+                raysOff.setSelected(false);
+            }
+        });
+
+        raysOff.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                for(Circle c: travelList) {
+                    wavesPane.getChildren().remove(c);
+                }
+                for(Circle c: reTravelList) {
+                    wavesPane.getChildren().remove(c);
+                }
+                raysOn.setSelected(false);
+            }
+        });
 
         /**
          * Timer
