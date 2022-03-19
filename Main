@@ -27,6 +27,9 @@ import java.util.ArrayList;
 
 public class Ui extends Application {
     static String menuPic, homePic, helpPic;
+    static Color omori = Color.web("#6c0ffe");
+    static Color neonCyan = Color.web("#08F7FE");
+    static Color neonPink = Color.web("#FE53BB");
     static Circle c;
 
     static ArrayList<Circle> standList = new ArrayList<>();
@@ -34,8 +37,12 @@ public class Ui extends Application {
     static ArrayList<Circle> reTravelList = new ArrayList<>();
 
     static Timer timer;
+    static Line vertGrid, horiGrid, xIndic, yIndic;
+    static ArrayList<Line> xIndiList = new ArrayList<>();
+    static ArrayList<Line> yIndiList = new ArrayList<>();
     static Label xL, yL;
-    static Line xIndic, yIndic;
+    static ArrayList<Label> xLabelList = new ArrayList<>();
+    static ArrayList<Label> yTickList = new ArrayList<>();
     static int startPauseCounter = 0;
 
     static double A, f, T, omega, lambda, k, xPos, timeElapsed;
@@ -209,6 +216,7 @@ public class Ui extends Application {
         Button btn3 = new Button("Help");
         ui.getChildren().addAll(params, playBtn, btn3);
 
+
         /**
          * Displaying the waves
          */
@@ -216,7 +224,9 @@ public class Ui extends Application {
         wavesPane.setPrefWidth(960);
         wavesPane.setPrefHeight(320);
 
-        //Setting up the Cartesian Plane
+        /**
+         * Setting up the grid
+         */
         Line xAxis = new Line();
         Line yAxis = new Line();
         wavesPane.getChildren().addAll(xAxis, yAxis);
@@ -230,58 +240,124 @@ public class Ui extends Application {
         yAxis.setEndY(wavesPane.getPrefHeight()); //350, 470
 
         //X-Axis indices for(int i = 0; i <= 500; i += 50)
-        for(int i = 50; i <= 960; i += 50) {
-            xL = new Label("" + i);
+        for(int i = 20; i < 980; i += 20) {
             xIndic = new Line(i, xAxis.getStartY()-10, i, xAxis.getStartY()+10);
+            xIndiList.add(xIndic);
+            xL = new Label("" + i);
+            xLabelList.add(xL);
+            xL.setLayoutX(i - 80);
+            xL.setLayoutY(xAxis.getStartY() + 15);
             wavesPane.getChildren().addAll(xL, xIndic);
-            xL.setLayoutX(i + 47.5);
-            xL.setLayoutY(260);
         }
 
         //Y-Axis indices for(int i = 250; i >= 150; i -= 25)
         for(int i = 570; i >= 370; i -= 25) {
-            yL = new Label("" + (250 - i));
             yIndic = new Line(yAxis.getStartX()+10, i, yAxis.getStartX()-10, i);
-            wavesPane.getChildren().addAll(yL, yIndic);
+            yIndiList.add(yIndic);
+            yL = new Label("" + (250 - i));
             yL.setLayoutX(10);
             yL.setLayoutY(i - 5);
+            wavesPane.getChildren().addAll(yL, yIndic);
         }
 
         //Grid lines
+        for(int i = 0; i <= wavesPane.getPrefHeight(); i += 20) {
+            horiGrid = new Line(0, i, 980, i);
+            horiGrid.setStroke(Color.LIGHTGRAY);
+            wavesPane.getChildren().add(horiGrid);
+        }
 
+        for(int i = 10; i <= 990; i += 20) {
+            vertGrid = new Line(i, 0, i, wavesPane.getPrefHeight());
+            vertGrid.setStroke(Color.LIGHTGRAY);
+            wavesPane.getChildren().add(vertGrid);
+        }
 
         /**
          * Creating the incident traveling wave
          */
-        for(int i = 10; i < 990; i += 20) {
-            c = new Circle(i, wavesPane.getPrefHeight()/2, 10, Color.MAROON);
+        for(int i = 10; i < 990; i += 4) {
+            c = new Circle(i, wavesPane.getPrefHeight()/2, 2, Color.CORNFLOWERBLUE);
             travelList.add(c);
         }
         for(Circle c: travelList) {
-            wavesPane.getChildren().addAll(c);
+            wavesPane.getChildren().add(c);
         }
 
         /**
          * Creating the reflected traveling wave
          */
-        for(int i = 10; i < 990; i += 20) {
-            c = new Circle(i, wavesPane.getPrefHeight()/2, 10, Color.CORNFLOWERBLUE);
+        for(int i = 10; i < 990; i += 4) {
+            c = new Circle(i, wavesPane.getPrefHeight()/2, 2, Color.MAROON);
             reTravelList.add(c);
         }
         for(Circle c: reTravelList) {
-            wavesPane.getChildren().addAll(c);
+            wavesPane.getChildren().add(c);
         }
 
         /**
          * Creating the standing wave
          */
-        for(int i = 10; i < 990; i += 20) {
-            c = new Circle(i, wavesPane.getPrefHeight()/2, 10, Color.DARKMAGENTA);
+        for(int i = 10; i < 990; i += 10) {
+            c = new Circle(i, wavesPane.getPrefHeight()/2, 5, Color.DARKMAGENTA);
             standList.add(c);
         }
         for(Circle c: standList) {
-            wavesPane.getChildren().addAll(c);
+            wavesPane.getChildren().add(c);
         }
+
+        /**
+         * Change Theme
+         */
+        darkMode.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                root.setStyle("-fx-background-color: #303030");
+                xAxis.setStroke(Color.WHITE);
+                yAxis.setStroke(Color.WHITE);
+                for(Line l: xIndiList) {
+                    l.setStroke(Color.WHITE);
+                }
+                for(Line l: yIndiList) {
+                    l.setStroke(Color.WHITE);
+                }
+                for(Circle c: travelList) {
+                    c.setStroke(neonCyan);
+                }
+                for(Circle c: reTravelList) {
+                    c.setStroke(Color.ORANGERED);
+                }
+                for(Circle c: standList) {
+                    c.setStroke(omori); //color not added?
+                }
+                lightMode.setSelected(false);
+            }
+        });
+
+        lightMode.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                root.setStyle("-fx-background-color: white");
+                xAxis.setStroke(Color.BLACK);
+                yAxis.setStroke(Color.BLACK);
+                for(Line l: xIndiList) {
+                    l.setStroke(Color.BLACK);
+                }
+                for(Line l: yIndiList) {
+                    l.setStroke(Color.BLACK);
+                }
+                for(Circle c: travelList) {
+                    c.setStroke(Color.CORNFLOWERBLUE);
+                }
+                for(Circle c: reTravelList) {
+                    c.setStroke(Color.MAROON);
+                }
+                for(Circle c: standList) {
+                    c.setStroke(Color.DARKMAGENTA);
+                }
+                darkMode.setSelected(false);
+            }
+        });
 
         /**
          * Toggle Wave Visibility
