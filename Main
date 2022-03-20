@@ -32,8 +32,6 @@ import java.util.ArrayList;
 public class Ui extends Application {
     static String menuPic, homePic, helpPic;
     static Color omori = Color.web("#6c0ffe");
-    static Color neonCyan = Color.web("#08F7FE");
-    static Color neonPink = Color.web("#FE53BB");
     static Circle c;
 
     static ArrayList<Circle> standList = new ArrayList<>();
@@ -42,6 +40,8 @@ public class Ui extends Application {
 
     static Timer timer;
     static Line vertGrid, horiGrid, xIndic, yIndic;
+    static ArrayList<Line> hLineList = new ArrayList<>();
+    static ArrayList<Line> vLineList = new ArrayList<>();
     static ArrayList<Line> xIndiList = new ArrayList<>();
     static ArrayList<Line> yIndiList = new ArrayList<>();
     static Text xL, yL;
@@ -85,24 +85,28 @@ public class Ui extends Application {
         HBox nagivationHBox = new HBox(230);
         nagivationHBox.setPadding(new Insets(10, 5, 5, 5));
         Pane menuPane = new Pane();
+
         //Toggling the incident and reflect rays visibility
         Menu raysVis = new Menu("Toggle Rays");
         CheckMenuItem raysOn = new CheckMenuItem("On");
         CheckMenuItem raysOff = new CheckMenuItem("Off");
         raysOn.setSelected(true);
         raysVis.getItems().addAll(raysOn, raysOff);
+
         //Toggling grid visibility
         Menu objects = new Menu("Toggle Grid");
         CheckMenuItem gridOn = new CheckMenuItem("On");
         CheckMenuItem gridOff = new CheckMenuItem("Off");
         gridOn.setSelected(true);
         objects.getItems().addAll(gridOn, gridOff);
+
         //Change themes
-        Menu mode = new Menu("Mode");
+        Menu theme = new Menu("Theme");
         CheckMenuItem lightMode = new CheckMenuItem("Light Mode");
         CheckMenuItem darkMode = new CheckMenuItem("Dark Mode");
         lightMode.setSelected(true);
-        mode.getItems().addAll(lightMode,darkMode);
+        theme.getItems().addAll(lightMode,darkMode);
+
         //Time effects
         Menu showForces = new Menu("Time");
         CheckMenuItem showForcesOn = new CheckMenuItem("Slow Motion");
@@ -110,10 +114,32 @@ public class Ui extends Application {
         CheckMenuItem fastMotion = new CheckMenuItem("Fast Motion");
         showForcesOff.setSelected(true);
         showForces.getItems().addAll(showForcesOn, showForcesOff, fastMotion);
-        //Additional settings
+
+        //Help MenuItem
         MenuItem menuHelp = new MenuItem("Help");
+        Pane helpPane = new Pane();
+        ImageView shulkNo = new ImageView(new Image("https://www.siliconera.com/wp-content/uploads/2020/03/xbc-de-16.jpg"));
+        Text subtitle = new Text("No!");
+        subtitle.setFont(Font.font("Consolas", FontWeight.NORMAL, FontPosture.REGULAR, 35));
+        subtitle.setFill(Color.WHITE);
+        subtitle.setLayoutX(538);
+        subtitle.setLayoutY(560);
+        helpPane.getChildren().addAll(shulkNo, subtitle);
+        Scene theoryScene = new Scene(helpPane);
+        Stage secondaryStage = new Stage();
+        secondaryStage.setTitle("Loss");
+        secondaryStage.setResizable(false);
+        secondaryStage.setScene(theoryScene);
+        menuHelp.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                secondaryStage.show();
+            }
+        });
+        
+        //Additional Settings
         MenuItem exitProgram = new MenuItem("Exit Program");
-        MenuButton menuBtn = new MenuButton("Menu", null, raysVis,mode, objects, showForces, menuHelp, exitProgram);
+        MenuButton menuBtn = new MenuButton("Menu", null, raysVis,theme, objects, showForces, menuHelp, exitProgram);
         Image menuIcon = new Image(menuPic);
         ImageView menuView = new ImageView(menuIcon);
         menuView.setPreserveRatio(true);
@@ -138,15 +164,6 @@ public class Ui extends Application {
         nagivationHBox.getChildren().addAll(homeBtn,warning, menuPane);
         nagivationHBox.setAlignment(Pos.CENTER);
 
-        //Pop-Up Text
-        Label instructionsTxt = new Label("Insert Text Here");
-        Pane helpPane = new Pane();
-        helpPane.getChildren().add(instructionsTxt);
-        Scene helpScene = new Scene(helpPane, 1000, 650);
-        Stage popUp1 = new Stage();
-        popUp1.setTitle("Instructions");
-        popUp1.setScene(helpScene);
-
         //The Top Buttons
         VBox controls = new VBox(10);
         root.setTop(controls);
@@ -166,7 +183,7 @@ public class Ui extends Application {
         VBox params = new VBox(5);
 
         //Frequency: "clear" the values (for a split second) then implementing the new value
-        TextField freqTf = new TextField("Frequency [in Hz]");
+        TextField freqTf = new TextField("Frequency [Hz]");
         freqTf.setAlignment(Pos.CENTER);
         freqTf.setEditable(false);
         Slider freqSldr = new Slider(0, 1, 0);
@@ -183,7 +200,7 @@ public class Ui extends Application {
         });
 
         //Wave Speed
-        TextField wavSpdTf = new TextField("Wave Speed [in centimeters/second]");
+        TextField wavSpdTf = new TextField("Wave Speed [cm/s]");
         wavSpdTf.setAlignment(Pos.CENTER);
         wavSpdTf.setEditable(false);
         Slider wavSpdSldr = new Slider(0, 500, 0);
@@ -199,10 +216,10 @@ public class Ui extends Application {
         });
 
         //Amplitude (changing the slider keeps the amp at max (snap) then implement new value)
-        TextField ampTf = new TextField("Amplitude [in centimeters]");
+        TextField ampTf = new TextField("Amplitude [cm]");
         ampTf.setAlignment(Pos.CENTER);
         ampTf.setEditable(false);
-        Slider ampSldr = new Slider(0, 90, 0);
+        Slider ampSldr = new Slider(0, 80, 0);
         ampSldr.setShowTickMarks(true);
         ampSldr.setShowTickLabels(true);
 
@@ -218,6 +235,19 @@ public class Ui extends Application {
 
         Button playBtn = new Button("Start");
         Button btn3 = new Button("Help");
+        Pane helpPane2 = new Pane();
+        ImageView astolfo = new ImageView(new Image("https://img5.goodfon.com/wallpaper/nbig/0/ad/fate-apocrypha-sudba-apokrif-astolfo-shorty-ulybka-topik.jpg"));
+        helpPane2.getChildren().add(astolfo);
+        Scene helpScene = new Scene(helpPane2);
+        Stage astolfoStage = new Stage();
+        astolfoStage.setTitle("Show Me The Trello");
+        astolfoStage.setScene(helpScene);
+        btn3.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                astolfoStage.show();
+            }
+        });
         ui.getChildren().addAll(params, playBtn, btn3);
 
 
@@ -231,59 +261,97 @@ public class Ui extends Application {
         /**
          * Setting up the grid
          */
+        Text scaleText = new Text("1 px : 1 cm");
+        scaleText.setLayoutX(wavesPane.getPrefWidth() - 30);
+        scaleText.setLayoutY(wavesPane.getPrefHeight());
+        wavesPane.getChildren().add(scaleText);
         //Grid lines
         for(int i = 0; i <= wavesPane.getPrefHeight(); i += 20) {
             horiGrid = new Line(0, i, 980, i);
             horiGrid.setStroke(Color.LIGHTGRAY);
+            hLineList.add(horiGrid);
             wavesPane.getChildren().add(horiGrid);
         }
 
         for(int i = 10; i <= 990; i += 20) {
             vertGrid = new Line(i, 0, i, wavesPane.getPrefHeight());
             vertGrid.setStroke(Color.LIGHTGRAY);
+            vLineList.add(vertGrid);
             wavesPane.getChildren().add(vertGrid);
         }
 
-        //Axis Lines
+        /**
+         * Toggle Grid
+         */
+        gridOn.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                for(Line l: hLineList) {
+                    wavesPane.getChildren().add(l);
+                }
+                for(Line l: vLineList) {
+                    wavesPane.getChildren().add(l);
+                }
+                gridOff.setSelected(false);
+            }
+        });
+
+        gridOff.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                for(Line l: hLineList) {
+                    wavesPane.getChildren().remove(l);
+                }
+                for(Line l: vLineList) {
+                    wavesPane.getChildren().remove(l);
+                }
+                gridOn.setSelected(false);
+            }
+        });
+
+        /**
+         * Creating Axis Lines
+         */
         Line xAxis = new Line();
         Line yAxis = new Line();
         wavesPane.getChildren().addAll(xAxis, yAxis);
         xAxis.setStartX(0);
-        xAxis.setEndX(960); //600
-        xAxis.setStartY(wavesPane.getPrefHeight()/2); //250
-        xAxis.setEndY(wavesPane.getPrefHeight()/2); //250
-        yAxis.setStartX(10); //50
-        yAxis.setEndX(10); //50
-        yAxis.setStartY(0); //150, 270
-        yAxis.setEndY(wavesPane.getPrefHeight()); //350, 470
+        xAxis.setEndX(960);
+        xAxis.setStartY(wavesPane.getPrefHeight() / 2);
+        xAxis.setEndY(wavesPane.getPrefHeight() / 2);
+        yAxis.setStartX(10);
+        yAxis.setEndX(10);
+        yAxis.setStartY(0);
+        yAxis.setEndY(wavesPane.getPrefHeight());
 
         //X-Axis indices
         for(int i = 30; i < 980; i += 20) {
-            xIndic = new Line(i, xAxis.getStartY()-10, i, xAxis.getStartY()+10);
+            xIndic = new Line(i, xAxis.getStartY() - 10, i, xAxis.getStartY() + 10);
             xIndiList.add(xIndic);
             wavesPane.getChildren().add(xIndic);
         }
         for(int i = 100; i < 980; i += 100) {
-            xL = new Text("" + i);
-            xL.setFont(Font.font("Consanas", FontWeight.BOLD, FontPosture.REGULAR, 11));
-            xL.setLayoutX(i);
-            xL.setLayoutY(xAxis.getStartY() + 15);
+            int actNb = i - 50;
+            xL = new Text("" + actNb);
+            xL.setFont(Font.font("Consolas", FontWeight.BOLD, FontPosture.REGULAR, 11));
+            xL.setLayoutX(i + 1);
+            xL.setLayoutY(xAxis.getStartY() + 20);
             xLabelList.add(xL);
             wavesPane.getChildren().add(xL);
         }
 
         //Y-Axis indices
         for(int i = 570; i >= 370; i -= 25) {
-            yIndic = new Line(yAxis.getStartX()+10, i, yAxis.getStartX()-10, i);
+            yIndic = new Line(yAxis.getStartX() + 10, i, yAxis.getStartX() - 10, i);
             yIndiList.add(yIndic);
             wavesPane.getChildren().add(yIndic);
         }
         for(int i = 320; i >= 0; i -= 20) {
-            int actNb = (int) (i - xAxis.getStartY());
+            int actNb = (int) ((i - xAxis.getStartY()) / 2);
             yL = new Text("" + actNb*-1);
             yL.setFont(Font.font("Consanas", FontWeight.BOLD, FontPosture.REGULAR, 11));
-            yL.setLayoutX(0 - 10);
-            yL.setLayoutY(i + 5);
+            yL.setLayoutX(-9);
+            yL.setLayoutY(i + 4);
             yLabelList.add(yL);
             wavesPane.getChildren().add(yL);
         }
@@ -291,7 +359,7 @@ public class Ui extends Application {
         /**
          * Creating the incident traveling wave
          */
-        for(int i = 10; i < 990; i += 4) {
+        for(int i = 10; i < 990; i++) {
             c = new Circle(i, wavesPane.getPrefHeight()/2, 2, Color.CORNFLOWERBLUE);
             travelList.add(c);
         }
@@ -302,7 +370,7 @@ public class Ui extends Application {
         /**
          * Creating the reflected traveling wave
          */
-        for(int i = 10; i < 990; i += 4) {
+        for(int i = 10; i < 990; i++) {
             c = new Circle(i, wavesPane.getPrefHeight()/2, 2, Color.MAROON);
             reTravelList.add(c);
         }
@@ -313,8 +381,8 @@ public class Ui extends Application {
         /**
          * Creating the standing wave
          */
-        for(int i = 10; i < 990; i += 10) {
-            c = new Circle(i, wavesPane.getPrefHeight()/2, 5, Color.DARKMAGENTA);
+        for(int i = 10; i < 990; i++) {
+            c = new Circle(i, wavesPane.getPrefHeight()/2, 3, Color.DARKMAGENTA);
             standList.add(c);
         }
         for(Circle c: standList) {
@@ -324,37 +392,6 @@ public class Ui extends Application {
         /**
          * Change Theme
          */
-        darkMode.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent actionEvent) {
-                root.setStyle("-fx-background-color: #303030");
-                xAxis.setStroke(Color.WHITE);
-                yAxis.setStroke(Color.WHITE);
-                for(Line l: xIndiList) {
-                    l.setStroke(Color.WHITE);
-                }
-                for(Text t: xLabelList) {
-                    t.setFill(Color.WHITE);
-                }
-                for(Line l: yIndiList) {
-                    l.setStroke(Color.WHITE);
-                }
-                for(Text t: yLabelList) {
-                    t.setFill(Color.WHITE);
-                }
-                for(Circle c: travelList) {
-                    c.setStroke(neonCyan);
-                }
-                for(Circle c: reTravelList) {
-                    c.setStroke(Color.ORANGERED);
-                }
-                for(Circle c: standList) {
-                    c.setStroke(omori); //color not added?
-                }
-                lightMode.setSelected(false);
-            }
-        });
-
         lightMode.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
@@ -382,7 +419,40 @@ public class Ui extends Application {
                 for(Circle c: standList) {
                     c.setStroke(Color.DARKMAGENTA);
                 }
+                scaleText.setFill(Color.WHITE);
                 darkMode.setSelected(false);
+            }
+        });
+
+        darkMode.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                root.setStyle("-fx-background-color: #303030");
+                xAxis.setStroke(Color.WHITE);
+                yAxis.setStroke(Color.WHITE);
+                for(Line l: xIndiList) {
+                    l.setStroke(Color.WHITE);
+                }
+                for(Text t: xLabelList) {
+                    t.setFill(Color.WHITE);
+                }
+                for(Line l: yIndiList) {
+                    l.setStroke(Color.WHITE);
+                }
+                for(Text t: yLabelList) {
+                    t.setFill(Color.WHITE);
+                }
+                for(Circle c: travelList) {
+                    c.setStroke(Color.CYAN);
+                }
+                for(Circle c: reTravelList) {
+                    c.setStroke(Color.ORANGERED);
+                }
+                for(Circle c: standList) {
+                    c.setStroke(omori);
+                }
+                scaleText.setFill(Color.WHITE);
+                lightMode.setSelected(false);
             }
         });
 
