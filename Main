@@ -16,6 +16,10 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontPosture;
+import javafx.scene.text.FontWeight;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -40,9 +44,9 @@ public class Ui extends Application {
     static Line vertGrid, horiGrid, xIndic, yIndic;
     static ArrayList<Line> xIndiList = new ArrayList<>();
     static ArrayList<Line> yIndiList = new ArrayList<>();
-    static Label xL, yL;
-    static ArrayList<Label> xLabelList = new ArrayList<>();
-    static ArrayList<Label> yTickList = new ArrayList<>();
+    static Text xL, yL;
+    static ArrayList<Text> xLabelList = new ArrayList<>();
+    static ArrayList<Text> yLabelList = new ArrayList<>();
     static int startPauseCounter = 0;
 
     static double A, f, T, omega, lambda, k, xPos, timeElapsed;
@@ -227,6 +231,20 @@ public class Ui extends Application {
         /**
          * Setting up the grid
          */
+        //Grid lines
+        for(int i = 0; i <= wavesPane.getPrefHeight(); i += 20) {
+            horiGrid = new Line(0, i, 980, i);
+            horiGrid.setStroke(Color.LIGHTGRAY);
+            wavesPane.getChildren().add(horiGrid);
+        }
+
+        for(int i = 10; i <= 990; i += 20) {
+            vertGrid = new Line(i, 0, i, wavesPane.getPrefHeight());
+            vertGrid.setStroke(Color.LIGHTGRAY);
+            wavesPane.getChildren().add(vertGrid);
+        }
+
+        //Axis Lines
         Line xAxis = new Line();
         Line yAxis = new Line();
         wavesPane.getChildren().addAll(xAxis, yAxis);
@@ -239,38 +257,35 @@ public class Ui extends Application {
         yAxis.setStartY(0); //150, 270
         yAxis.setEndY(wavesPane.getPrefHeight()); //350, 470
 
-        //X-Axis indices for(int i = 0; i <= 500; i += 50)
-        for(int i = 20; i < 980; i += 20) {
+        //X-Axis indices
+        for(int i = 30; i < 980; i += 20) {
             xIndic = new Line(i, xAxis.getStartY()-10, i, xAxis.getStartY()+10);
             xIndiList.add(xIndic);
-            xL = new Label("" + i);
-            xLabelList.add(xL);
-            xL.setLayoutX(i - 80);
+            wavesPane.getChildren().add(xIndic);
+        }
+        for(int i = 100; i < 980; i += 100) {
+            xL = new Text("" + i);
+            xL.setFont(Font.font("Consanas", FontWeight.BOLD, FontPosture.REGULAR, 11));
+            xL.setLayoutX(i);
             xL.setLayoutY(xAxis.getStartY() + 15);
-            wavesPane.getChildren().addAll(xL, xIndic);
+            xLabelList.add(xL);
+            wavesPane.getChildren().add(xL);
         }
 
-        //Y-Axis indices for(int i = 250; i >= 150; i -= 25)
+        //Y-Axis indices
         for(int i = 570; i >= 370; i -= 25) {
             yIndic = new Line(yAxis.getStartX()+10, i, yAxis.getStartX()-10, i);
             yIndiList.add(yIndic);
-            yL = new Label("" + (250 - i));
-            yL.setLayoutX(10);
-            yL.setLayoutY(i - 5);
-            wavesPane.getChildren().addAll(yL, yIndic);
+            wavesPane.getChildren().add(yIndic);
         }
-
-        //Grid lines
-        for(int i = 0; i <= wavesPane.getPrefHeight(); i += 20) {
-            horiGrid = new Line(0, i, 980, i);
-            horiGrid.setStroke(Color.LIGHTGRAY);
-            wavesPane.getChildren().add(horiGrid);
-        }
-
-        for(int i = 10; i <= 990; i += 20) {
-            vertGrid = new Line(i, 0, i, wavesPane.getPrefHeight());
-            vertGrid.setStroke(Color.LIGHTGRAY);
-            wavesPane.getChildren().add(vertGrid);
+        for(int i = 320; i >= 0; i -= 20) {
+            int actNb = (int) (i - xAxis.getStartY());
+            yL = new Text("" + actNb*-1);
+            yL.setFont(Font.font("Consanas", FontWeight.BOLD, FontPosture.REGULAR, 11));
+            yL.setLayoutX(0 - 10);
+            yL.setLayoutY(i + 5);
+            yLabelList.add(yL);
+            wavesPane.getChildren().add(yL);
         }
 
         /**
@@ -318,8 +333,14 @@ public class Ui extends Application {
                 for(Line l: xIndiList) {
                     l.setStroke(Color.WHITE);
                 }
+                for(Text t: xLabelList) {
+                    t.setFill(Color.WHITE);
+                }
                 for(Line l: yIndiList) {
                     l.setStroke(Color.WHITE);
+                }
+                for(Text t: yLabelList) {
+                    t.setFill(Color.WHITE);
                 }
                 for(Circle c: travelList) {
                     c.setStroke(neonCyan);
@@ -343,8 +364,14 @@ public class Ui extends Application {
                 for(Line l: xIndiList) {
                     l.setStroke(Color.BLACK);
                 }
+                for(Text t: xLabelList) {
+                    t.setFill(Color.BLACK);
+                }
                 for(Line l: yIndiList) {
                     l.setStroke(Color.BLACK);
+                }
+                for(Text t: yLabelList) {
+                    t.setFill(Color.BLACK);
                 }
                 for(Circle c: travelList) {
                     c.setStroke(Color.CORNFLOWERBLUE);
@@ -425,15 +452,15 @@ public class Ui extends Application {
          * Setting up the Play button
          */
         playBtn.setOnAction(actionEvent -> {
-            if(playBtn.getText() == "Start") {
-                timer = new Timer();
-                animateTimer.start();
-                playBtn.setText("Stop");
-            }//Second conditional won't let the sim run at all
-//            if(playBtn.getText() == "Stop") {
-//                animateTimer.stop();
-//                playBtn.setText("Start");
-//            }
+            boolean isRunning = true;
+            timer = new Timer();
+            animateTimer.start();
+            playBtn.setText("Stop");
+
+            if(!isRunning) {
+                animateTimer.stop();
+                playBtn.setText("Start");
+            }
         });
 
         root.setCenter(wavesPane);
