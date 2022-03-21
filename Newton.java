@@ -38,7 +38,7 @@ public class Newton extends Application {
     static ArrayList<Line> impDistanceLineArrayList = new ArrayList<>();
     static ArrayList<Text> distanceIndicatorArrayList = new ArrayList<>();
     static ArrayList<Text> impDistanceIndicatorArrayList = new ArrayList<>();
-    static String menuPic, homePic, helpPic, dusk, dayCar, day, nightCar,god,skateboard;
+    static String menuPic, homePic, helpPic, dusk, dayCar, day, nightCar,god,skateboard, nMenuPic;
     static Timer startWatch, endWatch, totalWatch;
     public Newton(Stage newtonStage) {
         start(newtonStage);
@@ -57,7 +57,7 @@ public class Newton extends Application {
             day = (String) jsonObject.get("day");
             god = (String) jsonObject.get("god");
             skateboard = (String) jsonObject.get("board");
-
+            nMenuPic = (String ) jsonObject.get("nMenuIcon");
         } catch (ParseException | IOException e) {
             e.printStackTrace();
         }
@@ -184,6 +184,7 @@ public class Newton extends Application {
         Image dayCarImg = new Image(dayCar);
         Image godImg = new Image(god);
         Image skateboardImg = new Image(skateboard);
+
         ImageView objectView = new ImageView(dayCarImg);
         objectView.setPreserveRatio(true);
         objectView.setFitHeight(80);
@@ -200,11 +201,12 @@ public class Newton extends Application {
 
         Image duskImg = new Image(dusk);
         Image dayImg = new Image(day);
+        Image nMenu = new Image(nMenuPic);
         ImageView groundView = new ImageView(dayImg);
         groundView.setY(0);
         groundView.setFitWidth(10000);
         groundView.setFitHeight(400);
-        pane.getChildren().addAll(groundView, line);
+        pane.getChildren().addAll(groundView, line, objectView);
         warning.setLayoutX(100);
         warning.setLayoutY(3500);
 
@@ -249,7 +251,6 @@ public class Newton extends Application {
             pane.getChildren().addAll(t);
             t.setVisible(false);
         }
-        pane.getChildren().add(objectView);
 
         Rectangle arrowTail = new Rectangle(50, 15);
         Polygon arrowHead = new Polygon();
@@ -615,13 +616,13 @@ public class Newton extends Application {
             accDistance = 0.0;
             if (imperial.isSelected()) {
                 accelerationDisplayLabel.setText("Acceleration: " + String.format("%.2f", acceleration) + "ft/s²");
-                timeDisplayLabel.setText("Time: " + String.format("%.2f", time) + "s");
-                distanceDisplayLabel.setText("Distance: " + String.format("%.2f", distance) + "yd");
+                timeDisplayLabel.setText("Time: " + String.format("%.2f", time) + "s                   ");
+                distanceDisplayLabel.setText("Distance: " + String.format("%.2f", distance) + "yd           ");
             }
             if (metric.isSelected()) {
                 accelerationDisplayLabel.setText("Acceleration: " + String.format("%.2f", acceleration) + "m/s²");
-                timeDisplayLabel.setText("Time: " + String.format("%.2f", time) + "s");
-                distanceDisplayLabel.setText("Distance: " + String.format("%.2f", distance) + "m");
+                timeDisplayLabel.setText("Time: " + String.format("%.2f", time) + "s                   ");
+                distanceDisplayLabel.setText("Distance: " + String.format("%.2f", distance) + "m           ");
             }
             timer2.start();
         });
@@ -674,6 +675,7 @@ public class Newton extends Application {
         lightMode.setOnAction(actionEvent -> {
             root.setStyle("-fx-background-color: #ffffff");
             menuBtn.setStyle("-fx-background-color: #ffffff");
+            menuView.setImage(menuIcon);
             forceTextField.setStyle("-fx-background-color: white ;-fx-text-fill: black;");
             massTextField.setStyle("-fx-background-color: white ;-fx-text-fill: black;");
             frictionForceTextField.setStyle("-fx-background-color: white ;-fx-text-fill: black;");
@@ -684,10 +686,13 @@ public class Newton extends Application {
             groundView.setImage(dayImg);
             separator.setStyle("-fx-stroke:White;");
             darkMode.setSelected(false);
+
+
         });
         darkMode.setOnAction(actionEvent -> {
             root.setStyle("-fx-background-color: #121212");
             menuBtn.setStyle("-fx-background-color: #121212");
+            menuView.setImage(nMenu);
             forceTextField.setStyle("-fx-background-color: #303030 ;-fx-text-fill: white;");
             frictionForceTextField.setStyle("-fx-background-color: #303030 ;-fx-text-fill: white;");
             massTextField.setStyle("-fx-background-color: #303030 ;-fx-text-fill: white;");
@@ -710,7 +715,7 @@ public class Newton extends Application {
         carObject.setOnAction(actionEvent -> {
             objectView.setY(10);
             objectView.setX(50);
-            objectView.setImage(dayCarImg);
+                objectView.setImage(dayCarImg);
 
             skateboardObject.setSelected(false);
             godObject.setSelected(false);
@@ -742,30 +747,29 @@ public class Newton extends Application {
                 The momentum of a body is equal to:
                 the product of its mass and its velocity. F=m*a
                 
-                Furthermore, Newton's First law states:
-                If a body is at rest/moving at a constant speed in a straight line,
+                Furthermore, the First law dictates that:
+                If a body is at rest/moving at a constant speed in a straight line
                 it will remain at rest or keep moving in a straight line
-                at a constant speed unless it is acted upon by a force. In this
-                case, the friction force is what allows the object to come to a
-                stop.
+                at constant speed unless it is acted upon by a force
+                The Friction force is what allows the object to come to a stop.
                 
                 The user can change the force, mass and friction force based on
                 their desired values, omitting decimal values and
                 within the accepted values within this simulator, by typing them
-                into the respective text fields.
+                into the respective text bubbles.
                 
                 Upon the clicking the start button, the simulation will apply the
-                aforementioned laws and slide the object across the screen,
-                given that no unaccepted values are given by the user.
+                aforementioned laws and slide the image across the screen forgo any
+                unaccepted values.
                 
-                NOTE: An error of <0.5% is to be expected, as due to factors 
-                such as code architecture and decimal rounding, Java does not 
-                provide a perfect, consistent way of tracking time.
+                1% of error is to be expected as Java does a poor job tracking time.
+                
                 
                 Accepted values:
-                F: Force (100 to 1000N)
+                F: Force (100 to 1000 N)
                 m: Mass  (1 to 10 kg)
                 Friction Force: (100 to 1000N)
+                
                 """);
         textPane.getChildren().add(text);
         text.setY(40);
@@ -785,7 +789,7 @@ public class Newton extends Application {
         });
         homeBtn.setOnAction(actionEvent -> {
             primaryStage.close();
-            Main m = new Main();
+            MainPage m = new MainPage();
             m.start(new Stage());
 
         });
@@ -805,7 +809,7 @@ public class Newton extends Application {
             arrowForceLabel.setVisible(false);
         });
     }
-    static class Timer {
+    class Timer {
         long startTime;
 
         public Timer() {

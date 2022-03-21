@@ -1,0 +1,64 @@
+.text-field {
+    -fx-border-radius: 20px;
+    -fx-background-radius: 20 20 20 20;
+    -fx-background-color: white;
+    -fx-border-color: black;
+    -fx-border-width: 2;
+    -fx-text-fill: black;
+    -fx-pref-width: 115;
+    -fx-pref-height: 15;
+    -fx-effect: innershadow(gaussian, Gray, 10, 0.05, 2.0, 2.0);
+}
+.root{
+    -fx-background-color: white;
+}
+
+.menu-button > .arrow-button {
+    -fx-padding: 0;
+}
+.menu-button > .arrow-button > .arrow {
+    -fx-padding: 0;
+}
+.label{
+    -fx-font-weight: bold;
+    -fx-alignment: center;
+    -fx-pref-width: 225.0px;
+    -fx-font-family: "Verdana";
+
+}
+#controlButton{
+    -fx-background-color: white;
+    -fx-text-fill: black;
+    -fx-font-size: 15;
+    -fx-font-family: "Verdana";
+    -fx-font-weight: bold;
+    -fx-alignment: center;
+    -fx-border-radius: 20px;
+    -fx-background-radius: 20 20 20 20;
+    -fx-border-color: black;
+    -fx-border-width: 2;
+    -fx-pref-width: 100;
+}
+#warning{
+    -fx-pref-width: 400;
+    -fx-text-fill: red;
+    -fx-font-weight:  bold;
+    -fx-font-family: "Verdana";
+    -fx-font-size: 12;
+}
+#navigation{
+    -fx-border-color: black;
+    -fx-border-radius: 5em;
+    -fx-border-width: 5;
+    -fx-background-radius: 5em;
+    -fx-min-width: 60px;
+    -fx-min-height: 60px;
+    -fx-max-width: 60px;
+    -fx-max-height: 60px;
+    -fx-background-color: white;
+    -fx-text-fill: black;
+    -fx-font-size: 20;
+    -fx-font-weight: bold;
+    -fx-pref-width: 80;
+    -fx-pref-height: 30;
+}
