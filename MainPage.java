@@ -197,7 +197,7 @@ public class MainPage extends Application {
         newton.hoverProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue) {
                 iView.setImage(newtonImg);
-                iView.setX(0);
+                iView.setX(-10);
                 nl1.setVisible(true);
                 nl2.setVisible(true);
             } else {
@@ -223,6 +223,7 @@ public class MainPage extends Application {
         waves.hoverProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue) {
                 iView.setImage(wavesImg);
+                iView.setX(-60);
                 wl1.setVisible(true);
                 wl2.setVisible(true);
             } else {
