@@ -674,7 +674,7 @@ public class Newton extends Application {
 
         lightMode.setOnAction(actionEvent -> {
             root.setStyle("-fx-background-color: #ffffff");
-            menuBtn.setStyle("-fx-background-color: #ffffff");
+            menuBtn.setStyle("-fx-background-color: #ffffff;-fx-border-color: black;");
             menuView.setImage(menuIcon);
             forceTextField.setStyle("-fx-background-color: white ;-fx-text-fill: black;");
             massTextField.setStyle("-fx-background-color: white ;-fx-text-fill: black;");
@@ -691,7 +691,7 @@ public class Newton extends Application {
         });
         darkMode.setOnAction(actionEvent -> {
             root.setStyle("-fx-background-color: #121212");
-            menuBtn.setStyle("-fx-background-color: #121212");
+            menuBtn.setStyle("-fx-background-color: #121212;-fx-border-color: white;");
             menuView.setImage(nMenu);
             forceTextField.setStyle("-fx-background-color: #303030 ;-fx-text-fill: white;");
             frictionForceTextField.setStyle("-fx-background-color: #303030 ;-fx-text-fill: white;");
