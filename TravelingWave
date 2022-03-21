@@ -505,7 +505,7 @@ public class Ui extends Application {
                     omega = 2 * Math.PI * f;
                     lambda = v / f;
                     k = (2 * Math.PI) / lambda;
-                    c.setCenterY(A * Math.sin(omega * timeElapsed - k * xPos) + wavesPane.getHeight()/2);
+                    c.setCenterY(A * Math.sin(k * xPos - omega * timeElapsed) + wavesPane.getHeight()/2);
                 }
                 for(Circle c: reTravelList) {
                     timeElapsed = timer.elapsed();
@@ -513,7 +513,7 @@ public class Ui extends Application {
                     omega = 2 * Math.PI * f;
                     lambda = v / f;
                     k = (2 * Math.PI) / lambda;
-                    c.setCenterY(A * Math.sin(omega * timeElapsed + k * xPos) + wavesPane.getHeight()/2);
+                    c.setCenterY(A * Math.sin(k * xPos + omega * timeElapsed) + wavesPane.getHeight()/2);
                 }
             }
         };
