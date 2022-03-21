@@ -1,4 +1,4 @@
-package djangounchained.physics;
+package com.example.demo;
 
 import javafx.animation.*;
 import javafx.application.Application;
@@ -180,9 +180,10 @@ public class Ui extends Application {
          * Sliders
          * Always make the waves "snap" (clear first and then implement new values)
          */
-        VBox params = new VBox(5);
+        HBox sliders = new HBox(5);
 
         //Frequency: "clear" the values (for a split second) then implementing the new value
+        VBox freqVBox = new VBox(5);
         TextField freqTf = new TextField("Frequency [Hz]");
         freqTf.setAlignment(Pos.CENTER);
         freqTf.setEditable(false);
@@ -198,8 +199,10 @@ public class Ui extends Application {
                 freqTf.setText(String.format("%.2f", freqSldr.getValue()) + " Hz");
             }
         });
+        freqVBox.getChildren().addAll(freqTf,freqSldr);
 
         //Wave Speed
+        VBox wavSpdVBox = new VBox(5);
         TextField wavSpdTf = new TextField("Wave Speed [cm/s]");
         wavSpdTf.setAlignment(Pos.CENTER);
         wavSpdTf.setEditable(false);
@@ -214,8 +217,10 @@ public class Ui extends Application {
                 wavSpdTf.setText(String.format("%.2f", wavSpdSldr.getValue()) + " cm/s");
             }
         });
+        wavSpdVBox.getChildren().addAll(wavSpdTf,wavSpdSldr);
 
         //Amplitude (changing the slider keeps the amp at max (snap) then implement new value)
+        VBox ampVBox = new VBox(5);
         TextField ampTf = new TextField("Amplitude [cm]");
         ampTf.setAlignment(Pos.CENTER);
         ampTf.setEditable(false);
@@ -231,7 +236,7 @@ public class Ui extends Application {
             }
         });
 
-        params.getChildren().addAll(freqTf, freqSldr, wavSpdTf, wavSpdSldr, ampTf, ampSldr);
+        sliders.getChildren().addAll(freqTf, freqSldr, wavSpdTf, wavSpdSldr, ampTf, ampSldr);
 
         Button playBtn = new Button("Start");
         Button btn3 = new Button("Help");
@@ -241,8 +246,9 @@ public class Ui extends Application {
                 System.out.println("What did the ocean say to the beach?\nNothing, it just waved.\n");
             }
         });
-        ui.getChildren().addAll(params, playBtn, btn3);
-
+        ampVBox.getChildren().addAll(ampTf,ampSldr);
+        sliders.getChildren().addAll(freqVBox, wavSpdVBox, ampVBox);
+        ui.getChildren().add(sliders);
 
         /**
          * Displaying the waves
