@@ -190,7 +190,8 @@ public class Ui extends Application {
         Slider freqSldr = new Slider(0, 10, 0);
         freqSldr.setShowTickLabels(true);
         freqSldr.setShowTickMarks(true);
-        freqSldr.setMajorTickUnit(0.5);
+        freqSldr.setMajorTickUnit(1);
+        freqSldr.setMinorTickCount(4);
 
         freqSldr.valueProperty().addListener(new ChangeListener<Number>() {
             @Override
@@ -209,6 +210,8 @@ public class Ui extends Application {
         Slider wavSpdSldr = new Slider(0, 1000, 0);
         wavSpdSldr.setShowTickLabels(true);
         wavSpdSldr.setShowTickMarks(true);
+        wavSpdSldr.setMajorTickUnit(100);
+        wavSpdSldr.setMinorTickCount(4);
 
         wavSpdSldr.valueProperty().addListener(new ChangeListener<Number>() {
             @Override
@@ -224,9 +227,11 @@ public class Ui extends Application {
         TextField ampTf = new TextField("Amplitude [cm]");
         ampTf.setAlignment(Pos.CENTER);
         ampTf.setEditable(false);
-        Slider ampSldr = new Slider(0, 80, 0);
+        Slider ampSldr = new Slider(0, 40, 0);
         ampSldr.setShowTickMarks(true);
         ampSldr.setShowTickLabels(true);
+        ampSldr.setMajorTickUnit(5);
+        ampSldr.setMinorTickCount(4);
 
         ampSldr.valueProperty().addListener(new ChangeListener<Number>() {
             @Override
@@ -242,14 +247,14 @@ public class Ui extends Application {
 
         HBox actionData = new HBox(100);
         actionData.setAlignment(Pos.CENTER);
+        controls.getChildren().add(actionData);
+
         /**
          * Legend
          */
-        controls.getChildren().add(actionData);
-
         VBox legend = new VBox(5);
         HBox incidTraveLeg = new HBox(10);
-        Line inciTravLine = new Line(0, 20, 10, 20);
+        Line inciTravLine = new Line(0, 0, 10, 0);
         inciTravLine.setStroke(Color.CORNFLOWERBLUE);
         Text inciTravLegTxt = new Text("Incident Traveling Wave");
         incidTraveLeg.getChildren().addAll(inciTravLine, inciTravLegTxt);
@@ -281,6 +286,16 @@ public class Ui extends Application {
             }
         });
         actionData.getChildren().add(playBtn);
+
+        /**
+         * Extra Displayed Values
+         */
+        VBox exData = new VBox(5);
+        Text omegaTxt = new Text("Angular Frequency: ");
+        Text lambdaTxt = new Text("Wavelength: ");
+        Text kTxt = new Text("Wave Number: ");
+        exData.getChildren().addAll(omegaTxt, lambdaTxt, kTxt);
+        actionData.getChildren().add(exData);
 
         /**
          * Displaying the waves
@@ -340,8 +355,8 @@ public class Ui extends Application {
          * Creating Axis Lines
          */
         Line xAxis = new Line();
-        xAxis.setStartX(25);
-        xAxis.setEndX(975);
+        xAxis.setStartX(10);
+        xAxis.setEndX(970);
         xAxis.setStartY(wavesPane.getPrefHeight() / 2);
         xAxis.setEndY(wavesPane.getPrefHeight() / 2);
         Text xAxisTitle = new Text("X-Position (cm)");
@@ -352,8 +367,8 @@ public class Ui extends Application {
         Line yAxis = new Line();
         yAxis.setStartX(30);
         yAxis.setEndX(30);
-        yAxis.setStartY(30);
-        yAxis.setEndY(wavesPane.getPrefHeight() - 30);
+        yAxis.setStartY(32);
+        yAxis.setEndY(wavesPane.getPrefHeight() - 32);
         Text yAxisTitle = new Text("Y-Position (cm)");
         yAxisTitle.setFont(Font.font("Consanas", FontWeight.BOLD, FontPosture.REGULAR, 14));
         yAxisTitle.setLayoutX(0);
@@ -385,17 +400,13 @@ public class Ui extends Application {
         }
         for(int i = 380; i > 40; i -= 20) {
             int actNb = (int) ((i - xAxis.getStartY()) / 2);
-            yL = new Text("" + (actNb * -1 + 14));
+            yL = new Text("" + (actNb * -1 + 14) / 2);
             yL.setFont(Font.font("Consanas", FontWeight.BOLD, FontPosture.REGULAR, 11));
             yL.setLayoutX(5);
             yL.setLayoutY(i - 24);
             yLabelList.add(yL);
             wavesPane.getChildren().add(yL);
         }
-        Text scaleText = new Text("1 px : 1 cm");
-        scaleText.setLayoutX(wavesPane.getPrefWidth() - 30);
-        scaleText.setLayoutY(wavesPane.getPrefHeight());
-        wavesPane.getChildren().add(scaleText);
 
         /**
          * Creating the incident traveling wave
@@ -437,8 +448,19 @@ public class Ui extends Application {
             @Override
             public void handle(ActionEvent actionEvent) {
                 root.setStyle("-fx-background-color: white");
+                inciTravLine.setStroke(Color.CORNFLOWERBLUE);
+                inciTravLegTxt.setFill(Color.BLACK);
+                refTravLine.setStroke(Color.MAROON);
+                refTravLegTxt.setFill(Color.BLACK);
+                standLine.setStroke(Color.DARKMAGENTA);
+                standLegTxt.setFill(Color.BLACK);
+                omegaTxt.setFill(Color.BLACK);
+                lambdaTxt.setFill(Color.BLACK);
+                kTxt.setFill(Color.BLACK);
                 xAxis.setStroke(Color.BLACK);
+                xAxisTitle.setFill(Color.BLACK);
                 yAxis.setStroke(Color.BLACK);
+                yAxisTitle.setFill(Color.BLACK);
                 for(Line l: xIndiList) {
                     l.setStroke(Color.BLACK);
                 }
@@ -460,7 +482,6 @@ public class Ui extends Application {
                 for(Circle c: standList) {
                     c.setStroke(Color.DARKMAGENTA);
                 }
-                scaleText.setFill(Color.WHITE);
                 darkMode.setSelected(false);
             }
         });
@@ -469,8 +490,19 @@ public class Ui extends Application {
             @Override
             public void handle(ActionEvent actionEvent) {
                 root.setStyle("-fx-background-color: #303030");
+                inciTravLine.setStroke(Color.CYAN);
+                inciTravLegTxt.setFill(Color.WHITE);
+                refTravLine.setStroke(Color.ORANGERED);
+                refTravLegTxt.setFill(Color.WHITE);
+                standLine.setStroke(omori);
+                standLegTxt.setFill(Color.WHITE);
+                omegaTxt.setFill(Color.WHITE);
+                lambdaTxt.setFill(Color.WHITE);
+                kTxt.setFill(Color.WHITE);
                 xAxis.setStroke(Color.WHITE);
+                xAxisTitle.setFill(Color.WHITE);
                 yAxis.setStroke(Color.WHITE);
+                yAxisTitle.setFill(Color.WHITE);
                 for(Line l: xIndiList) {
                     l.setStroke(Color.WHITE);
                 }
@@ -492,7 +524,6 @@ public class Ui extends Application {
                 for(Circle c: standList) {
                     c.setStroke(omori);
                 }
-                scaleText.setFill(Color.WHITE);
                 lightMode.setSelected(false);
             }
         });
@@ -529,13 +560,6 @@ public class Ui extends Application {
         /**
          * Equations and AnimationTimer
          */
-        VBox exData = new VBox(5);
-        Text omegaTxt = new Text();
-        Text lambdaTxt = new Text();
-        Text kTxt = new Text();
-        exData.getChildren().addAll(omegaTxt, lambdaTxt, kTxt);
-        actionData.getChildren().add(exData);
-
         AnimationTimer animateTimer = new AnimationTimer() {
             @Override
             public void handle(long l) {
@@ -549,15 +573,15 @@ public class Ui extends Application {
 
                 for(Circle c: standList){
                     xPos = c.getCenterX() - 30;
-                    c.setCenterY(2 * A * Math.cos(omega * timeElapsed) * Math.sin(k * xPos) + wavesPane.getHeight()/2);
+                    c.setCenterY((2 * A * Math.cos(omega * timeElapsed) * Math.sin(k * xPos)) * 2 + wavesPane.getHeight()/2);
                 }
                 for(Circle c: travelList) {
                     xPos = c.getCenterX() - 30;
-                    c.setCenterY(A * Math.sin(k * xPos - omega * timeElapsed) + wavesPane.getHeight()/2);
+                    c.setCenterY((A * Math.sin(k * xPos - omega * timeElapsed)) * 2 + wavesPane.getHeight()/2);
                 }
                 for(Circle c: reTravelList) {
                     xPos = c.getCenterX() - 30;
-                    c.setCenterY(A * Math.sin(k * xPos + omega * timeElapsed) + wavesPane.getHeight()/2);
+                    c.setCenterY((A * Math.sin(k * xPos + omega * timeElapsed)) * 2 + wavesPane.getHeight()/2);
                 }
             }
         };
