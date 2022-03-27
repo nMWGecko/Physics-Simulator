@@ -32,8 +32,6 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import application.Newton.Timer;
-
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -47,7 +45,7 @@ public class Waves extends Application {
     static ArrayList<Circle> travelList = new ArrayList<>();
     static ArrayList<Circle> reTravelList = new ArrayList<>();
 
-    static Timer timer;
+    static Newton.Timer timer;
     static Line vertGrid, horiGrid, xIndic, yIndic;
     static ArrayList<Line> hLineList = new ArrayList<>();
     static ArrayList<Line> vLineList = new ArrayList<>();
