@@ -1,4 +1,4 @@
-package djangounchained.physics;
+package com.example.demo;
 
 import javafx.animation.*;
 import javafx.application.Application;
@@ -109,11 +109,11 @@ public class Ui extends Application {
 
         //Time effects
         Menu showForces = new Menu("Time");
-        CheckMenuItem showForcesOn = new CheckMenuItem("Slow Motion");
-        CheckMenuItem showForcesOff = new CheckMenuItem("Normal");
+        CheckMenuItem slowMotion = new CheckMenuItem("Slow Motion");
+        CheckMenuItem normalMotion = new CheckMenuItem("Normal");
         CheckMenuItem fastMotion = new CheckMenuItem("Fast Motion");
-        showForcesOff.setSelected(true);
-        showForces.getItems().addAll(showForcesOn, showForcesOff, fastMotion);
+        normalMotion.setSelected(true);
+        showForces.getItems().addAll(slowMotion, normalMotion, fastMotion);
 
         //Help MenuItem
         MenuItem menuHelp = new MenuItem("Help");
@@ -184,7 +184,8 @@ public class Ui extends Application {
 
         //Frequency: "clear" the values (for a split second) then implementing the new value
         VBox freqVBox = new VBox(5);
-        TextField freqTf = new TextField("Frequency [Hz]");
+        Text freqText = new Text("Frequency [Hz]");
+        TextField freqTf = new TextField("0.00 Hz");
         freqTf.setAlignment(Pos.CENTER);
         freqTf.setEditable(false);
         Slider freqSldr = new Slider(0, 10, 0);
@@ -200,11 +201,12 @@ public class Ui extends Application {
                 freqTf.setText(String.format("%.2f", freqSldr.getValue()) + " Hz");
             }
         });
-        freqVBox.getChildren().addAll(freqTf, freqSldr);
+        freqVBox.getChildren().addAll(freqText,freqTf, freqSldr);
 
         //Wave Speed
         VBox wavSpdVBox = new VBox(5);
-        TextField wavSpdTf = new TextField("Wave Speed [cm/s]");
+        Text wavSpdText = new Text("Wave Speed [cm/s]");
+        TextField wavSpdTf = new TextField("0.00 cm/s");
         wavSpdTf.setAlignment(Pos.CENTER);
         wavSpdTf.setEditable(false);
         Slider wavSpdSldr = new Slider(0, 1000, 0);
@@ -220,11 +222,12 @@ public class Ui extends Application {
                 wavSpdTf.setText(String.format("%.2f", wavSpdSldr.getValue()) + " cm/s");
             }
         });
-        wavSpdVBox.getChildren().addAll(wavSpdTf,wavSpdSldr);
+        wavSpdVBox.getChildren().addAll(wavSpdText,wavSpdTf,wavSpdSldr);
 
         //Amplitude (changing the slider keeps the amp at max (snap) then implement new value)
         VBox ampVBox = new VBox(5);
-        TextField ampTf = new TextField("Amplitude [cm]");
+        Text ampText = new Text("Amplitude [cm]");
+        TextField ampTf = new TextField("0.00 cm");
         ampTf.setAlignment(Pos.CENTER);
         ampTf.setEditable(false);
         Slider ampSldr = new Slider(0, 40, 0);
@@ -241,7 +244,7 @@ public class Ui extends Application {
             }
         });
 
-        ampVBox.getChildren().addAll(ampTf,ampSldr);
+        ampVBox.getChildren().addAll(ampText,ampTf,ampSldr);
         sliders.getChildren().addAll(freqVBox, wavSpdVBox, ampVBox);
         ui.getChildren().add(sliders);
 
@@ -377,16 +380,16 @@ public class Ui extends Application {
         wavesPane.getChildren().addAll(xAxis, xAxisTitle, yAxis, yAxisTitle);
 
         //X-Axis indices
-        for(int i = 30; i < 980; i += 20) {
+        for(int i = 40; i < 980; i += 20) {
             xIndic = new Line(i, xAxis.getStartY() - 5, i, xAxis.getStartY() + 5);
             xIndiList.add(xIndic);
             wavesPane.getChildren().add(xIndic);
         }
-        for(int i = 100; i < 980; i += 100) {
-            int actNb = i - 50;
+        for(int i = 120; i < 980; i += 100) {
+            int actNb = i/2 - 10;
             xL = new Text("" + actNb);
             xL.setFont(Font.font("Consolas", FontWeight.BOLD, FontPosture.REGULAR, 11));
-            xL.setLayoutX(i + 1);
+            xL.setLayoutX(i - 8);
             xL.setLayoutY(xAxis.getStartY() + 20);
             xLabelList.add(xL);
             wavesPane.getChildren().add(xL);
@@ -567,9 +570,37 @@ public class Ui extends Application {
                 omega = 2 * Math.PI * f;
                 omegaTxt.setText("Angular Frequency: " + String.format("%.2f", omega) + " rad/s");
                 lambda = v / f;
-                lambdaTxt.setText("Wavelength: " + String.format("%.2f", lambda) + " cm");
+                lambdaTxt.setText("Wavelength: " + String.format("%.2f", lambda / 2 + 3.75) + " cm"); // review later
                 k = (2 * Math.PI) / lambda;
                 kTxt.setText("Wave Number: " + String.format("%.2f", k) + " rad/cm");
+
+                normalMotion.setOnAction(new EventHandler<ActionEvent>() {
+                    @Override
+                    public void handle(ActionEvent actionEvent) {
+                        timeElapsed = timer.elapsed();
+                        slowMotion.setSelected(false);
+                        fastMotion.setSelected(false);
+
+                    }
+                });
+
+                fastMotion.setOnAction(new EventHandler<ActionEvent>() {
+                    @Override
+                    public void handle(ActionEvent actionEvent) {
+                        timeElapsed = timer.elapsed()*2;
+                        slowMotion.setSelected(false);
+                        normalMotion.setSelected(false);
+                    }
+                });
+
+                slowMotion.setOnAction(new EventHandler<ActionEvent>() {
+                    @Override
+                    public void handle(ActionEvent actionEvent) {
+                        timeElapsed = timer.elapsed()/2;
+                        fastMotion.setSelected(false);
+                        normalMotion.setSelected(false);
+                    }
+                });
 
                 for(Circle c: standList){
                     xPos = c.getCenterX() - 30;
@@ -583,8 +614,11 @@ public class Ui extends Application {
                     xPos = c.getCenterX() - 30;
                     c.setCenterY((A * Math.sin(k * xPos + omega * timeElapsed)) * 2 + wavesPane.getHeight()/2);
                 }
+
             }
         };
+
+
 
         /**
          * Setting up the Play button
