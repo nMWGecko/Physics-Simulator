@@ -36,7 +36,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class Waves extends Application {
+public class Ui extends Application {
     static String menuPic, homePic, helpPic;
     static Color omori = Color.web("#6c0ffe");
     static Circle c;
@@ -56,7 +56,7 @@ public class Waves extends Application {
     static ArrayList<Text> yLabelList = new ArrayList<>();
     static int startPauseCounter = 0;
 
-    static double A, f, T, omega, lambda, k, xPos, timeElapsed, timeWhenStopped, totalTimeWhenStopped;
+    static double A, f, T, omega, lambda, k, waveLength, xPos, timeElapsed, timeWhenStopped, totalTimeWhenStopped;
     static int stringLength = 490;
     static double timeToReachEnd = 4.9;
     static double v = 100;
@@ -77,8 +77,7 @@ public class Waves extends Application {
          */
         JSONParser jsonParser = new JSONParser();
         try {
-            Object o = jsonParser.parse(new FileReader("C:\\Users\\kalsi\\Downloads\\index.json"));
-
+            Object o = jsonParser.parse(new FileReader(this.getClass().getClassLoader().getResource("index.json").getFile()));
             JSONObject jsonObject = (JSONObject) o;
             menuPic = (String) jsonObject.get("menuIcon");
             homePic = (String) jsonObject.get("homeIcon");
@@ -216,19 +215,28 @@ public class Waves extends Application {
                 f = freqSldr.getValue();
                 freqTf.setText(String.format("%.2f", freqSldr.getValue()) + " Hz");
                 if (startPauseCounter > 0 && playBtn.getText() == "Play") {
-                    for(Circle c: standList){
-                        xPos = c.getCenterX() - 30;
-                        c.setCenterY((2 * A * Math.cos(omega * (timeElapsed + totalTimeWhenStopped)) * Math.sin(k * xPos)) * 2 + wavesPane.getHeight()/2);
+                    for (Circle c : standList) {
+                        double sinTing = Math.sin(k * (c.getCenterX() - 30));
+                        double cosTing = Math.cos(omega * (totalTimeWhenStopped));
+                        double eq = 2 * A * sinTing * cosTing;
+                        c.setCenterY(wavesPane.getPrefHeight()/2 + eq);
                     }
-                    for(Circle c: travelList) {
-                        xPos = c.getCenterX() - 30;
-                        c.setCenterY((A * Math.sin(k * xPos - omega * (timeElapsed + totalTimeWhenStopped))) * 2 + wavesPane.getHeight()/2);
+                    for (Circle c : travelList) {
+                        double sinTing = Math.sin((k * (c.getCenterX() - 30)) - (omega * (totalTimeWhenStopped)));
+                        double eq = A * sinTing;
+                        c.setCenterY(wavesPane.getPrefHeight()/2 + eq);
                     }
-                    for(Circle c: reTravelList) {
-                        xPos = c.getCenterX() - 30;
-                        c.setCenterY((A * Math.sin(k * xPos + omega * (timeElapsed + totalTimeWhenStopped))) * 2 + wavesPane.getHeight()/2);
+                    for (Circle c : reTravelList) {
+                        double sinTing = Math.sin((k * (c.getCenterX() - 30)) + (omega * (totalTimeWhenStopped)));
+                        double eq = A * sinTing;
+                        c.setCenterY(wavesPane.getPrefHeight()/2 + eq);
                     }
                 }
+                T = 1 / f;
+                omega = 2 * Math.PI * f;
+                waveLength = v / f;
+                k = (2 * Math.PI) / waveLength;
+                timeToReachEnd = stringLength / v;
             }
         });
         freqVBox.getChildren().addAll(freqText,freqTf, freqSldr);
@@ -251,19 +259,28 @@ public class Waves extends Application {
                 v = wavSpdSldr.getValue();
                 wavSpdTf.setText(String.format("%.2f", wavSpdSldr.getValue()) + " cm/s");
                 if (startPauseCounter > 0 && playBtn.getText() == "Play") {
-                    for(Circle c: standList){
-                        xPos = c.getCenterX() - 30;
-                        c.setCenterY((2 * A * Math.cos(omega * (timeElapsed + totalTimeWhenStopped)) * Math.sin(k * xPos)) * 2 + wavesPane.getHeight()/2);
+                    for (Circle c : standList) {
+                        double sinTing = Math.sin(k * (c.getCenterX() - 30));
+                        double cosTing = Math.cos(omega * (totalTimeWhenStopped));
+                        double eq = 2 * A * sinTing * cosTing;
+                        c.setCenterY(wavesPane.getPrefHeight()/2 + eq);
                     }
-                    for(Circle c: travelList) {
-                        xPos = c.getCenterX() - 30;
-                        c.setCenterY((A * Math.sin(k * xPos - omega * (timeElapsed + totalTimeWhenStopped))) * 2 + wavesPane.getHeight()/2);
+                    for (Circle c : travelList) {
+                        double sinTing = Math.sin((k * (c.getCenterX() - 30)) - (omega * (totalTimeWhenStopped)));
+                        double eq = A * sinTing;
+                        c.setCenterY(wavesPane.getPrefHeight()/2 + eq);
                     }
-                    for(Circle c: reTravelList) {
-                        xPos = c.getCenterX() - 30;
-                        c.setCenterY((A * Math.sin(k * xPos + omega * (timeElapsed + totalTimeWhenStopped))) * 2 + wavesPane.getHeight()/2);
+                    for (Circle c : reTravelList) {
+                        double sinTing = Math.sin((k * (c.getCenterX() - 30)) + (omega * (totalTimeWhenStopped)));
+                        double eq = A * sinTing;
+                        c.setCenterY(wavesPane.getPrefHeight()/2 + eq);
                     }
                 }
+                T = 1 / f;
+                omega = 2 * Math.PI * f;
+                waveLength = v / f;
+                k = (2 * Math.PI) / waveLength;
+                timeToReachEnd = stringLength / v;
             }
         });
         wavSpdVBox.getChildren().addAll(wavSpdText,wavSpdTf,wavSpdSldr);
@@ -286,19 +303,28 @@ public class Waves extends Application {
                 A = ampSldr.getValue();
                 ampTf.setText(String.format("%.2f", ampSldr.getValue()) + " cm");
                 if (startPauseCounter > 0 && playBtn.getText() == "Play") {
-                    for(Circle c: standList){
-                        xPos = c.getCenterX() - 30;
-                        c.setCenterY((2 * A * Math.cos(omega * (timeElapsed + totalTimeWhenStopped)) * Math.sin(k * xPos)) * 2 + wavesPane.getHeight()/2);
+                    for (Circle c : standList) {
+                        double sinTing = Math.sin(k * (c.getCenterX() - 30));
+                        double cosTing = Math.cos(omega * (totalTimeWhenStopped));
+                        double eq = 2 * A * sinTing * cosTing;
+                        c.setCenterY(wavesPane.getPrefHeight()/2 + eq);
                     }
-                    for(Circle c: travelList) {
-                        xPos = c.getCenterX() - 30;
-                        c.setCenterY((A * Math.sin(k * xPos - omega * (timeElapsed + totalTimeWhenStopped))) * 2 + wavesPane.getHeight()/2);
+                    for (Circle c : travelList) {
+                        double sinTing = Math.sin((k * (c.getCenterX() - 30)) - (omega * (totalTimeWhenStopped)));
+                        double eq = A * sinTing;
+                        c.setCenterY(wavesPane.getPrefHeight()/2 + eq);
                     }
-                    for(Circle c: reTravelList) {
-                        xPos = c.getCenterX() - 30;
-                        c.setCenterY((A * Math.sin(k * xPos + omega * (timeElapsed + totalTimeWhenStopped))) * 2 + wavesPane.getHeight()/2);
+                    for (Circle c : reTravelList) {
+                        double sinTing = Math.sin((k * (c.getCenterX() - 30)) + (omega * (totalTimeWhenStopped)));
+                        double eq = A * sinTing;
+                        c.setCenterY(wavesPane.getPrefHeight()/2 + eq);
                     }
                 }
+                T = 1 / f;
+                omega = 2 * Math.PI * f;
+                waveLength = v / f;
+                k = (2 * Math.PI) / waveLength;
+                timeToReachEnd = stringLength / v;
             }
         });
 
@@ -644,11 +670,8 @@ public class Waves extends Application {
         AnimationTimer animateTimer = new AnimationTimer() {
             @Override
             public void handle(long l) {
-                omega = 2 * Math.PI * f;
                 omegaTxt.setText("Angular Frequency: " + String.format("%.2f", omega) + " rad/s");
-                lambda = v / f;
                 lambdaTxt.setText("Wavelength: " + String.format("%.2f", lambda / 2 + 3.75) + " cm"); // review later
-                k = (2 * Math.PI) / lambda;
                 kTxt.setText("Wave Number: " + String.format("%.2f", k) + " rad/cm");
 
                 if(normalMotion.isSelected()) {
@@ -660,19 +683,23 @@ public class Waves extends Application {
                 if(fastMotion.isSelected()) {
                     timeElapsed = timer.elapsed() * 10;
                 }
-
-                for(Circle c: standList){
-                    xPos = c.getCenterX() - 30;
-                    c.setCenterY((2 * A * Math.cos(omega * (timeElapsed + totalTimeWhenStopped)) * Math.sin(k * xPos)) * 2 + wavesPane.getHeight()/2);
+                for (Circle c : standList) {
+                    double sinTing = Math.sin(k * (c.getCenterX() - 30));
+                    double cosTing = Math.cos(omega * (timeElapsed + totalTimeWhenStopped));
+                    double eq = 2 * A * sinTing * cosTing;
+                    c.setCenterY(wavesPane.getPrefHeight()/2 + eq);
                 }
-                for(Circle c: travelList) {
-                    xPos = c.getCenterX() - 30;
-                    c.setCenterY((A * Math.sin(k * xPos - omega * (timeElapsed + totalTimeWhenStopped))) * 2 + wavesPane.getHeight()/2);
+                for (Circle c : travelList) {
+                    double sinTing = Math.sin((k * (c.getCenterX() - 30)) - (omega * (timeElapsed + totalTimeWhenStopped)));
+                    double eq = A * sinTing;
+                    c.setCenterY(wavesPane.getPrefHeight()/2 + eq);
                 }
-                for(Circle c: reTravelList) {
-                    xPos = c.getCenterX() - 30;
-                    c.setCenterY((A * Math.sin(k * xPos + omega * (timeElapsed + totalTimeWhenStopped))) * 2 + wavesPane.getHeight()/2);
+                for (Circle c : reTravelList) {
+                    double sinTing = Math.sin((k * (c.getCenterX() - 30)) + (omega * (timeElapsed + totalTimeWhenStopped)));
+                    double eq = A * sinTing;
+                    c.setCenterY(wavesPane.getPrefHeight()/2 + eq);
                 }
+                
             }
         };
 
