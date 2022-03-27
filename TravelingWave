@@ -1,5 +1,12 @@
 package djangounchained.physics;
 
+
+// TODO preset waves
+// TODO start/pause button
+// TODO display more values
+// TODO hover over points
+
+
 import javafx.animation.*;
 import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
@@ -7,7 +14,6 @@ import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
-import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -26,11 +32,13 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import application.Newton.Timer;
+
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class Ui extends Application {
+public class Waves extends Application {
     static String menuPic, homePic, helpPic;
     static Color omori = Color.web("#6c0ffe");
     static Circle c;
@@ -39,7 +47,7 @@ public class Ui extends Application {
     static ArrayList<Circle> travelList = new ArrayList<>();
     static ArrayList<Circle> reTravelList = new ArrayList<>();
 
-    static Timer timer, totalTimer;
+    static Timer timer;
     static Line vertGrid, horiGrid, xIndic, yIndic;
     static ArrayList<Line> hLineList = new ArrayList<>();
     static ArrayList<Line> vLineList = new ArrayList<>();
@@ -48,22 +56,31 @@ public class Ui extends Application {
     static Text xL, yL;
     static ArrayList<Text> xLabelList = new ArrayList<>();
     static ArrayList<Text> yLabelList = new ArrayList<>();
-    static int counter = 0;
+    static int startPauseCounter = 0;
 
     static double A, f, T, omega, lambda, k, xPos, timeElapsed, timeWhenStopped, totalTimeWhenStopped;
     static int stringLength = 490;
     static double timeToReachEnd = 4.9;
     static double v = 100;
 
+    Waves(Stage travelWaveStage) {
+        start(travelWaveStage);
+    }
+
     @Override
     public void start(Stage stage) {
+        Button playBtn = new Button("Play");
+        Pane wavesPane = new Pane();
+        wavesPane.setPrefWidth(960);
+        wavesPane.setPrefHeight(384);
+
         /**
          * JSON file
          */
         JSONParser jsonParser = new JSONParser();
         try {
-            Object o = jsonParser.parse(new FileReader(this.getClass().getClassLoader()
-                    .getResource("index.json").getFile()));
+            Object o = jsonParser.parse(new FileReader("C:\\Users\\kalsi\\Downloads\\index.json"));
+
             JSONObject jsonObject = (JSONObject) o;
             menuPic = (String) jsonObject.get("menuIcon");
             homePic = (String) jsonObject.get("homeIcon");
@@ -119,73 +136,14 @@ public class Ui extends Application {
         //Help MenuItem
         MenuItem menuHelp = new MenuItem("Help");
         Pane helpPane = new Pane();
-        helpPane.setPadding(new Insets(10));
-        VBox theoVbox = new VBox(10);
-        ScrollBar sb = new ScrollBar();
-        sb.setOrientation(Orientation.VERTICAL);
-        sb.setPrefHeight(650);
-        sb.setLayoutX(985);
-        sb.setMax(650);
-        sb.valueProperty().addListener(new ChangeListener<Number>() {
-            @Override
-            public void changed(ObservableValue<? extends Number> observableValue, Number number, Number t1) {
-                theoVbox.setLayoutY(-t1.doubleValue());
-            }
-        });
-        Text theoryTxt = new Text("""
-                 Crash Course on Traveling Waves
-                                
-                     In the settings of this simulation, you will find the option to switch between light and dark mode,
-                     the option to toggle the visibility of the travelling and standing waves,\s
-                                
-                     To interact with the Standing wave simulation, simply press ‘start’ after adjusting the values on
-                     the three sliders. In this simulation, there are sliders for each of the following parameters:
-                     amplitude, wave speed, and mode number. Adjusting these parameters will result in standing waves
-                     being formed for a string fixed on both ends.
-                                
-                 Amplitude [m]: the maximum displacement or distance moved by a point on a vibrating body or wave
-                 measured from its equilibrium position. It is equal to one-half the length of the vibration path.
-                 Wave Speed [m/s]: the distance the disturbance travels across a medium in a given amount of time. It can
-                 be calculated by multiplying frequency with the wavelength of a wave.
-                 Frequency [Hz]: the number of waves that pass a fixed point in a given amount of time. The hertz
-                 measurement, abbreviated Hz, is the number of waves that pass by per second.
-                                
-                 It is possible to derive the wavelength, the distance between two successive crests or troughs (the
-                 highest point of a wave and the lowest point of a wave respectively) from wave speed through the
-                 formula:
-                                
-                                
-                 Pictured below are visual representations of two travelling waves (green and blue,) that form a standing
-                 wave (red).
-                                
-                """);
-        theoryTxt.setFont(Font.font("Consolas", FontWeight.NORMAL, FontPosture.REGULAR, 14));
-        ImageView wavesEg = new ImageView(new Image("https://www.siliconera.com/wp-content/uploads/2020/03/xbc-de-16.jpg"));
-        wavesEg.setFitWidth(990);
-        wavesEg.setFitHeight(640);
-
-        Text theoryTxt2 = new Text("""
-                 What are standing waves and how are they created?
-                                
-                     First, consider that waves always originate from some sort of event or disturbance. When two waves
-                     with the same amplitude and frequency move in opposite directions, they will respect the
-                     superposition principle and create what is known as an interference pattern. To elaborate, these
-                     two linear waves will either be added together or cancelled out.
-                                
-                     Interestingly enough, you might have even come across this phenomena without realising it yourself:
-                     interference patterns are so common to our daily lives, and can be produced by waves in the water,
-                     sound waves, or even light waves.
-                                
-                     Should you make the choice to further explore the concepts related to waves, a great starting point
-                     would be to consult these interesting articles written by Stephen Cohen (on his website, The
-                     Engineer’s Pulse, under the “For Physics Students” section:
-                                
-                """);
-        theoryTxt2.setFont(Font.font("Consolas", FontWeight.NORMAL, FontPosture.REGULAR, 14));
-
-        theoVbox.getChildren().addAll(theoryTxt, wavesEg, theoryTxt2);
-        helpPane.getChildren().addAll(theoVbox, sb);
-        Scene theoryScene = new Scene(helpPane, 1000, 650);
+        ImageView shulkNo = new ImageView(new Image("https://www.siliconera.com/wp-content/uploads/2020/03/xbc-de-16.jpg"));
+        Text subtitle = new Text("No! ");
+        subtitle.setFont(Font.font("Consolas", FontWeight.NORMAL, FontPosture.REGULAR, 35));
+        subtitle.setFill(Color.WHITE);
+        subtitle.setLayoutX(538);
+        subtitle.setLayoutY(560);
+        helpPane.getChildren().addAll(shulkNo, subtitle);
+        Scene theoryScene = new Scene(helpPane);
         Stage secondaryStage = new Stage();
         secondaryStage.setTitle("Loss");
         secondaryStage.setResizable(false);
@@ -259,10 +217,10 @@ public class Ui extends Application {
             public void changed(ObservableValue<? extends Number> observableValue, Number number, Number t1) {
                 f = freqSldr.getValue();
                 freqTf.setText(String.format("%.2f", freqSldr.getValue()) + " Hz");
-                if(counter > 0 && playBtn.getText) {
+                if (startPauseCounter > 0 && playBtn.getText() == "Play") {
                     for(Circle c: standList){
                         xPos = c.getCenterX() - 30;
-                        c.setCenterY((2 * A * Math.cos(omega * ((timeElapsed + totalTimeWhenStopped)) * Math.sin(k * xPos))) * 2 + wavesPane.getHeight()/2);
+                        c.setCenterY((2 * A * Math.cos(omega * (timeElapsed + totalTimeWhenStopped)) * Math.sin(k * xPos)) * 2 + wavesPane.getHeight()/2);
                     }
                     for(Circle c: travelList) {
                         xPos = c.getCenterX() - 30;
@@ -294,6 +252,20 @@ public class Ui extends Application {
             public void changed(ObservableValue<? extends Number> observableValue, Number number, Number t1) {
                 v = wavSpdSldr.getValue();
                 wavSpdTf.setText(String.format("%.2f", wavSpdSldr.getValue()) + " cm/s");
+                if (startPauseCounter > 0 && playBtn.getText() == "Play") {
+                    for(Circle c: standList){
+                        xPos = c.getCenterX() - 30;
+                        c.setCenterY((2 * A * Math.cos(omega * (timeElapsed + totalTimeWhenStopped)) * Math.sin(k * xPos)) * 2 + wavesPane.getHeight()/2);
+                    }
+                    for(Circle c: travelList) {
+                        xPos = c.getCenterX() - 30;
+                        c.setCenterY((A * Math.sin(k * xPos - omega * (timeElapsed + totalTimeWhenStopped))) * 2 + wavesPane.getHeight()/2);
+                    }
+                    for(Circle c: reTravelList) {
+                        xPos = c.getCenterX() - 30;
+                        c.setCenterY((A * Math.sin(k * xPos + omega * (timeElapsed + totalTimeWhenStopped))) * 2 + wavesPane.getHeight()/2);
+                    }
+                }
             }
         });
         wavSpdVBox.getChildren().addAll(wavSpdText,wavSpdTf,wavSpdSldr);
@@ -315,6 +287,20 @@ public class Ui extends Application {
             public void changed(ObservableValue<? extends Number> observableValue, Number number, Number t1) {
                 A = ampSldr.getValue();
                 ampTf.setText(String.format("%.2f", ampSldr.getValue()) + " cm");
+                if (startPauseCounter > 0 && playBtn.getText() == "Play") {
+                    for(Circle c: standList){
+                        xPos = c.getCenterX() - 30;
+                        c.setCenterY((2 * A * Math.cos(omega * (timeElapsed + totalTimeWhenStopped)) * Math.sin(k * xPos)) * 2 + wavesPane.getHeight()/2);
+                    }
+                    for(Circle c: travelList) {
+                        xPos = c.getCenterX() - 30;
+                        c.setCenterY((A * Math.sin(k * xPos - omega * (timeElapsed + totalTimeWhenStopped))) * 2 + wavesPane.getHeight()/2);
+                    }
+                    for(Circle c: reTravelList) {
+                        xPos = c.getCenterX() - 30;
+                        c.setCenterY((A * Math.sin(k * xPos + omega * (timeElapsed + totalTimeWhenStopped))) * 2 + wavesPane.getHeight()/2);
+                    }
+                }
             }
         });
 
@@ -354,7 +340,13 @@ public class Ui extends Application {
         /**
          * Start Button
          */
-        Button playBtn = new Button("Start");
+        Button btn3 = new Button("Help");
+        btn3.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                System.out.println("What did the ocean say to the beach?\nNothing, it just waved.\n");
+            }
+        });
         actionData.getChildren().add(playBtn);
 
         /**
@@ -370,9 +362,6 @@ public class Ui extends Application {
         /**
          * Displaying the waves
          */
-        Pane wavesPane = new Pane();
-        wavesPane.setPrefWidth(960);
-        wavesPane.setPrefHeight(384);
 
         /**
          * Setting up the grid
@@ -676,7 +665,7 @@ public class Ui extends Application {
 
                 for(Circle c: standList){
                     xPos = c.getCenterX() - 30;
-                    c.setCenterY((2 * A * Math.cos(omega * ((timeElapsed + totalTimeWhenStopped)) * Math.sin(k * xPos))) * 2 + wavesPane.getHeight()/2);
+                    c.setCenterY((2 * A * Math.cos(omega * (timeElapsed + totalTimeWhenStopped)) * Math.sin(k * xPos)) * 2 + wavesPane.getHeight()/2);
                 }
                 for(Circle c: travelList) {
                     xPos = c.getCenterX() - 30;
@@ -689,21 +678,23 @@ public class Ui extends Application {
             }
         };
 
+
+
         /**
          * Setting up the Play button
          */
         playBtn.setOnAction(actionEvent -> {
-            counter++;
-            if(counter % 2 != 0) {
+            startPauseCounter += 1;
+            if (startPauseCounter % 2 == 1) {
+                playBtn.setText("Pause");
                 animateTimer.start();
-                playBtn.setText("Stop");
-                timer = new Timer();
+                timer = new Newton.Timer();		
             }
-            if(counter % 2 == 0) {
+            if (startPauseCounter % 2 == 0) {
+                playBtn.setText("Play");
                 animateTimer.stop();
-                timeWhenStopped = timeElapsed;
+                timeWhenStopped = timer.elapsed();
                 totalTimeWhenStopped += timeWhenStopped;
-                playBtn.setText("Start");
             }
         });
 
@@ -720,7 +711,4 @@ public class Ui extends Application {
         stage.show();
     }
 
-    public static void main(String[] args) {
-        launch();
-    }
 }
