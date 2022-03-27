@@ -1,4 +1,4 @@
-package com.example.demo;
+package djangounchained.physics;
 
 import javafx.animation.*;
 import javafx.application.Application;
@@ -53,6 +53,10 @@ public class Ui extends Application {
     static int stringLength = 490;
     static double timeToReachEnd = 4.9;
     static double v = 100;
+
+    Ui(Stage travelWaveStage) {
+        start(travelWaveStage);
+    }
 
     @Override
     public void start(Stage stage) {
@@ -188,7 +192,7 @@ public class Ui extends Application {
         TextField freqTf = new TextField("0.00 Hz");
         freqTf.setAlignment(Pos.CENTER);
         freqTf.setEditable(false);
-        Slider freqSldr = new Slider(0, 10, 0);
+        Slider freqSldr = new Slider(0, 1, 0); //we're sorry mr cohen
         freqSldr.setShowTickLabels(true);
         freqSldr.setShowTickMarks(true);
         freqSldr.setMajorTickUnit(1);
@@ -560,13 +564,36 @@ public class Ui extends Application {
             }
         });
 
+        normalMotion.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                slowMotion.setSelected(false);
+                fastMotion.setSelected(false);
+            }
+        });
+
+        fastMotion.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                slowMotion.setSelected(false);
+                normalMotion.setSelected(false);
+            }
+        });
+
+        slowMotion.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                fastMotion.setSelected(false);
+                normalMotion.setSelected(false);
+            }
+        });
+
         /**
          * Equations and AnimationTimer
          */
         AnimationTimer animateTimer = new AnimationTimer() {
             @Override
             public void handle(long l) {
-                timeElapsed = timer.elapsed();
                 omega = 2 * Math.PI * f;
                 omegaTxt.setText("Angular Frequency: " + String.format("%.2f", omega) + " rad/s");
                 lambda = v / f;
@@ -574,33 +601,15 @@ public class Ui extends Application {
                 k = (2 * Math.PI) / lambda;
                 kTxt.setText("Wave Number: " + String.format("%.2f", k) + " rad/cm");
 
-                normalMotion.setOnAction(new EventHandler<ActionEvent>() {
-                    @Override
-                    public void handle(ActionEvent actionEvent) {
-                        timeElapsed = timer.elapsed();
-                        slowMotion.setSelected(false);
-                        fastMotion.setSelected(false);
-
-                    }
-                });
-
-                fastMotion.setOnAction(new EventHandler<ActionEvent>() {
-                    @Override
-                    public void handle(ActionEvent actionEvent) {
-                        timeElapsed = timer.elapsed()*2;
-                        slowMotion.setSelected(false);
-                        normalMotion.setSelected(false);
-                    }
-                });
-
-                slowMotion.setOnAction(new EventHandler<ActionEvent>() {
-                    @Override
-                    public void handle(ActionEvent actionEvent) {
-                        timeElapsed = timer.elapsed()/2;
-                        fastMotion.setSelected(false);
-                        normalMotion.setSelected(false);
-                    }
-                });
+                if(normalMotion.isSelected()) {
+                    timeElapsed = timer.elapsed();
+                }
+                if(slowMotion.isSelected()) {
+                    timeElapsed = timer.elapsed() / 10;
+                }
+                if(fastMotion.isSelected()) {
+                    timeElapsed = timer.elapsed() * 10;
+                }
 
                 for(Circle c: standList){
                     xPos = c.getCenterX() - 30;
@@ -614,7 +623,6 @@ public class Ui extends Application {
                     xPos = c.getCenterX() - 30;
                     c.setCenterY((A * Math.sin(k * xPos + omega * timeElapsed)) * 2 + wavesPane.getHeight()/2);
                 }
-
             }
         };
 
@@ -628,6 +636,9 @@ public class Ui extends Application {
             timer = new Timer();
             animateTimer.start();
             playBtn.setText("Stop");
+
+            System.out.println(A + " cm\n" + f + " Hz\n" + v +" cm/s\n" + T + " s\n"+ omega + " rad/s\n"
+                    + lambda + " cm\n" + k + " rad/cm\n");
 
             if(!isRunning) {
                 animateTimer.stop();
