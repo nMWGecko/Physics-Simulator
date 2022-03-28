@@ -1,10 +1,9 @@
-package djangounchained.physics;
-
+package com.example.demo;
 
 // TODO preset waves
+// TODO change toggle waves setting to toggle incident, standing, reflected wave
 // TODO display more values
 // TODO hover over points
-
 
 import javafx.animation.*;
 import javafx.application.Application;
@@ -278,7 +277,7 @@ public class Ui extends Application {
         TextField freqTf = new TextField("0.00 Hz");
         freqTf.setAlignment(Pos.CENTER);
         freqTf.setEditable(false);
-        Slider freqSldr = new Slider(0, 1, 0); //we're sorry mr cohen
+        Slider freqSldr = new Slider(0, 5, 0); //we're sorry mr cohen
         freqSldr.setShowTickLabels(true);
         freqSldr.setShowTickMarks(true);
         freqSldr.setMajorTickUnit(1);
@@ -452,10 +451,11 @@ public class Ui extends Application {
          * Extra Displayed Values
          */
         VBox exData = new VBox(5);
+        Text periodTxt = new Text("Period: ");
         Text omegaTxt = new Text("Angular Frequency: ");
         Text lambdaTxt = new Text("Wavelength: ");
         Text kTxt = new Text("Wave Number: ");
-        exData.getChildren().addAll(omegaTxt, lambdaTxt, kTxt);
+        exData.getChildren().addAll(periodTxt, omegaTxt, lambdaTxt, kTxt);
         actionData.getChildren().add(exData);
 
         /**
@@ -612,6 +612,7 @@ public class Ui extends Application {
                 refTravLegTxt.setFill(Color.BLACK);
                 standLine.setStroke(Color.DARKMAGENTA);
                 standLegTxt.setFill(Color.BLACK);
+                periodTxt.setFill(Color.BLACK);
                 omegaTxt.setFill(Color.BLACK);
                 lambdaTxt.setFill(Color.BLACK);
                 kTxt.setFill(Color.BLACK);
@@ -654,6 +655,7 @@ public class Ui extends Application {
                 refTravLegTxt.setFill(Color.WHITE);
                 standLine.setStroke(omori);
                 standLegTxt.setFill(Color.WHITE);
+                periodTxt.setFill(Color.BLACK);
                 omegaTxt.setFill(Color.WHITE);
                 lambdaTxt.setFill(Color.WHITE);
                 kTxt.setFill(Color.WHITE);
@@ -745,8 +747,20 @@ public class Ui extends Application {
         AnimationTimer animateTimer = new AnimationTimer() {
             @Override
             public void handle(long l) {
+
+                T = 1 / f;
+                omega = 2 * Math.PI * f;
+                lambda = v / f;
+                k = (2 * Math.PI) / lambda;
+
+                periodTxt.setText("Period: " + String.format("%.2f", T) + " seconds");
                 omegaTxt.setText("Angular Frequency: " + String.format("%.2f", omega) + " rad/s");
-                lambdaTxt.setText("Wavelength: " + String.format("%.2f", lambda / 2 + 3.75) + " cm"); // review later
+                if (lambda > 0){
+                    lambdaTxt.setText("Wavelength: " + String.format("%.2f", lambda / 2 + 3.75) + " cm");
+                }
+                else {
+                    lambdaTxt.setText("Wavelength: " + String.format("%.2f", lambda / 2) + " cm");
+                }
                 kTxt.setText("Wave Number: " + String.format("%.2f", k) + " rad/cm");
 
                 if(normalMotion.isSelected()) {
