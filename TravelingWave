@@ -32,6 +32,8 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import application.Newton.Timer;
+
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -45,7 +47,7 @@ public class Ui extends Application {
     static ArrayList<Circle> travelList = new ArrayList<>();
     static ArrayList<Circle> reTravelList = new ArrayList<>();
 
-    static Newton.Timer timer;
+    static Timer timer;
     static Line vertGrid, horiGrid, xIndic, yIndic;
     static ArrayList<Line> hLineList = new ArrayList<>();
     static ArrayList<Line> vLineList = new ArrayList<>();
@@ -719,7 +721,17 @@ public class Ui extends Application {
                 playBtn.setText("Play");
                 animateTimer.stop();
                 timeWhenStopped = timer.elapsed();
-                totalTimeWhenStopped += timeWhenStopped;
+                if (normalMotion.isSelected()) {
+                    totalTimeWhenStopped += timeWhenStopped;
+
+                }
+                if (fastMotion.isSelected()) {
+                    totalTimeWhenStopped += 10 * timeWhenStopped;
+
+                }
+                if (slowMotion.isSelected()) {
+                    totalTimeWhenStopped += timeWhenStopped / 10;
+                }
             }
         });
 
