@@ -1,4 +1,8 @@
-package com.example.project;
+package application;
+
+
+// TODO center force vector
+// TODO help window
 
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
@@ -31,7 +35,7 @@ import static javafx.application.Platform.exit;
 public class Newton extends Application {
     static AnimationTimer timer, timer2;
     static double time, decTime, speed, oppSpeed, prevSpeed, prevOppSpeed, distance, prevDeltaX, accDistance, distancePerFrame,
-            acceleration, deceleration, accTime;
+            acceleration, deceleration, accTime, timeWhenStopped, totalTimeWhenStopped;
     static Line distanceLine, impDistanceLine;
     static Text distanceIndicator, impDistanceIndicator;
     static ArrayList<Line> distanceLineArrayList = new ArrayList<>();
@@ -40,6 +44,7 @@ public class Newton extends Application {
     static ArrayList<Text> impDistanceIndicatorArrayList = new ArrayList<>();
     static String menuPic, homePic, helpPic, dusk, dayCar, day, nightCar,god,skateboard, nMenuPic;
     static Timer startWatch, endWatch, totalWatch;
+    static int counter = 0;
     public Newton(Stage newtonStage) {
         start(newtonStage);
     }
@@ -47,7 +52,7 @@ public class Newton extends Application {
     public void start(Stage primaryStage) {
         JSONParser jsonParser = new JSONParser();
         try {
-            Object o = jsonParser.parse(new FileReader(this.getClass().getClassLoader().getResource("index.json").getFile()));
+            Object o = jsonParser.parse(new FileReader("C:\\Users\\kalsi\\Downloads\\index.json"));
             JSONObject jsonObject = (JSONObject) o;
             menuPic = (String) jsonObject.get("menuIcon");
             homePic = (String) jsonObject.get("homeIcon");
@@ -261,10 +266,10 @@ public class Newton extends Application {
         arrowForceLabel.setLayoutX(370);
         arrowForceLabel.setLayoutY(75);
         arrowForceLabel.setVisible(false);
-        arrowHead.setLayoutX(400);
+        arrowHead.setLayoutX(500);
         arrowHead.setLayoutY(100);
         arrowHead.setVisible(false);
-        arrowTail.setX(350);
+        arrowTail.setX(450);
         arrowTail.setY(112.5);
         arrowTail.setVisible(false);
         Group g = new Group();
@@ -273,7 +278,7 @@ public class Newton extends Application {
         root.getChildren().addAll(vbox,pane);
 
         Scene s = new Scene(root, 1000, 650);
-        s.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
+        s.getStylesheets().add(getClass().getResource("newton.css").toExternalForm());
         primaryStage.setScene(s);
         primaryStage.setTitle("Newton's 2nd Law Simulator");
         primaryStage.setResizable(false);
@@ -286,9 +291,9 @@ public class Newton extends Application {
                     arrowHead.setFill(Color.LIGHTGREEN);
                     arrowTail.setFill(Color.LIGHTGREEN);
                     arrowForceLabel.setText(forceTextField.getText()+"N");
-                    accTime = startWatch.elapsed();
-                    speed = acceleration * accTime;
-                    distance = 0.5 * speed * accTime;
+                    accTime = startWatch.elapsed() + totalTimeWhenStopped;
+                    speed = acceleration * (accTime);
+                    distance = 0.5 * speed * (accTime);
                     if (metric.isSelected()) {
                         accelerationDisplayLabel.setText("Acceleration: " + String.format("%.2f", acceleration) + "m/s²");
                     }
@@ -302,13 +307,13 @@ public class Newton extends Application {
                     arrowHead.setFill(Color.RED);
                     arrowTail.setFill(Color.RED);
                     arrowHead.getPoints().setAll(0.0, 20.0, 30.0, 0.0, 30.0, 40.0);
-                    arrowHead.setLayoutX(350);
-                    arrowTail.setX(380);
+                    arrowHead.setLayoutX(450);
+                    arrowTail.setX(480);
                     arrowForceLabel.setText(frictionForceTextField.getText() + "N");
 
                     decTime = endWatch.elapsed() - accTime;
 
-                    oppSpeed = (deceleration * decTime);
+                    oppSpeed = (deceleration * (decTime));
                     speed -= prevOppSpeed - oppSpeed;
                     if (metric.isSelected()) {
                         accelerationDisplayLabel.setText("Acceleration: " + String.format("%.2f", deceleration) + "m/s²");
@@ -369,6 +374,7 @@ public class Newton extends Application {
             public void handle(long now) {
                 groundView.setTranslateX(0);
                 objectView.setTranslateX(0);
+                
                 for (Line l : distanceLineArrayList) {
                     l.setTranslateX(0);
                 }
@@ -402,10 +408,22 @@ public class Newton extends Application {
         });
 
         startBtn.setOnAction(actionEvent -> {
-            startWatch = new Timer();
-            endWatch = new Timer();
-            totalWatch = new Timer();
+        	counter++;
+        	if (counter % 2 == 1) {
+        		startBtn.setText("Pause");
+                timer.start();
+                startWatch = new Timer();
+                endWatch = new Timer();
+                totalWatch = new Timer();
+        	}
+        	if (counter % 2 == 0) {
+        		startBtn.setText("Play");
+        		timer.stop();
+        		timeWhenStopped = totalWatch.elapsed();
+        		totalTimeWhenStopped += timeWhenStopped;
+        	}
             timer2.stop();
+
             String forceInput = forceTextField.getText();
             String massInput = massTextField.getText();
             String frictionForceInput = frictionForceTextField.getText();
@@ -568,7 +586,6 @@ public class Newton extends Application {
                         massTextField.setStyle("-fx-background-color: White");
                         frictionForceTextField.setStyle("-fx-background-color: White");
                     }
-                    startBtn.setDisable(true);
                     resetBtn.setDisable(true);
                     warning.setVisible(false);
                     double force = Double.parseDouble(forceInput);
@@ -576,14 +593,12 @@ public class Newton extends Application {
                     double frictionForce = Double.parseDouble(frictionForceInput);
                     acceleration = force / mass;
                     deceleration = -frictionForce / mass;
-                    timer.start();
                 }
             }
         });
 
         resetBtn.setOnAction(actionEvent -> {
             warning.setVisible(false);
-            startBtn.setDisable(false);
             if(darkMode.isSelected()) {
                 forceTextField.setStyle("-fx-background-color: #303030");
                 massTextField.setStyle("-fx-background-color: #303030");
@@ -596,8 +611,8 @@ public class Newton extends Application {
             arrowHead.setFill(Color.LIGHTGREEN);
             arrowTail.setFill(Color.LIGHTGREEN);
             arrowHead.getPoints().setAll(0.0, 0.0, 30.0, 20.0, 0.0, 40.0);
-            arrowHead.setLayoutX(400);
-            arrowTail.setX(350);
+            arrowHead.setLayoutX(500);
+            arrowTail.setX(450);
             arrowForceLabel.setText("0N");
             forceTextField.setText("");
             frictionForceTextField.setText("");
@@ -614,6 +629,8 @@ public class Newton extends Application {
             oppSpeed = 0.0;
             prevOppSpeed = 0.0;
             accDistance = 0.0;
+            timeWhenStopped = 0.0;
+            totalTimeWhenStopped = 0.0;
             if (imperial.isSelected()) {
                 accelerationDisplayLabel.setText("Acceleration: " + String.format("%.2f", acceleration) + "ft/s²");
                 timeDisplayLabel.setText("Time: " + String.format("%.2f", time) + "s                   ");
@@ -789,7 +806,7 @@ public class Newton extends Application {
         });
         homeBtn.setOnAction(actionEvent -> {
             primaryStage.close();
-            MainPage m = new MainPage();
+            Main m = new Main();
             m.start(new Stage());
 
         });
@@ -809,7 +826,7 @@ public class Newton extends Application {
             arrowForceLabel.setVisible(false);
         });
     }
-    class Timer {
+    static class Timer {
         long startTime;
 
         public Timer() {
