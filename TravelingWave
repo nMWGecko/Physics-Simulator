@@ -2,7 +2,6 @@ package djangounchained.physics;
 
 
 // TODO preset waves
-// TODO start/pause button
 // TODO display more values
 // TODO hover over points
 
@@ -14,11 +13,13 @@ import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
+import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -32,7 +33,6 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import application.Newton.Timer;
 
 import java.io.FileReader;
 import java.io.IOException;
@@ -47,7 +47,7 @@ public class Ui extends Application {
     static ArrayList<Circle> travelList = new ArrayList<>();
     static ArrayList<Circle> reTravelList = new ArrayList<>();
 
-    static Timer timer;
+    static Newton.Timer timer;
     static Line vertGrid, horiGrid, xIndic, yIndic;
     static ArrayList<Line> hLineList = new ArrayList<>();
     static ArrayList<Line> vLineList = new ArrayList<>();
@@ -63,9 +63,9 @@ public class Ui extends Application {
     static double timeToReachEnd = 4.9;
     static double v = 100;
 
-    Waves(Stage travelWaveStage) {
-        start(travelWaveStage);
-    }
+//    Ui(Stage travelWaveStage) {
+//        start(travelWaveStage);
+//    }
 
     @Override
     public void start(Stage stage) {
@@ -135,24 +135,97 @@ public class Ui extends Application {
         //Help MenuItem
         MenuItem menuHelp = new MenuItem("Help");
         Pane helpPane = new Pane();
-        ImageView shulkNo = new ImageView(new Image("https://www.siliconera.com/wp-content/uploads/2020/03/xbc-de-16.jpg"));
-        Text subtitle = new Text("No! ");
-        subtitle.setFont(Font.font("Consolas", FontWeight.NORMAL, FontPosture.REGULAR, 35));
-        subtitle.setFill(Color.WHITE);
-        subtitle.setLayoutX(538);
-        subtitle.setLayoutY(560);
-        helpPane.getChildren().addAll(shulkNo, subtitle);
-        Scene theoryScene = new Scene(helpPane);
+        helpPane.setPadding(new Insets(10));
+        VBox theoVbox = new VBox(10);
+        ScrollBar sb = new ScrollBar();
+        sb.setOrientation(Orientation.VERTICAL);
+        sb.setPrefHeight(650);
+        sb.setLayoutX(985);
+        sb.setMax(650);
+        sb.valueProperty().addListener((observableValue, number, t1) -> theoVbox.setLayoutY(-t1.doubleValue()));
+        theoVbox.setOnScroll(new EventHandler<ScrollEvent>() {
+            @Override
+            public void handle(ScrollEvent scrollEvent) {
+                theoVbox.setTranslateX(theoVbox.getTranslateX() + scrollEvent.getDeltaX());
+                theoVbox.setTranslateY(theoVbox.getTranslateY() + scrollEvent.getDeltaY());
+            }
+        });
+
+        Text theoryTxt = new Text("""
+                 Crash Course on Traveling Waves
+
+                     In the settings of this simulation, you will find the option to switch between light and dark mode,
+                     the option to toggle the visibility of the travelling and standing waves,\s
+
+                     To interact with the Standing wave simulation, simply press ‘start’ after adjusting the values on
+                     the three sliders. In this simulation, there are sliders for each of the following parameters:
+                     amplitude, wave speed, and mode number. Adjusting these parameters will result in standing waves
+                     being formed for a string fixed on both ends.
+
+                 Amplitude [m]: the maximum displacement or distance moved by a point on a vibrating body or wave
+                 measured from its equilibrium position. It is equal to one-half the length of the vibration path.
+                 Wave Speed [m/s]: the distance the disturbance travels across a medium in a given amount of time. It can
+                 be calculated by multiplying frequency with the wavelength of a wave.
+                 Frequency [Hz]: the number of waves that pass a fixed point in a given amount of time. The hertz
+                 measurement, abbreviated Hz, is the number of waves that pass by per second.
+
+                 It is possible to derive the wavelength, the distance between two successive crests or troughs (the
+                 highest point of a wave and the lowest point of a wave respectively) from wave speed through the
+                 formula:
+
+
+                 Pictured below are visual representations of two travelling waves (green and blue,) that form a standing
+                 wave (red).
+
+                """);
+
+        theoryTxt.setFont(Font.font("Consolas", FontWeight.NORMAL, FontPosture.REGULAR, 14));
+        ImageView wavesEg = new ImageView(new Image("https://www.siliconera.com/wp-content/uploads/2020/03/xbc-de-16.jpg"));
+        wavesEg.setFitWidth(990);
+        wavesEg.setFitHeight(640);
+
+        Text theoryTxt2 = new Text("""
+                 What are standing waves and how are they created?
+
+                     First, consider that waves always originate from some sort of event or disturbance. When two waves
+                     with the same amplitude and frequency move in opposite directions, they will respect the
+                     superposition principle and create what is known as an interference pattern. To elaborate, these
+                     two linear waves will either be added together or cancelled out.
+
+                     Interestingly enough, you might have even come across this phenomena without realising it yourself:
+                     interference patterns are so common to our daily lives, and can be produced by waves in the water,
+                     sound waves, or even light waves.
+
+                     Should you make the choice to further explore the concepts related to waves, a great starting point
+                     would be to consult these interesting articles written by Stephen Cohen (on his website, The
+                     Engineer’s Pulse, under the “For Physics Students” section:
+
+                """);
+
+        theoryTxt2.setFont(Font.font("Consolas", FontWeight.NORMAL, FontPosture.REGULAR, 14));
+
+        Text theoEqn = new Text("""
+                 Standing Wave:     Traveling Wave:
+                 Wave Speed:    Wave Number:
+                 Angular Frequency: 
+                 
+                 Where:
+                    x: a particle's
+                    y: 
+                    k: 
+                    A: 
+                    ω: 
+                """);
+        theoEqn.setFont(Font.font("Consolas", FontWeight.NORMAL, FontPosture.REGULAR, 14));
+
+        theoVbox.getChildren().addAll(theoryTxt, wavesEg, theoryTxt2, theoEqn);
+        helpPane.getChildren().addAll(theoVbox, sb);
+        Scene theoryScene = new Scene(helpPane, 1000, 650);
         Stage secondaryStage = new Stage();
         secondaryStage.setTitle("Loss");
         secondaryStage.setResizable(false);
         secondaryStage.setScene(theoryScene);
-        menuHelp.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent actionEvent) {
-                secondaryStage.show();
-            }
-        });
+        menuHelp.setOnAction(actionEvent -> secondaryStage.show());
 
         //Additional Settings
         MenuItem exitProgram = new MenuItem("Exit Program");
@@ -701,7 +774,7 @@ public class Ui extends Application {
                     double eq = A * sinTing;
                     c.setCenterY(wavesPane.getPrefHeight()/2 + eq);
                 }
-                
+
             }
         };
 
@@ -715,7 +788,7 @@ public class Ui extends Application {
             if (startPauseCounter % 2 == 1) {
                 playBtn.setText("Pause");
                 animateTimer.start();
-                timer = new Newton.Timer();		
+                timer = new Newton.Timer();
             }
             if (startPauseCounter % 2 == 0) {
                 playBtn.setText("Play");
@@ -746,6 +819,10 @@ public class Ui extends Application {
         stage.setResizable(false);
         stage.setScene(scene);
         stage.show();
+    }
+
+    public static void main(String[] args) {
+        launch();
     }
 
 }
