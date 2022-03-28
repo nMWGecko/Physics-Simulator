@@ -153,32 +153,26 @@ public class Ui extends Application {
         Text theoryTxt = new Text("""
                  Crash Course on Traveling Waves
 
-                     In the settings of this simulation, you will find the option to switch between light and dark mode,
-                     the option to toggle the visibility of the travelling and standing waves,\s
+                    In the settings of this simulation, you will find the option to switch between light and dark mode, the option to toggle
+                 the visibility of the travelling and standing waves.
 
-                     To interact with the Standing wave simulation, simply press ‘start’ after adjusting the values on
-                     the three sliders. In this simulation, there are sliders for each of the following parameters:
-                     amplitude, wave speed, and mode number. Adjusting these parameters will result in standing waves
-                     being formed for a string fixed on both ends.
+                    To interact with the Standing wave simulation, simply press ‘start’ after adjusting the values on the three sliders. In
+                 this simulation, there are sliders for each of the following parameters: amplitude, wave speed, and mode number. Adjusting
+                 these parameters will result in standing waves being formed for a string fixed on both ends.
 
-                 Amplitude [m]: the maximum displacement or distance moved by a point on a vibrating body or wave
-                 measured from its equilibrium position. It is equal to one-half the length of the vibration path.
-                 Wave Speed [m/s]: the distance the disturbance travels across a medium in a given amount of time. It can
-                 be calculated by multiplying frequency with the wavelength of a wave.
-                 Frequency [Hz]: the number of waves that pass a fixed point in a given amount of time. The hertz
-                 measurement, abbreviated Hz, is the number of waves that pass by per second.
-
-                 It is possible to derive the wavelength, the distance between two successive crests or troughs (the
-                 highest point of a wave and the lowest point of a wave respectively) from wave speed through the
-                 formula:
-
-
-                 Pictured below are visual representations of two travelling waves (green and blue,) that form a standing
-                 wave (red).
-
+                 * Amplitude [m]: the maximum displacement or distance moved by a point on a vibrating body or wave measured from its
+                   equilibrium position. It is equal to one-half the length of the vibration path.
+                 * Wave Speed [m/s]: the distance the disturbance travels across a medium in a given amount of time. It can be calculated by
+                   multiplying frequency with the wavelength of a wave.
+                 * Frequency [Hz]: the number of waves that pass a fixed point in a given amount of time. The hertz measurement, abbreviated
+                   Hz, is the number of waves that pass by per second.
                 """);
-
         theoryTxt.setFont(Font.font("Consolas", FontWeight.NORMAL, FontPosture.REGULAR, 14));
+
+        Text wavesEgDesc = new Text(" Pictured below are visual representations of two travelling waves (green and" +
+                "blue) that form a standing wave (red).");
+        wavesEgDesc.setFont(Font.font("Consolas", FontWeight.NORMAL, FontPosture.ITALIC, 14));
+
         ImageView wavesEg = new ImageView(new Image("https://www.siliconera.com/wp-content/uploads/2020/03/xbc-de-16.jpg"));
         wavesEg.setFitWidth(990);
         wavesEg.setFitHeight(640);
@@ -186,38 +180,37 @@ public class Ui extends Application {
         Text theoryTxt2 = new Text("""
                  What are standing waves and how are they created?
 
-                     First, consider that waves always originate from some sort of event or disturbance. When two waves
-                     with the same amplitude and frequency move in opposite directions, they will respect the
-                     superposition principle and create what is known as an interference pattern. To elaborate, these
-                     two linear waves will either be added together or cancelled out.
+                    First, consider that waves always originate from some sort of event or disturbance. When two waves with the same amplitude
+                 and frequency move in opposite directions, they will respect the superposition principle and create what is known as an
+                 interference pattern. To elaborate, these two linear waves will either be added together or cancelled out.
 
-                     Interestingly enough, you might have even come across this phenomena without realising it yourself:
-                     interference patterns are so common to our daily lives, and can be produced by waves in the water,
-                     sound waves, or even light waves.
+                    Interestingly enough, you might have even come across this phenomena without realising it yourself: interference patterns
+                 are so common to our daily lives, and can be produced by waves in the water, sound waves, or even light waves.
 
-                     Should you make the choice to further explore the concepts related to waves, a great starting point
-                     would be to consult these interesting articles written by Stephen Cohen (on his website, The
-                     Engineer’s Pulse, under the “For Physics Students” section:
-
+                    Should you make the choice to further explore the concepts related to waves, a great starting point would be to consult
+                 these interesting articles written by Stephen Cohen (on his website, The Engineer’s Pulse, under the “For Physics Students”
+                 section:
                 """);
-
         theoryTxt2.setFont(Font.font("Consolas", FontWeight.NORMAL, FontPosture.REGULAR, 14));
 
         Text theoEqn = new Text("""
-                 Standing Wave:     Traveling Wave:
-                 Wave Speed:    Wave Number:
-                 Angular Frequency: 
+                                Standing Wave: y(x, t) = 2Asin(kx)cos(ωt) [m]       Traveling Wave: y(x, t) = Asin(kx ± ωt) [m]
+                 
+                                                    Wave Speed: v = λf [m/s]        Wave Number: k = 2π/λ [rad/m]
+                 
+                                                                Angular Frequency: ⍵ = 2πf [rad/s]
                  
                  Where:
-                    x: a particle's
-                    y: 
-                    k: 
-                    A: 
-                    ω: 
+                 x [m]: a particle's x-axis position at a certain time
+                 y [m]: a particle's y-axis position at a certain time
+                 k [rad/m]: wave number
+                 A [m]: amplitude
+                 t [s]: time elapsed
+                 ω [rad/s]: angular frequency
                 """);
         theoEqn.setFont(Font.font("Consolas", FontWeight.NORMAL, FontPosture.REGULAR, 14));
 
-        theoVbox.getChildren().addAll(theoryTxt, wavesEg, theoryTxt2, theoEqn);
+        theoVbox.getChildren().addAll(theoryTxt, wavesEgDesc, wavesEg, theoryTxt2, theoEqn);
         helpPane.getChildren().addAll(theoVbox, sb);
         Scene theoryScene = new Scene(helpPane, 1000, 650);
         Stage secondaryStage = new Stage();
