@@ -98,8 +98,8 @@ public class Ui extends Application {
          * Navigation Button
          */
         //Pane for settings
-        HBox nagivationHBox = new HBox(230);
-        nagivationHBox.setPadding(new Insets(10, 5, 5, 5));
+        HBox navigationHBox = new HBox(303);
+        navigationHBox.setPadding(new Insets(10, 5, 5, 5));
         Pane menuPane = new Pane();
 
         //Toggling the incident and reflect rays visibility
@@ -246,18 +246,17 @@ public class Ui extends Application {
         homeBtn.setGraphic(homeView);
         homeBtn.setId("navigation");
 
-        //Home Button settings
-        Label warning = new Label();
-        warning.setId("warning");
-        warning.setVisible(false);
-        nagivationHBox.getChildren().addAll(homeBtn,warning, menuPane);
-        nagivationHBox.setAlignment(Pos.CENTER);
+        //Finishing up the Top HBox
+        Text simTitle = new Text("Traveling Wave Simulator");
+        simTitle.setFont(Font.font("Consanas", FontWeight.BOLD, FontPosture.REGULAR, 20));
+        navigationHBox.getChildren().addAll(homeBtn, simTitle, menuPane);
+        navigationHBox.setAlignment(Pos.CENTER);
 
         //The Top Buttons
         VBox controls = new VBox(20);
         root.setTop(controls);
         HBox menuCtrl = new HBox();
-        menuCtrl.getChildren().add(nagivationHBox);
+        menuCtrl.getChildren().add(navigationHBox);
         controls.getChildren().add(menuCtrl);
 
         //The UI Controls
