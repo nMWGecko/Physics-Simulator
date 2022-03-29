@@ -2,8 +2,8 @@ package com.example.demo;
 
 // TODO preset waves
 // TODO change toggle waves setting to toggle incident, standing, reflected wave
-// TODO display more values
-// TODO hover over points
+// TODO fix lambda equation
+// TODO fix scaling on graph, fix numbers that come off bottom of screen for y axis, fix x axis title.
 
 import javafx.animation.*;
 import javafx.application.Application;
@@ -39,7 +39,7 @@ import java.util.ArrayList;
 
 public class Ui extends Application {
     static String menuPic, homePic, helpPic;
-    static Color omori = Color.web("#6c0ffe");
+    static Color OMORI = Color.web("#6c0ffe");
     static Circle c;
 
     static ArrayList<Circle> standList = new ArrayList<>();
@@ -55,7 +55,7 @@ public class Ui extends Application {
     static Text xL, yL;
     static ArrayList<Text> xLabelList = new ArrayList<>();
     static ArrayList<Text> yLabelList = new ArrayList<>();
-    static int startPauseCounter = 0;
+    static int startPauseCounter, incidentCounter, reflectedCounter, standingCounter = 0;
 
     static double A, f, T, omega, lambda, k, waveLength, xPos, timeElapsed, timeWhenStopped, totalTimeWhenStopped;
     static int stringLength = 490;
@@ -103,11 +103,11 @@ public class Ui extends Application {
         Pane menuPane = new Pane();
 
         //Toggling the incident and reflect rays visibility
-        Menu raysVis = new Menu("Toggle Rays");
-        CheckMenuItem raysOn = new CheckMenuItem("On");
-        CheckMenuItem raysOff = new CheckMenuItem("Off");
-        raysOn.setSelected(true);
-        raysVis.getItems().addAll(raysOn, raysOff);
+        Menu raysVis = new Menu("Toggle Wave(s)");
+        MenuItem toggleIncident = new MenuItem("Incident");
+        MenuItem toggleReflected = new MenuItem("Reflected");
+        MenuItem toggleStanding = new MenuItem("Standing");
+        raysVis.getItems().addAll(toggleIncident, toggleReflected, toggleStanding);
 
         //Toggling grid visibility
         Menu objects = new Menu("Toggle Grid");
@@ -365,7 +365,7 @@ public class Ui extends Application {
         TextField ampTf = new TextField("0.00 cm");
         ampTf.setAlignment(Pos.CENTER);
         ampTf.setEditable(false);
-        Slider ampSldr = new Slider(0, 40, 0);
+        Slider ampSldr = new Slider(0, 30, 0);
         ampSldr.setShowTickMarks(true);
         ampSldr.setShowTickLabels(true);
         ampSldr.setMajorTickUnit(5);
@@ -381,17 +381,17 @@ public class Ui extends Application {
                         double sinTing = Math.sin(k * (c.getCenterX() - 30));
                         double cosTing = Math.cos(omega * (totalTimeWhenStopped));
                         double eq = 2 * A * sinTing * cosTing;
-                        c.setCenterY(wavesPane.getPrefHeight()/2 + eq);
+                        c.setCenterY(wavesPane.getPrefHeight()/2 + 2 * eq);
                     }
                     for (Circle c : travelList) {
                         double sinTing = Math.sin((k * (c.getCenterX() - 30)) - (omega * (totalTimeWhenStopped)));
                         double eq = A * sinTing;
-                        c.setCenterY(wavesPane.getPrefHeight()/2 + eq);
+                        c.setCenterY(wavesPane.getPrefHeight()/2 + 2 * eq);
                     }
                     for (Circle c : reTravelList) {
                         double sinTing = Math.sin((k * (c.getCenterX() - 30)) + (omega * (totalTimeWhenStopped)));
                         double eq = A * sinTing;
-                        c.setCenterY(wavesPane.getPrefHeight()/2 + eq);
+                        c.setCenterY(wavesPane.getPrefHeight()/2 + 2 * eq);
                     }
                 }
                 T = 1 / f;
@@ -661,7 +661,7 @@ public class Ui extends Application {
                 inciTravLegTxt.setFill(Color.WHITE);
                 refTravLine.setStroke(Color.ORANGERED);
                 refTravLegTxt.setFill(Color.WHITE);
-                standLine.setStroke(omori);
+                standLine.setStroke(OMORI);
                 standLegTxt.setFill(Color.WHITE);
                 coordinateTxt.setFill(Color.WHITE);
                 periodTxt.setFill(Color.WHITE);
@@ -691,7 +691,7 @@ public class Ui extends Application {
                     c.setStroke(Color.ORANGERED);
                 }
                 for(Circle c: standList) {
-                    c.setStroke(omori);
+                    c.setStroke(OMORI);
                 }
                 lightMode.setSelected(false);
             }
@@ -700,29 +700,58 @@ public class Ui extends Application {
         /**
          * Toggle Wave Visibility
          */
-        raysOn.setOnAction(new EventHandler<ActionEvent>() {
+
+        toggleIncident.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
-                for(Circle c: travelList) {
-                    wavesPane.getChildren().add(c);
+                incidentCounter += 1;
+                if (incidentCounter % 2 == 1) {
+                    for(Circle c: travelList) {
+                        wavesPane.getChildren().remove(c);
+                    }
                 }
-                for(Circle c: reTravelList) {
-                    wavesPane.getChildren().add(c);
+
+                if (incidentCounter % 2 == 0) {
+                    for(Circle c: travelList) {
+                        wavesPane.getChildren().add(c);
+                    }
                 }
-                raysOff.setSelected(false);
             }
         });
 
-        raysOff.setOnAction(new EventHandler<ActionEvent>() {
+        toggleReflected.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
-                for(Circle c: travelList) {
-                    wavesPane.getChildren().remove(c);
+                reflectedCounter += 1;
+                if (reflectedCounter % 2 == 1) {
+                    for(Circle c: reTravelList) {
+                        wavesPane.getChildren().remove(c);
+                    }
                 }
-                for(Circle c: reTravelList) {
-                    wavesPane.getChildren().remove(c);
+
+                if (reflectedCounter % 2 == 0) {
+                    for(Circle c: reTravelList) {
+                        wavesPane.getChildren().add(c);
+                    }
                 }
-                raysOn.setSelected(false);
+            }
+        });
+
+        toggleStanding.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                standingCounter += 1;
+                if (standingCounter % 2 == 1) {
+                    for(Circle c: standList) {
+                        wavesPane.getChildren().remove(c);
+                    }
+                }
+
+                if (standingCounter % 2 == 0) {
+                    for(Circle c: standList) {
+                        wavesPane.getChildren().add(c);
+                    }
+                }
             }
         });
 
@@ -768,12 +797,7 @@ public class Ui extends Application {
 
                 periodTxt.setText("Period: " + String.format("%.2f", T) + " seconds");
                 omegaTxt.setText("Angular Frequency: " + String.format("%.2f", omega) + " rad/s");
-                if (lambda > 0){
-                    lambdaTxt.setText("Wavelength: " + String.format("%.2f", lambda / 2 + 3.75) + " cm");
-                }
-                else {
-                    lambdaTxt.setText("Wavelength: " + String.format("%.2f", lambda / 2) + " cm");
-                }
+                lambdaTxt.setText("Wavelength: " + String.format("%.2f", lambda) + " cm"); // not accurate
                 kTxt.setText("Wave Number: " + String.format("%.2f", k) + " rad/cm");
 
                 if(normalMotion.isSelected()) {
@@ -789,17 +813,19 @@ public class Ui extends Application {
                     double sinTing = Math.sin(k * (c.getCenterX() - 30));
                     double cosTing = Math.cos(omega * (timeElapsed + totalTimeWhenStopped));
                     double eq = 2 * A * sinTing * cosTing;
-                    c.setCenterY(wavesPane.getPrefHeight()/2 + eq);
+                    c.setCenterY(wavesPane.getPrefHeight()/2 + 2 * eq);
                 }
                 for (Circle c : travelList) {
-                    double sinTing = Math.sin((k * (c.getCenterX() - 30)) - (omega * (timeElapsed + totalTimeWhenStopped)));
+                    double sinTing = Math.sin((k * (c.getCenterX() - 30)) - (omega * (timeElapsed
+                            + totalTimeWhenStopped)));
                     double eq = A * sinTing;
-                    c.setCenterY(wavesPane.getPrefHeight()/2 + eq);
+                    c.setCenterY(wavesPane.getPrefHeight()/2 + 2 * eq);
                 }
                 for (Circle c : reTravelList) {
-                    double sinTing = Math.sin((k * (c.getCenterX() - 30)) + (omega * (timeElapsed + totalTimeWhenStopped)));
+                    double sinTing = Math.sin((k * (c.getCenterX() - 30)) + (omega * (timeElapsed
+                            + totalTimeWhenStopped)));
                     double eq = A * sinTing;
-                    c.setCenterY(wavesPane.getPrefHeight()/2 + eq);
+                    c.setCenterY(wavesPane.getPrefHeight()/2 + 2 * eq);
                 }
 
             }
@@ -855,20 +881,22 @@ public class Ui extends Application {
     }
 
     private void showCoordinates(Text coordinateTxt, ArrayList<Circle> standList) {
+
         for (Circle c : standList) {
+
             c.setOnMouseEntered(mouseEvent -> {
-                //if (c.getCenterY() <= ){ review line
-                    coordinateTxt.setText("Point Coordinates (x,y): " + "(" + standList.indexOf(c) + ", "
-                           + String.format("%.2f", 250 - c.getCenterY()) + ")");
-                //}
-                //else{
-                //    coordinateTxt.setText("Point Coordinates (x,y): ");
-                //}
+                    coordinateTxt.setText("Point Coordinates (x,y): " + "(" + String.format("%.2f",
+                            (c.getCenterX() * 4/7 - 120/7)) + ", " + String.format("%.2f",  (c.getCenterY() * -0.25 + 48)) + ")");
             });
             c.setOnMouseExited(mouseEvent -> {
+
                 coordinateTxt.setText("Point Coordinates (x,y): ");
             });
         }
+    }
+
+    private void toggleWaves(){ //TODO move duplicate code here
+
     }
 
     public static void main(String[] args) {
