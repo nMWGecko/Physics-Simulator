@@ -37,15 +37,13 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 
-import java.awt.*;
 import java.io.FileReader;
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 
 public class Ui extends Application {
     static String menuPic, homePic, helpPic,nMenuPic;
+    static Font font = Font.font("Consolas", FontWeight.NORMAL, FontPosture.REGULAR, 14);
     static Color omori = Color.web("#6c0ffe");
     static Circle c;
 
@@ -176,11 +174,11 @@ public class Ui extends Application {
                  * Frequency [Hz]: the number of waves that pass a fixed point in a given amount of time. The hertz measurement, abbreviated
                    Hz, is the number of waves that pass by per second.
                 """);
-        theoryTxt.setFont(Font.font("Consolas", FontWeight.NORMAL, FontPosture.REGULAR, 14));
+        theoryTxt.setFont(font);
 
         Text wavesEgDesc = new Text(" Pictured below are visual representations of two travelling waves (green and" +
                 "blue) that form a standing wave (red).");
-        wavesEgDesc.setFont(Font.font("Consolas", FontWeight.NORMAL, FontPosture.ITALIC, 14));
+        wavesEgDesc.setFont(font);
 
         ImageView wavesEg = new ImageView(new Image("https://www.siliconera.com/wp-content/uploads/2020/03/xbc-de-16.jpg"));
         wavesEg.setFitWidth(990);
@@ -200,19 +198,13 @@ public class Ui extends Application {
                  these interesting articles written by Stephen Cohen (on his website, The Engineer’s Pulse, under the “For Physics Students”
                  section:
                 """);
-        theoryTxt2.setFont(Font.font("Consolas", FontWeight.NORMAL, FontPosture.REGULAR, 14));
+        theoryTxt2.setFont(font);
 
-        Hyperlink cohenBlog = new Hyperlink("https://theengineerspulse.blogspot.com/p/for-physics-students.html");
-        cohenBlog.setFont(Font.font("Consolas", FontWeight.NORMAL, FontPosture.REGULAR, 14));
+        Hyperlink cohenBlog = new Hyperlink("theengineerspulse.blogspot.com/p/for-physics-students.html");
+        cohenBlog.setFont(font);
         cohenBlog.setTextFill(Color.DODGERBLUE);
         cohenBlog.setOnAction(actionEvent -> {
-            try {
-                Desktop.getDesktop().browse(new URI("https://theengineerspulse.blogspot.com/p/for-physics-students.html"));
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (URISyntaxException e) {
-                e.printStackTrace();
-            }
+            getHostServices().showDocument(cohenBlog.getText());
         });
 
         Text theoEqn = new Text("""
@@ -229,10 +221,49 @@ public class Ui extends Application {
                  A [m]: amplitude
                  t [s]: time elapsed
                  ω [rad/s]: angular frequency
+                 
+                 
+                 ______________________________________________________________________________________________________________________________
                 """);
-        theoEqn.setFont(Font.font("Consolas", FontWeight.NORMAL, FontPosture.REGULAR, 14));
+        theoEqn.setFont(font);
 
-        theoVbox.getChildren().addAll(theoryTxt, wavesEgDesc, wavesEg, theoryTxt2, cohenBlog, theoEqn);
+        Text sourcesTitle = new Text("Additional Sources Consulted");
+        sourcesTitle.setFont(font);
+        sourcesTitle.setUnderline(true);
+
+        Text profDaveRef = new Text("\n Youtube - Professor Dave Explains: Interference, Reflection, and Diffraction\n" +
+                " Consulted on 2022/02/27");
+        profDaveRef.setFont(font);
+        Hyperlink profDaveLink = new Hyperlink("www.youtube.com/watch?v=eW5VGGJuWtQ&t=195s");
+        profDaveLink.setFont(font);
+        profDaveLink.setTextFill(Color.DODGERBLUE);
+        profDaveLink.setOnAction(actionEvent -> {
+            getHostServices().showDocument(profDaveLink.getText());
+        });
+
+        Text britAmpRef = new Text("\n Brittanica.com - Physics: Amplitude\n" +
+                " Consulted on 2022/02/27");
+        britAmpRef.setFont(font);
+        Hyperlink britAmpLink = new Hyperlink("www.britannica.com/science/amplitude-physics");
+        britAmpLink.setFont(font);
+        britAmpLink.setTextFill(Color.DODGERBLUE);
+        britAmpLink.setOnAction(actionEvent -> {
+            getHostServices().showDocument(britAmpLink.getText());
+        });
+
+        Text britWaveRef = new Text("\n Brittanica.com - Physics: Standing Wave\n" +
+                " Consulted on 2022/02/27");
+        britWaveRef.setFont(font);
+        Hyperlink britWaveLink = new Hyperlink("www.britannica.com/science/standing-wave-physics");
+        britWaveLink.setFont(font);
+        britWaveLink.setTextFill(Color.DODGERBLUE);
+        britWaveLink.setOnAction(actionEvent -> {
+            getHostServices().showDocument(britWaveLink.getText());
+        });
+
+
+        theoVbox.getChildren().addAll(theoryTxt, wavesEgDesc, wavesEg, theoryTxt2, cohenBlog, theoEqn, sourcesTitle,
+                profDaveRef, profDaveLink, britAmpRef, britAmpLink, britWaveRef, britWaveLink);
         helpPane.getChildren().addAll(theoVbox, sb);
         Scene theoryScene = new Scene(helpPane, 1000, 650);
         Stage secondaryStage = new Stage();
