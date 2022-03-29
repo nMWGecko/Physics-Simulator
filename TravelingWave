@@ -822,29 +822,9 @@ public class Ui extends Application {
                 animateTimer.stop();
                 timeWhenStopped = timer.elapsed();
 
-                for (Circle c : standList) {
-                    c.setOnMouseEntered(mouseEvent -> {
-                        //if (c.getCenterY() <= ){ review line
-                            coordinateTxt.setText("Point Coordinates (x,y): " + "(" + standList.indexOf(c) + ", "
-                                   + String.format("%.2f", 250 - c.getCenterY()) + ")");
-                        //}
-                        //else{
-                        //    coordinateTxt.setText("Point Coordinates (x,y): ");
-                        //}
-                    });
-                }
-                for (Circle c : travelList) {
-                    c.setOnMouseEntered(mouseEvent -> {
-                        coordinateTxt.setText("Point Coordinates (x,y): " + "(" + travelList.indexOf(c) + ", "
-                                + String.format("%.2f", 250 - c.getCenterY()) + ")");
-                    });
-                }
-                for (Circle c : reTravelList) {
-                    c.setOnMouseEntered(mouseEvent -> {
-                        coordinateTxt.setText("Point Coordinates (x,y): " + "(" + reTravelList.indexOf(c) + ", "
-                                + String.format("%.2f", 250 - c.getCenterY()) + ")");
-                    });
-                }
+                showCoordinates(coordinateTxt, standList);
+                showCoordinates(coordinateTxt, travelList);
+                showCoordinates(coordinateTxt, reTravelList);
 
                 if (normalMotion.isSelected()) {
                     totalTimeWhenStopped += timeWhenStopped;
@@ -872,6 +852,23 @@ public class Ui extends Application {
         stage.setResizable(false);
         stage.setScene(scene);
         stage.show();
+    }
+
+    private void showCoordinates(Text coordinateTxt, ArrayList<Circle> standList) {
+        for (Circle c : standList) {
+            c.setOnMouseEntered(mouseEvent -> {
+                //if (c.getCenterY() <= ){ review line
+                    coordinateTxt.setText("Point Coordinates (x,y): " + "(" + standList.indexOf(c) + ", "
+                           + String.format("%.2f", 250 - c.getCenterY()) + ")");
+                //}
+                //else{
+                //    coordinateTxt.setText("Point Coordinates (x,y): ");
+                //}
+            });
+            c.setOnMouseExited(mouseEvent -> {
+                coordinateTxt.setText("Point Coordinates (x,y): ");
+            });
+        }
     }
 
     public static void main(String[] args) {
