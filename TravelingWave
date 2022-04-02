@@ -1,8 +1,9 @@
-package com.example.demo;
+package djangounchained.physics;
 
 // TODO preset waves
-// TODO change toggle waves setting to toggle incident, standing, reflected wave
+// TODO display period
 // TODO fix lambda equation
+// TODO fix scaling on graph, fix numbers that come off bottom of screen for y axis, fix x axis title.
 
 import javafx.animation.*;
 import javafx.application.Application;
@@ -147,8 +148,7 @@ public class Ui extends Application {
         theoVbox.setOnScroll(new EventHandler<ScrollEvent>() {
             @Override
             public void handle(ScrollEvent scrollEvent) {
-                theoVbox.setTranslateX(theoVbox.getTranslateX() + scrollEvent.getDeltaX());
-                theoVbox.setTranslateY(theoVbox.getTranslateY() + scrollEvent.getDeltaY());
+                    theoVbox.setTranslateY(theoVbox.getTranslateY() + scrollEvent.getDeltaY());
             }
         });
 
@@ -175,9 +175,9 @@ public class Ui extends Application {
                 "blue) that form a standing wave (red).");
         wavesEgDesc.setFont(font);
 
-        ImageView wavesEg = new ImageView(new Image("https://www.siliconera.com/wp-content/uploads/2020/03/xbc-de-16.jpg"));
-        wavesEg.setFitWidth(990);
-        wavesEg.setFitHeight(640);
+        ImageView wavesEg = new ImageView(new Image("https://upload.wikimedia.org/wikipedia/commons/thumb/5/5d/Waventerference.gif/620px-Waventerference.gif"));
+        wavesEg.setFitWidth(985);
+        wavesEg.setFitHeight(420);
 
         Text theoryTxt2 = new Text("""
                  What are standing waves and how are they created?
@@ -256,7 +256,6 @@ public class Ui extends Application {
             getHostServices().showDocument(britWaveLink.getText());
         });
 
-
         theoVbox.getChildren().addAll(theoryTxt, wavesEgDesc, wavesEg, theoryTxt2, cohenBlog, theoEqn, sourcesTitle,
                 profDaveRef, profDaveLink, britAmpRef, britAmpLink, britWaveRef, britWaveLink);
         helpPane.getChildren().addAll(theoVbox, sb);
@@ -266,6 +265,7 @@ public class Ui extends Application {
         secondaryStage.setResizable(false);
         secondaryStage.setScene(theoryScene);
         menuHelp.setOnAction(actionEvent -> secondaryStage.show());
+
         //Additional Settings
         MenuItem exitProgram = new MenuItem("Exit Program");
         MenuButton menuBtn = new MenuButton("Menu", null, raysVis,theme, objects, showForces, menuHelp, exitProgram);
@@ -399,7 +399,7 @@ public class Ui extends Application {
         });
         wavSpdVBox.getChildren().addAll(wavSpdText,wavSpdTf,wavSpdSldr);
 
-        //Amplitude (changing the slider keeps the amp at max (snap) then implement new value)
+        //Amplitude
         VBox ampVBox = new VBox(5);
         Text ampText = new Text("Amplitude [cm]");
         TextField ampTf = new TextField("0.00 cm");
@@ -494,11 +494,11 @@ public class Ui extends Application {
          * Extra Displayed Values
          */
         VBox exData = new VBox(5);
-        Text coordinateTxt = new Text("Point Coordinates (x,y): ");
-        Text periodTxt = new Text("Period: ");
-        Text omegaTxt = new Text("Angular Frequency: ");
-        Text lambdaTxt = new Text("Wavelength: ");
-        Text kTxt = new Text("Wave Number: ");
+        Text coordinateTxt = new Text("Point Coordinates (x, y) = ");
+        Text periodTxt = new Text("Period = 0.00 s");
+        Text omegaTxt = new Text("Angular Frequency = 0.00 rad/s");
+        Text lambdaTxt = new Text("Wavelength = 0.00 cm");
+        Text kTxt = new Text("Wave Number = 0.00 rad/cm");
         exData.getChildren().addAll(coordinateTxt,periodTxt, omegaTxt, lambdaTxt, kTxt);
         actionData.getChildren().add(exData);
 
@@ -510,7 +510,7 @@ public class Ui extends Application {
          * Setting up the grid
          */
         //Grid lines
-        for(int i = 70; i <= wavesPane.getPrefHeight() - 40; i += 20) {
+        for(int i = 70; i <= wavesPane.getPrefHeight() - 60; i += 20) {
             horiGrid = new Line(10, i + 2, 970, i + 2);
             horiGrid.setStroke(Color.LIGHTGRAY);
             hLineList.add(horiGrid);
@@ -562,9 +562,9 @@ public class Ui extends Application {
         xAxis.setStartY(wavesPane.getPrefHeight() / 2);
         xAxis.setEndY(wavesPane.getPrefHeight() / 2);
         Text xAxisTitle = new Text("X-Position (cm)");
-        xAxisTitle.setFont(Font.font("Consanas", FontWeight.BOLD, FontPosture.REGULAR, 14));
+        xAxisTitle.setFont(font);
         xAxisTitle.setLayoutX(880);
-        xAxisTitle.setLayoutY(xAxis.getStartY() + 40);
+        xAxisTitle.setLayoutY(xAxis.getStartY() + 135);
 
         Line yAxis = new Line();
         yAxis.setStartX(30);
@@ -572,9 +572,9 @@ public class Ui extends Application {
         yAxis.setStartY(72);
         yAxis.setEndY(wavesPane.getPrefHeight() - 72);
         Text yAxisTitle = new Text("Y-Position (cm)");
-        yAxisTitle.setFont(Font.font("Consanas", FontWeight.BOLD, FontPosture.REGULAR, 14));
+        yAxisTitle.setFont(font);
         yAxisTitle.setLayoutX(0);
-        yAxisTitle.setLayoutY(20);
+        yAxisTitle.setLayoutY(60);
 
         wavesPane.getChildren().addAll(xAxis, xAxisTitle, yAxis, yAxisTitle);
 
@@ -595,7 +595,7 @@ public class Ui extends Application {
         }
 
         //Y-Axis indices
-        for(int i = (int) wavesPane.getPrefHeight() - 30; i >= 60; i -= 20) {
+        for(int i = (int) wavesPane.getPrefHeight() - 70; i >= 60; i -= 20) {
             yIndic = new Line(yAxis.getStartX() - 5, i - 2, yAxis.getStartX() + 5, i - 2);
             yIndiList.add(yIndic);
             wavesPane.getChildren().add(yIndic);
@@ -644,30 +644,52 @@ public class Ui extends Application {
         }
 
         /**
-        * Change Theme
-        */
+         * Change Theme
+         */
         lightMode.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
                 root.setStyle("-fx-background-color: white");
+
                 inciTravLine.setStroke(Color.CORNFLOWERBLUE);
-                inciTravLegTxt.setFill(Color.BLACK);
                 refTravLine.setStroke(Color.MAROON);
-                refTravLegTxt.setFill(Color.BLACK);
                 standLine.setStroke(Color.DARKMAGENTA);
+                xAxis.setStroke(Color.BLACK);
+                yAxis.setStroke(Color.BLACK);
+
+                //Text in main window
+                simTitle.setFill(Color.BLACK);
+                inciTravLegTxt.setFill(Color.BLACK);
+                refTravLegTxt.setFill(Color.BLACK);
+                ampText.setFill(Color.BLACK);
+                wavSpdText.setFill(Color.BLACK);
+                ampText.setFill(Color.BLACK);
                 standLegTxt.setFill(Color.BLACK);
+                coordinateTxt.setFill(Color.BLACK);
+                periodTxt.setFill(Color.BLACK);
                 omegaTxt.setFill(Color.BLACK);
                 lambdaTxt.setFill(Color.BLACK);
                 kTxt.setFill(Color.BLACK);
-                xAxis.setStroke(Color.BLACK);
                 xAxisTitle.setFill(Color.BLACK);
-                yAxis.setStroke(Color.BLACK);
                 yAxisTitle.setFill(Color.BLACK);
+
+                //Text in Help window
+                helpPane.setStyle("-fx-background-color: white");
+                theoryTxt.setFill(Color.BLACK);
+                wavesEgDesc.setFill(Color.BLACK);
+                theoryTxt2.setFill(Color.BLACK);
+                theoEqn.setFill(Color.BLACK);
+                sourcesTitle.setFill(Color.BLACK);
+                profDaveRef.setFill(Color.BLACK);
+                britAmpRef.setFill(Color.BLACK);
+                britWaveRef.setFill(Color.BLACK);
+
                 menuView.setImage(menuIcon);
                 menuBtn.setStyle("-fx-background-color: #ffffff;-fx-border-color: black;");
                 ampTf.setStyle("-fx-background-color: #ffffff;-fx-border-color: black;");
                 freqTf.setStyle("-fx-background-color: #ffffff;-fx-border-color: black;");
                 wavSpdTf.setStyle("-fx-background-color: #ffffff;-fx-border-color: black;");
+
                 for(Line l: xIndiList) {
                     l.setStroke(Color.BLACK);
                 }
@@ -689,6 +711,7 @@ public class Ui extends Application {
                 for(Circle c: standList) {
                     c.setStroke(Color.DARKMAGENTA);
                 }
+
                 darkMode.setSelected(false);
             }
         });
@@ -696,21 +719,47 @@ public class Ui extends Application {
         darkMode.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
-                root.setStyle("-fx-background-color: #303030"); inciTravLegTxt.setFill(Color.WHITE);
-                refTravLegTxt.setFill(Color.WHITE); standLegTxt.setFill(Color.WHITE);
-                omegaTxt.setFill(Color.WHITE); lambdaTxt.setFill(Color.WHITE);
-                kTxt.setFill(Color.WHITE); xAxisTitle.setFill(Color.WHITE);
-                ampTf.setStyle("-fx-background-color: #303030 ;-fx-text-fill: white;");
-                freqTf.setStyle("-fx-background-color: #303030 ;-fx-text-fill: white;");
-                wavSpdTf.setStyle("-fx-background-color: #303030 ;-fx-text-fill: white;");
-                menuView.setImage(nMenuIcon);
-                menuBtn.setStyle("-fx-background-color: #303030;-fx-border-color: white;");
+                root.setStyle("-fx-background-color: #303030");
+
+                //Text in main window
+                simTitle.setFill(Color.WHITE);
+                inciTravLegTxt.setFill(Color.WHITE);
+                refTravLegTxt.setFill(Color.WHITE);
+                standLegTxt.setFill(Color.WHITE);
+                coordinateTxt.setFill(Color.WHITE);
+                periodTxt.setFill(Color.WHITE);
+                omegaTxt.setFill(Color.WHITE);
+                lambdaTxt.setFill(Color.WHITE);
+                kTxt.setFill(Color.WHITE);
+                ampText.setFill(Color.WHITE);
+                xAxisTitle.setFill(Color.WHITE);
+                freqText.setFill(Color.WHITE);
+                wavSpdText.setFill(Color.WHITE);
                 yAxisTitle.setFill(Color.WHITE);
+
+                //Text in the Help window
+                helpPane.setStyle("-fx-background-color: #303030");
+                theoryTxt.setFill(Color.WHITE);
+                wavesEgDesc.setFill(Color.WHITE);
+                theoryTxt2.setFill(Color.WHITE);
+                theoEqn.setFill(Color.WHITE);
+                sourcesTitle.setFill(Color.WHITE);
+                profDaveRef.setFill(Color.WHITE);
+                britAmpRef.setFill(Color.WHITE);
+                britWaveRef.setFill(Color.WHITE);
+
+                ampTf.setStyle("-fx-background-color: #303030; -fx-text-fill: white;");
+                freqTf.setStyle("-fx-background-color: #303030; -fx-text-fill: white;");
+                wavSpdTf.setStyle("-fx-background-color: #303030; -fx-text-fill: white;");
+                menuView.setImage(nMenuIcon);
+                menuBtn.setStyle("-fx-background-color: #303030; -fx-border-color: white;");
+
                 inciTravLine.setStroke(Color.CYAN);
                 refTravLine.setStroke(Color.ORANGERED);
                 standLine.setStroke(omori);
                 xAxis.setStroke(Color.WHITE);
                 yAxis.setStroke(Color.WHITE);
+
                 for(Line l: xIndiList) {
                     l.setStroke(Color.WHITE);
                 }
@@ -732,6 +781,7 @@ public class Ui extends Application {
                 for(Circle c: standList) {
                     c.setStroke(omori);
                 }
+
                 lightMode.setSelected(false);
             }
         });
@@ -762,13 +812,12 @@ public class Ui extends Application {
             @Override
             public void handle(ActionEvent actionEvent) {
                 reflectedCounter += 1;
-                if (reflectedCounter % 2 == 1) {
+                if(reflectedCounter % 2 == 1) {
                     for(Circle c: reTravelList) {
                         wavesPane.getChildren().remove(c);
                     }
                 }
-
-                if (reflectedCounter % 2 == 0) {
+                if(reflectedCounter % 2 == 0) {
                     for(Circle c: reTravelList) {
                         wavesPane.getChildren().add(c);
                     }
@@ -780,13 +829,12 @@ public class Ui extends Application {
             @Override
             public void handle(ActionEvent actionEvent) {
                 standingCounter += 1;
-                if (standingCounter % 2 == 1) {
+                if(standingCounter % 2 == 1) {
                     for(Circle c: standList) {
                         wavesPane.getChildren().remove(c);
                     }
                 }
-
-                if (standingCounter % 2 == 0) {
+                if(standingCounter % 2 == 0) {
                     for(Circle c: standList) {
                         wavesPane.getChildren().add(c);
                     }
@@ -795,9 +843,8 @@ public class Ui extends Application {
         });
 
         /**
-        * Fast, Slow, & Normal motion speeds
-        */
-
+         * Fast, Slow, & Normal motion speeds
+         */
         normalMotion.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
@@ -828,16 +875,15 @@ public class Ui extends Application {
         AnimationTimer animateTimer = new AnimationTimer() {
             @Override
             public void handle(long l) {
-
                 T = 1 / f;
                 omega = 2 * Math.PI * f;
                 lambda = v / f;
                 k = (2 * Math.PI) / lambda;
 
-                periodTxt.setText("Period: " + String.format("%.2f", T) + " seconds");
-                omegaTxt.setText("Angular Frequency: " + String.format("%.2f", omega) + " rad/s");
-                lambdaTxt.setText("Wavelength: " + String.format("%.2f", lambda) + " cm"); // not accurate
-                kTxt.setText("Wave Number: " + String.format("%.2f", k) + " rad/cm");
+                periodTxt.setText("Period = " + String.format("%.2f", T) + " s");
+                omegaTxt.setText("Angular Frequency = " + String.format("%.2f", omega) + " rad/s");
+                lambdaTxt.setText("Wavelength = " + String.format("%.2f", lambda) + " cm");
+                kTxt.setText("Wave Number = " + String.format("%.2f", k) + " rad/cm");
 
                 if(normalMotion.isSelected()) {
                     timeElapsed = timer.elapsed();
@@ -848,25 +894,24 @@ public class Ui extends Application {
                 if(fastMotion.isSelected()) {
                     timeElapsed = timer.elapsed() * 10;
                 }
-                for (Circle c : standList) {
+                for(Circle c : standList) {
                     double sinTing = Math.sin(k * (c.getCenterX() - 30));
                     double cosTing = Math.cos(omega * (timeElapsed + totalTimeWhenStopped));
                     double eq = 2 * A * sinTing * cosTing;
                     c.setCenterY(wavesPane.getPrefHeight()/2 + 2 * eq);
                 }
-                for (Circle c : travelList) {
+                for(Circle c : travelList) {
                     double sinTing = Math.sin((k * (c.getCenterX() - 30)) - (omega * (timeElapsed
                             + totalTimeWhenStopped)));
                     double eq = A * sinTing;
                     c.setCenterY(wavesPane.getPrefHeight()/2 + 2 * eq);
                 }
-                for (Circle c : reTravelList) {
+                for(Circle c : reTravelList) {
                     double sinTing = Math.sin((k * (c.getCenterX() - 30)) + (omega * (timeElapsed
                             + totalTimeWhenStopped)));
                     double eq = A * sinTing;
                     c.setCenterY(wavesPane.getPrefHeight()/2 + 2 * eq);
                 }
-
             }
         };
 
@@ -874,35 +919,30 @@ public class Ui extends Application {
          * Setting up the Pause / Play button
          */
         playBtn.setOnAction(actionEvent -> {
-
             startPauseCounter += 1;
-            if (startPauseCounter % 2 == 1) {
+            if(startPauseCounter % 2 == 1) {
                 playBtn.setText("Pause");
                 animateTimer.start();
                 timer = new Newton.Timer();
             }
-
-            if (startPauseCounter % 2 == 0) {
+            if(startPauseCounter % 2 == 0) {
                 playBtn.setText("Play");
                 animateTimer.stop();
                 timeWhenStopped = timer.elapsed();
-
                 showCoordinates(coordinateTxt, standList);
                 showCoordinates(coordinateTxt, travelList);
                 showCoordinates(coordinateTxt, reTravelList);
 
-                if (normalMotion.isSelected()) {
+                if(normalMotion.isSelected()) {
                     totalTimeWhenStopped += timeWhenStopped;
-
                 }
-                if (fastMotion.isSelected()) {
+                if(fastMotion.isSelected()) {
                     totalTimeWhenStopped += 10 * timeWhenStopped;
 
                 }
-                if (slowMotion.isSelected()) {
+                if(slowMotion.isSelected()) {
                     totalTimeWhenStopped += timeWhenStopped / 10;
                 }
-
             }
         });
 
@@ -922,11 +962,11 @@ public class Ui extends Application {
     private void showCoordinates(Text coordinateTxt, ArrayList<Circle> standList) {
         for (Circle c : standList) {
             c.setOnMouseEntered(mouseEvent -> {
-                    coordinateTxt.setText("Point Coordinates (x,y): " + "(" + String.format("%.2f",
-                            (c.getCenterX() * 4/7 - 120/7)) + ", " + String.format("%.2f",  (c.getCenterY() * -0.25 + 48)) + ")");
+                coordinateTxt.setText("Point Coordinates (x, y) = (" + String.format("%.2f",
+                        (c.getCenterX() - 30)) + ", " + String.format("%.2f",  ((192 - c.getCenterY())) / 4) + ")");
             });
             c.setOnMouseExited(mouseEvent -> {
-                coordinateTxt.setText("Point Coordinates (x,y): ");
+                coordinateTxt.setText("Point Coordinates (x, y) = ");
             });
         }
     }
