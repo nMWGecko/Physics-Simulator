@@ -1,9 +1,8 @@
 package com.example.physics;
 
 
-// TODO center force vector
 // TODO help window
-// TODO pause button
+// TODO center value text
 
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
@@ -36,8 +35,7 @@ import static javafx.application.Platform.exit;
 public class Newton extends Application {
     static AnimationTimer timer, timer2;
     static double time, decTime, speed, oppSpeed, prevSpeed, prevOppSpeed, distance, prevDeltaX, accDistance, distancePerFrame,
-            acceleration, deceleration, accTime;
-    static double timeWhenStopped, totalTimeWhenStopped = 0.0;
+            acceleration, deceleration, accTime, totalTime, accTimeWhenStopped, decTimeWhenStopped, timeWhenStopped, accTotalTimeWhenStopped,decTotalTimeWhenStopped,totalTimeWhenStopped;
     static Line distanceLine, impDistanceLine;
     static Text distanceIndicator, impDistanceIndicator;
     static ArrayList<Line> distanceLineArrayList = new ArrayList<>();
@@ -46,7 +44,6 @@ public class Newton extends Application {
     static ArrayList<Text> impDistanceIndicatorArrayList = new ArrayList<>();
     static String menuPic, homePic, helpPic, dusk, dayCar, day, nightCar,god,skateboard, nMenuPic;
     static int counter = 0;
-    static double testAccTime, testDecTime, testTotalTime, testDistancePerFrame = 0.0;
     public Newton(Stage newtonStage) {
         start(newtonStage);
     }
@@ -280,7 +277,7 @@ public class Newton extends Application {
         root.getChildren().addAll(vbox,pane);
 
         Scene s = new Scene(root, 1000, 650);
-        s.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
+        s.getStylesheets().add(getClass().getResource("newton.css").toExternalForm());
         primaryStage.setScene(s);
         primaryStage.setTitle("Newton's 2nd Law Simulator");
         primaryStage.setResizable(false);
@@ -289,88 +286,87 @@ public class Newton extends Application {
         timer = new AnimationTimer() {
             @Override
             public void handle(long now) {
-                if (distance < 350) {
-                    arrowHead.setFill(Color.LIGHTGREEN);
-                    arrowTail.setFill(Color.LIGHTGREEN);
-                    arrowForceLabel.setText(forceTextField.getText()+"N");
-                    
-                    speed = acceleration * testAccTime;
-                    distance = 0.5 * speed * testAccTime;
+                if (counter > 0 && startBtn.getText() == "Pause") {
+                    if (distance < 350) {
+                        arrowHead.setFill(Color.LIGHTGREEN);
+                        arrowTail.setFill(Color.LIGHTGREEN);
+                        arrowForceLabel.setText(forceTextField.getText()+"N");
+
+                        speed = acceleration * (accTime + accTotalTimeWhenStopped);
+                        distance = 0.5 * speed * (accTime + accTotalTimeWhenStopped);
+                        if (metric.isSelected()) {
+                            accelerationDisplayLabel.setText("Acceleration: " + String.format("%.2f", acceleration) + "m/s²");
+                        }
+                        if (imperial.isSelected()) {
+                            accelerationDisplayLabel.setText("Acceleration: " + String.format("%.2f", acceleration * 3.28084) + "ft/s²");
+                        }
+
+                        objectView.setTranslateX(distance);
+                        accDistance = distance;
+                        accTime += 1/60d;
+                    }
+                    else {
+                        arrowHead.setFill(Color.RED);
+                        arrowTail.setFill(Color.RED);
+                        arrowHead.getPoints().setAll(0.0, 20.0, 30.0, 0.0, 30.0, 40.0);
+                        arrowHead.setLayoutX(450);
+                        arrowTail.setX(480);
+                        arrowForceLabel.setText(frictionForceTextField.getText() + "N");
+                        oppSpeed = deceleration * (decTime + decTotalTimeWhenStopped);
+                        if (metric.isSelected()) {
+                            accelerationDisplayLabel.setText("Acceleration: " + String.format("%.2f", deceleration) + "m/s²");
+                        }
+                        if (imperial.isSelected()) {
+                            accelerationDisplayLabel.setText("Acceleration: " + String.format("%.2f", deceleration * 3.28084) + "ft/s²");
+                        }
+                        distancePerFrame = (speed * (decTime + decTotalTimeWhenStopped)) + (0.5 * deceleration * Math.pow((decTime + decTotalTimeWhenStopped), 2));
+                        groundView.setTranslateX(-distancePerFrame);
+
+                        for (Line l : distanceLineArrayList) {
+                            l.setTranslateX(-(distancePerFrame));
+                        }
+
+                        for (Text t : distanceIndicatorArrayList) {
+                            t.setTranslateX(-(distancePerFrame));
+                        }
+
+                        for (Line l : impDistanceLineArrayList) {
+                            l.setTranslateX(-(distancePerFrame));
+                        }
+
+                        for (Text t : impDistanceIndicatorArrayList) {
+                            t.setTranslateX(-(distancePerFrame));
+                        }
+                        decTime += 1/60d;
+                    }
+                    totalTime += 1/60d;
                     if (metric.isSelected()) {
-                        accelerationDisplayLabel.setText("Acceleration: " + String.format("%.2f", acceleration) + "m/s²");
+                        velocityDisplayLabel.setText("Velocity: " + String.format("%.2f", (speed * 3.6)) + "km/h");
+                        timeDisplayLabel.setText("Time: " + String.format("%.2f", totalTime + totalTimeWhenStopped) + "s");
+                        distanceDisplayLabel.setText("Distance: " + String.format("%.2f", distance + distancePerFrame) + "m");
                     }
-                    if (imperial.isSelected()) {
-                        accelerationDisplayLabel.setText("Acceleration: " + String.format("%.2f", acceleration * 3.28084) + "ft/s²");
+                    if (imperial.isSelected()){
+                        velocityDisplayLabel.setText("Velocity: " + String.format("%.2f", (speed * 3.6 * 0.621371)) + "mi/h");
+                        timeDisplayLabel.setText("Time: " + String.format("%.2f", totalTime + totalTimeWhenStopped) + "s");
+                        distanceDisplayLabel.setText("Distance: " + String.format("%.2f", (distance + distancePerFrame)* 1.09361) + "yd");
                     }
-
-                    objectView.setTranslateX(distance);
-                    accDistance = distance;
-                    testAccTime += 1/60d;
-                    System.out.println("acc speed: " + speed);
-                    System.out.println("acc time: " + testAccTime);
-                    System.out.println("acc distance: " + accDistance);
+                    if ((speed + oppSpeed) < 0) {
+                        timer.stop();
+                        System.out.println("distance: " + (distance + distancePerFrame));
+                        System.out.println("time: " + totalTime);
+                        if (imperial.isSelected()) {
+                            velocityDisplayLabel.setText("Velocity: 0.00mi/h");
+                        }
+                        if (metric.isSelected()) {
+                            velocityDisplayLabel.setText("Velocity: 0.00km/h");
+                        }
+                        resetBtn.setDisable(false);
+                        arrowForceLabel.setText("0N");
+                    }
+                    prevDeltaX = distance;
+                    prevSpeed = speed;
+                    prevOppSpeed = oppSpeed;
                 }
-                else {
-                    arrowHead.setFill(Color.RED);
-                    arrowTail.setFill(Color.RED);
-                    arrowHead.getPoints().setAll(0.0, 20.0, 30.0, 0.0, 30.0, 40.0);
-                    arrowHead.setLayoutX(450);
-                    arrowTail.setX(480);
-                    arrowForceLabel.setText(frictionForceTextField.getText() + "N");
-                    oppSpeed = deceleration * testDecTime;
-                    if (metric.isSelected()) {
-                        accelerationDisplayLabel.setText("Acceleration: " + String.format("%.2f", deceleration) + "m/s²");
-                    }
-                    if (imperial.isSelected()) {
-                        accelerationDisplayLabel.setText("Acceleration: " + String.format("%.2f", deceleration * 3.28084) + "ft/s²");
-                    }
-                    distancePerFrame = (speed * testDecTime) + (0.5 * deceleration * Math.pow(testDecTime, 2));
-                    groundView.setTranslateX(-distancePerFrame);
-
-                    for (Line l : distanceLineArrayList) {
-                        l.setTranslateX(-(distancePerFrame));
-                    }
-
-                    for (Text t : distanceIndicatorArrayList) {
-                        t.setTranslateX(-(distancePerFrame));
-                    }
-
-                    for (Line l : impDistanceLineArrayList) {
-                        l.setTranslateX(-(distancePerFrame));
-                    }
-
-                    for (Text t : impDistanceIndicatorArrayList) {
-                        t.setTranslateX(-(distancePerFrame));
-                    }
-                    testDecTime += 1/60d;
-                }
-                if (metric.isSelected()) {
-                    velocityDisplayLabel.setText("Velocity: " + String.format("%.2f", (speed * 3.6)) + "km/h");
-                    timeDisplayLabel.setText("Time: " + String.format("%.2f", testTotalTime) + "s");
-                    distanceDisplayLabel.setText("Distance: " + String.format("%.2f", distance + distancePerFrame) + "m");
-                }
-                if (imperial.isSelected()){
-                    velocityDisplayLabel.setText("Velocity: " + String.format("%.2f", (speed * 3.6 * 0.621371)) + "mi/h");
-                    timeDisplayLabel.setText("Time: " + String.format("%.2f", testTotalTime) + "s");
-                    distanceDisplayLabel.setText("Distance: " + String.format("%.2f", (distance + distancePerFrame)* 1.09361) + "yd");
-                }
-                //3.82 = 709.36
-                if ((speed + oppSpeed) < 0) {
-                    timer.stop();
-                    if (imperial.isSelected()) {
-                        velocityDisplayLabel.setText("Velocity: 0.00mi/h");
-                    }
-                    if (metric.isSelected()) {
-                        velocityDisplayLabel.setText("Velocity: 0.00km/h");
-                    }
-                    resetBtn.setDisable(false);
-                    arrowForceLabel.setText("0N");
-                    System.out.println("decTime: " + testDecTime);
-                }
-                testTotalTime += 1/60d;
-                prevDeltaX = distance;
-                prevSpeed = speed;
-                prevOppSpeed = oppSpeed;
             }
         };
 
@@ -412,14 +408,25 @@ public class Newton extends Application {
         });
 
         startBtn.setOnAction(actionEvent -> {
-        	counter++;
-        	if (counter % 2 == 1) {
-        		startBtn.setText("Pause");
-        	}
-        	if (counter % 2 == 0) {
-        		startBtn.setText("Play");
-        	}
-            timer2.stop();
+            counter++;
+            if (counter % 2 == 1) {
+                startBtn.setText("Pause");
+                timer.start();
+                timer2.stop();
+                accTime = 0;
+                decTime = 0;
+                totalTime = 0;
+            }
+            if (counter % 2 == 0) {
+                startBtn.setText("Play");
+                timer.stop();
+                timeWhenStopped = totalTime;
+                accTimeWhenStopped = accTime;
+                decTimeWhenStopped = decTime;
+                totalTimeWhenStopped += timeWhenStopped;
+                accTotalTimeWhenStopped += accTimeWhenStopped;
+                decTotalTimeWhenStopped += decTimeWhenStopped;
+            }
             String forceInput = forceTextField.getText();
             String massInput = massTextField.getText();
             String frictionForceInput = frictionForceTextField.getText();
@@ -595,7 +602,7 @@ public class Newton extends Application {
         });
 
         resetBtn.setOnAction(actionEvent -> {
-        	startBtn.setText("Play");
+            startBtn.setText("Play");
             warning.setVisible(false);
             if(darkMode.isSelected()) {
                 forceTextField.setStyle("-fx-background-color: #303030");
@@ -623,16 +630,19 @@ public class Newton extends Application {
             prevSpeed = 0.0;
             distance = 0.0;
             prevDeltaX = 0.0;
-            distancePerFrame = 0.0;
             oppSpeed = 0.0;
             prevOppSpeed = 0.0;
             accDistance = 0.0;
             timeWhenStopped = 0.0;
             counter = 0;
-            testAccTime = 0;
-            testDecTime = 0;
-            testTotalTime = 0;
-            testDistancePerFrame = 0;
+            accTime = 0;
+            totalTime = 0;
+            distancePerFrame = 0;
+            totalTimeWhenStopped = 0;
+            accTimeWhenStopped = 0;
+            decTimeWhenStopped = 0;
+            accTotalTimeWhenStopped = 0;
+            decTotalTimeWhenStopped = 0;
             if (imperial.isSelected()) {
                 accelerationDisplayLabel.setText("Acceleration: " + String.format("%.2f", acceleration) + "ft/s²");
                 timeDisplayLabel.setText("Time: " + String.format("%.2f", time) + "s                   ");
@@ -734,7 +744,7 @@ public class Newton extends Application {
         carObject.setOnAction(actionEvent -> {
             objectView.setY(10);
             objectView.setX(50);
-                objectView.setImage(dayCarImg);
+            objectView.setImage(dayCarImg);
 
             skateboardObject.setSelected(false);
             godObject.setSelected(false);
@@ -795,7 +805,6 @@ public class Newton extends Application {
         text.setStyle("-fx-font-family: Verdana");
         root2.getChildren().addAll(helpImageView, textPane);
 
-
         menuHelp.setOnAction(actionEvent -> {
             if (!newtonHelpStage.isShowing()) {
                 newtonHelpStage.show();
@@ -828,17 +837,4 @@ public class Newton extends Application {
             arrowForceLabel.setVisible(false);
         });
     }
-    static class Timer {
-        long startTime;
-
-        public Timer() {
-            startTime = System.currentTimeMillis();
-        }
-
-        public double elapsed() {
-            long elapsed = System.currentTimeMillis();
-            return (elapsed - startTime) / 1000.0;
-        }
-    }
-
 }
