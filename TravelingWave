@@ -1,9 +1,5 @@
-package djangounchained.physics;
-
-// TODO preset waves
-// TODO display period
-// TODO fix lambda equation
-// TODO fix scaling on graph, fix numbers that come off bottom of screen for y axis, fix x axis title.
+package com.example.demo;
+// TODO polish everything
 
 import javafx.animation.*;
 import javafx.application.Application;
@@ -39,6 +35,7 @@ import java.util.ArrayList;
 
 public class Ui extends Application {
     static String menuPic, homePic, helpPic, nMenuPic;
+    static int modeNumberOneValue, modeNumberTwoValue, modeNumberThreeValue;
     static Color omori = Color.web("#6c0ffe");
     static Circle c;
 
@@ -86,6 +83,9 @@ public class Ui extends Application {
             homePic = (String) jsonObject.get("homeIcon");
             helpPic = (String) jsonObject.get("newtonSecondStagePic");
             nMenuPic = (String) jsonObject.get("nMenuIcon");
+            modeNumberOneValue = Integer.parseInt((String) jsonObject.get("modeNumberOneValue"));
+            modeNumberTwoValue = Integer.parseInt((String) jsonObject.get("modeNumberTwoValue"));
+            modeNumberThreeValue = Integer.parseInt((String) jsonObject.get("modeNumberThreeValue"));
         }
         catch (ParseException | IOException e) {
             e.printStackTrace();
@@ -111,6 +111,15 @@ public class Ui extends Application {
         MenuItem toggleReflected = new MenuItem("Reflected");
         MenuItem toggleStanding = new MenuItem("Standing");
         raysVis.getItems().addAll(toggleIncident, toggleReflected, toggleStanding);
+
+        // Set 'mode numbers' (not accurate to actual values from mode # equation)
+        Menu modeNumber = new Menu("Mode #'s");
+        CheckMenuItem modeNumberOne = new CheckMenuItem("Mode no.1");
+        CheckMenuItem modeNumberTwo = new CheckMenuItem("Mode no.2");
+        CheckMenuItem modeNumberThree = new CheckMenuItem("Mode no.3");
+        // add more mode numbers
+        // feature: when a mode# is selected, have it deselected as soon as slider values are adjusted.
+        modeNumber.getItems().addAll(modeNumberOne,modeNumberTwo,modeNumberThree);
 
         //Toggling grid visibility
         Menu objects = new Menu("Grid Display");
@@ -148,7 +157,7 @@ public class Ui extends Application {
         theoVbox.setOnScroll(new EventHandler<ScrollEvent>() {
             @Override
             public void handle(ScrollEvent scrollEvent) {
-                    theoVbox.setTranslateY(theoVbox.getTranslateY() + scrollEvent.getDeltaY());
+                theoVbox.setTranslateY(theoVbox.getTranslateY() + scrollEvent.getDeltaY());
             }
         });
 
@@ -268,7 +277,8 @@ public class Ui extends Application {
 
         //Additional Settings
         MenuItem exitProgram = new MenuItem("Exit Program");
-        MenuButton menuBtn = new MenuButton("Menu", null, raysVis,theme, objects, showForces, menuHelp, exitProgram);
+        MenuButton menuBtn = new MenuButton("Menu", null, raysVis, modeNumber, theme, objects, showForces,
+                menuHelp, exitProgram);
         Image menuIcon = new Image(menuPic);
         Image nMenuIcon = new Image(nMenuPic);
         ImageView menuView = new ImageView(menuIcon);
@@ -563,7 +573,7 @@ public class Ui extends Application {
         xAxis.setEndY(wavesPane.getPrefHeight() / 2);
         Text xAxisTitle = new Text("X-Position (cm)");
         xAxisTitle.setFont(font);
-        xAxisTitle.setLayoutX(880);
+        xAxisTitle.setLayoutX(866);
         xAxisTitle.setLayoutY(xAxis.getStartY() + 135);
 
         Line yAxis = new Line();
@@ -658,14 +668,7 @@ public class Ui extends Application {
                 yAxis.setStroke(Color.BLACK);
 
                 //Text in main window
-                simTitle.setFill(Color.BLACK);
-                inciTravLegTxt.setFill(Color.BLACK);
-                refTravLegTxt.setFill(Color.BLACK);
-                ampText.setFill(Color.BLACK);
-                wavSpdText.setFill(Color.BLACK);
-                ampText.setFill(Color.BLACK);
-                standLegTxt.setFill(Color.BLACK);
-                coordinateTxt.setFill(Color.BLACK);
+                colorBlack(simTitle, inciTravLegTxt, refTravLegTxt, ampText, wavSpdText, ampText, standLegTxt, coordinateTxt);
                 periodTxt.setFill(Color.BLACK);
                 omegaTxt.setFill(Color.BLACK);
                 lambdaTxt.setFill(Color.BLACK);
@@ -675,14 +678,7 @@ public class Ui extends Application {
 
                 //Text in Help window
                 helpPane.setStyle("-fx-background-color: white");
-                theoryTxt.setFill(Color.BLACK);
-                wavesEgDesc.setFill(Color.BLACK);
-                theoryTxt2.setFill(Color.BLACK);
-                theoEqn.setFill(Color.BLACK);
-                sourcesTitle.setFill(Color.BLACK);
-                profDaveRef.setFill(Color.BLACK);
-                britAmpRef.setFill(Color.BLACK);
-                britWaveRef.setFill(Color.BLACK);
+                colorBlack(theoryTxt, wavesEgDesc, theoryTxt2, theoEqn, sourcesTitle, profDaveRef, britAmpRef, britWaveRef);
 
                 menuView.setImage(menuIcon);
                 menuBtn.setStyle("-fx-background-color: #ffffff;-fx-border-color: black;");
@@ -870,6 +866,19 @@ public class Ui extends Application {
         });
 
         /**
+         * Mode Number CheckMenuItems
+         */
+
+        modeNumberAction(modeNumberOne, modeNumberTwo, modeNumberThree, freqSldr, wavSpdSldr, ampSldr,
+                modeNumberOneValue);
+
+        modeNumberAction(modeNumberTwo, modeNumberOne, modeNumberThree, freqSldr, wavSpdSldr, ampSldr,
+                modeNumberTwoValue);
+
+        modeNumberAction(modeNumberThree, modeNumberOne, modeNumberTwo, freqSldr, wavSpdSldr, ampSldr,
+                modeNumberThreeValue);
+
+        /**
          * Equations and AnimationTimer
          */
         AnimationTimer animateTimer = new AnimationTimer() {
@@ -957,6 +966,33 @@ public class Ui extends Application {
         stage.setResizable(false);
         stage.setScene(scene);
         stage.show();
+    }
+
+    private void modeNumberAction(CheckMenuItem modeNumberOne, CheckMenuItem modeNumberTwo,
+                                  CheckMenuItem modeNumberThree, Slider freqSldr, Slider wavSpdSldr, Slider ampSldr,
+                                  int modeNumberOneValue) {
+        modeNumberOne.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                modeNumberTwo.setSelected(false);
+                modeNumberThree.setSelected(false);
+                ampSldr.setValue(30);
+                freqSldr.setValue(0.53);
+                wavSpdSldr.setValue(modeNumberOneValue); 
+            }
+        });
+    }
+
+    public void colorBlack(Text theoryTxt, Text wavesEgDesc, Text theoryTxt2, Text theoEqn, Text sourcesTitle,
+                              Text profDaveRef, Text britAmpRef, Text britWaveRef) {
+        theoryTxt.setFill(Color.BLACK);
+        wavesEgDesc.setFill(Color.BLACK);
+        theoryTxt2.setFill(Color.BLACK);
+        theoEqn.setFill(Color.BLACK);
+        sourcesTitle.setFill(Color.BLACK);
+        profDaveRef.setFill(Color.BLACK);
+        britAmpRef.setFill(Color.BLACK);
+        britWaveRef.setFill(Color.BLACK);
     }
 
     private void showCoordinates(Text coordinateTxt, ArrayList<Circle> standList) {
