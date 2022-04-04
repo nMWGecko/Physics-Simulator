@@ -1,6 +1,5 @@
 package com.example.demo;
 // TODO polish everything
-
 import javafx.animation.*;
 import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
@@ -27,15 +26,14 @@ import javafx.stage.Stage;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-
-
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 
 public class Ui extends Application {
     static String menuPic, homePic, helpPic, nMenuPic;
-    static int modeNumberOneValue, modeNumberTwoValue, modeNumberThreeValue;
+    static int modeNumberOneValue, modeNumberTwoValue, modeNumberThreeValue, modeNumberFourValue, modeNumberFiveValue,
+               modeNumberSixValue;
     static Color omori = Color.web("#6c0ffe");
     static Circle c;
 
@@ -86,6 +84,9 @@ public class Ui extends Application {
             modeNumberOneValue = Integer.parseInt((String) jsonObject.get("modeNumberOneValue"));
             modeNumberTwoValue = Integer.parseInt((String) jsonObject.get("modeNumberTwoValue"));
             modeNumberThreeValue = Integer.parseInt((String) jsonObject.get("modeNumberThreeValue"));
+            modeNumberFourValue = Integer.parseInt((String) jsonObject.get("modeNumberFourValue"));
+            modeNumberFiveValue = Integer.parseInt((String) jsonObject.get("modeNumberFiveValue"));
+            modeNumberSixValue = Integer.parseInt((String) jsonObject.get("modeNumberSixValue"));
         }
         catch (ParseException | IOException e) {
             e.printStackTrace();
@@ -117,9 +118,12 @@ public class Ui extends Application {
         CheckMenuItem modeNumberOne = new CheckMenuItem("Mode no.1");
         CheckMenuItem modeNumberTwo = new CheckMenuItem("Mode no.2");
         CheckMenuItem modeNumberThree = new CheckMenuItem("Mode no.3");
+        CheckMenuItem modeNumberFour = new CheckMenuItem("Mode no.4");
+        CheckMenuItem modeNumberFive = new CheckMenuItem("Mode no.5");
+        CheckMenuItem modeNumberSix = new CheckMenuItem("Mode no.6");
         // add more mode numbers
         // feature: when a mode# is selected, have it deselected as soon as slider values are adjusted.
-        modeNumber.getItems().addAll(modeNumberOne,modeNumberTwo,modeNumberThree);
+        modeNumber.getItems().addAll(modeNumberOne,modeNumberTwo,modeNumberThree,modeNumberFour,modeNumberFive,modeNumberSix);
 
         //Toggling grid visibility
         Menu objects = new Menu("Grid Display");
@@ -869,14 +873,18 @@ public class Ui extends Application {
          * Mode Number CheckMenuItems
          */
 
-        modeNumberAction(modeNumberOne, modeNumberTwo, modeNumberThree, freqSldr, wavSpdSldr, ampSldr,
-                modeNumberOneValue);
-
-        modeNumberAction(modeNumberTwo, modeNumberOne, modeNumberThree, freqSldr, wavSpdSldr, ampSldr,
-                modeNumberTwoValue);
-
-        modeNumberAction(modeNumberThree, modeNumberOne, modeNumberTwo, freqSldr, wavSpdSldr, ampSldr,
-                modeNumberThreeValue);
+        modeNumberAction(modeNumberOne, modeNumberTwo, modeNumberThree, modeNumberFour, modeNumberFive, modeNumberSix,
+                freqSldr, wavSpdSldr, ampSldr, modeNumberOneValue);
+        modeNumberAction(modeNumberTwo, modeNumberOne, modeNumberThree, modeNumberFour, modeNumberFive, modeNumberSix,
+                freqSldr, wavSpdSldr, ampSldr, modeNumberTwoValue);
+        modeNumberAction(modeNumberThree, modeNumberOne, modeNumberTwo, modeNumberFour, modeNumberFive, modeNumberSix,
+                freqSldr, wavSpdSldr, ampSldr, modeNumberThreeValue);
+        modeNumberAction(modeNumberFour, modeNumberOne, modeNumberTwo, modeNumberThree, modeNumberFive, modeNumberSix,
+                freqSldr, wavSpdSldr, ampSldr, modeNumberFourValue);
+        modeNumberAction(modeNumberFive, modeNumberOne, modeNumberTwo, modeNumberThree, modeNumberFour, modeNumberSix,
+                freqSldr, wavSpdSldr, ampSldr, modeNumberFiveValue);
+        modeNumberAction(modeNumberSix, modeNumberOne, modeNumberTwo, modeNumberThree, modeNumberFour, modeNumberFive,
+                freqSldr, wavSpdSldr, ampSldr, modeNumberSixValue);
 
         /**
          * Equations and AnimationTimer
@@ -969,16 +977,20 @@ public class Ui extends Application {
     }
 
     private void modeNumberAction(CheckMenuItem modeNumberOne, CheckMenuItem modeNumberTwo,
-                                  CheckMenuItem modeNumberThree, Slider freqSldr, Slider wavSpdSldr, Slider ampSldr,
-                                  int modeNumberOneValue) {
+                                  CheckMenuItem modeNumberThree, CheckMenuItem modeNumberFour,
+                                  CheckMenuItem modeNumberFive, CheckMenuItem modeNumberSix,
+                                  Slider freqSldr, Slider wavSpdSldr, Slider ampSldr, int modeNumberOneValue) {
         modeNumberOne.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
                 modeNumberTwo.setSelected(false);
                 modeNumberThree.setSelected(false);
+                modeNumberFour.setSelected(false);
+                modeNumberFive.setSelected(false);
+                modeNumberSix.setSelected(false);
                 ampSldr.setValue(30);
                 freqSldr.setValue(0.53);
-                wavSpdSldr.setValue(modeNumberOneValue); 
+                wavSpdSldr.setValue(modeNumberOneValue);
             }
         });
     }
