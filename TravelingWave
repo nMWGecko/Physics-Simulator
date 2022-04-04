@@ -1,12 +1,8 @@
-package djangounchained.physics;
+package com.example.demo;
 
-// TODO preset waves
-// TODO add checkmarks to wave toggle and put standing wave constantly in foreground
-// TODO update values even when paused
-// TODO display period
-// TODO fix lambda equation
-// TODO fix scaling on graph, fix numbers that come off bottom of screen for y axis, fix x axis title.
-
+// TODO make toggle wave options into check menu options
+// TODO fix dark mode text
+// TODO grid line (separator)
 import javafx.animation.*;
 import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
@@ -38,8 +34,9 @@ import org.json.simple.parser.ParseException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Objects;
 
-public class Waves extends Application {
+public class Ui extends Application {
     static String menuPic, homePic, helpPic, nMenuPic;
     static Color omori = Color.web("#6c0ffe");
     static Circle c;
@@ -58,16 +55,17 @@ public class Waves extends Application {
     static ArrayList<Text> xLabelList = new ArrayList<>();
     static ArrayList<Text> yLabelList = new ArrayList<>();
     static int startPauseCounter, incidentCounter, reflectedCounter, standingCounter = 0;
-
-    static double A, f, T, omega, lambda, k, waveLength, xPos, timeElapsed, timeWhenStopped, totalTimeWhenStopped;
+    static int modeNumberOneValue, modeNumberTwoValue, modeNumberThreeValue, modeNumberFourValue, modeNumberFiveValue,
+            modeNumberSixValue;
+    static double A, f, T, omega, lambda, k, waveLength, timeElapsed, timeWhenStopped, totalTimeWhenStopped;
     static int stringLength = 490;
     static double timeToReachEnd = 4.9;
     static double v = 100;
     static Font font = Font.font("Consolas", FontWeight.NORMAL, FontPosture.REGULAR, 14);
 
-    Waves(Stage travelWaveStage) {
-        start(travelWaveStage);
-    }
+    //Ui(Stage travelWaveStage) {
+    //    start(travelWaveStage);
+    //}
 
     @Override
     public void start(Stage stage) {
@@ -82,12 +80,19 @@ public class Waves extends Application {
          */
         JSONParser jsonParser = new JSONParser();
         try {
-            Object o = jsonParser.parse(new FileReader(this.getClass().getClassLoader().getResource("index.json").getFile()));
+            Object o = jsonParser.parse(new FileReader(Objects.requireNonNull(
+                    this.getClass().getClassLoader().getResource("index.json")).getFile()));
             JSONObject jsonObject = (JSONObject) o;
             menuPic = (String) jsonObject.get("menuIcon");
             homePic = (String) jsonObject.get("homeIcon");
             helpPic = (String) jsonObject.get("newtonSecondStagePic");
             nMenuPic = (String) jsonObject.get("nMenuIcon");
+            modeNumberOneValue = Integer.parseInt((String) jsonObject.get("modeNumberOneValue"));
+            modeNumberTwoValue = Integer.parseInt((String) jsonObject.get("modeNumberTwoValue"));
+            modeNumberThreeValue = Integer.parseInt((String) jsonObject.get("modeNumberThreeValue"));
+            modeNumberFourValue = Integer.parseInt((String) jsonObject.get("modeNumberFourValue"));
+            modeNumberFiveValue = Integer.parseInt((String) jsonObject.get("modeNumberFiveValue"));
+            modeNumberSixValue = Integer.parseInt((String) jsonObject.get("modeNumberSixValue"));
         }
         catch (ParseException | IOException e) {
             e.printStackTrace();
@@ -113,6 +118,17 @@ public class Waves extends Application {
         MenuItem toggleReflected = new MenuItem("Reflected");
         MenuItem toggleStanding = new MenuItem("Standing");
         raysVis.getItems().addAll(toggleIncident, toggleReflected, toggleStanding);
+
+        // Set 'mode numbers' (not accurate to actual values from mode # equation)
+        Menu modeNumber = new Menu("Mode #'s");
+        CheckMenuItem modeNumberOne = new CheckMenuItem("Mode no.1");
+        CheckMenuItem modeNumberTwo = new CheckMenuItem("Mode no.2");
+        CheckMenuItem modeNumberThree = new CheckMenuItem("Mode no.3");
+        CheckMenuItem modeNumberFour = new CheckMenuItem("Mode no.4");
+        CheckMenuItem modeNumberFive = new CheckMenuItem("Mode no.5");
+        CheckMenuItem modeNumberSix = new CheckMenuItem("Mode no.6");
+        // feature: when a mode# is selected, have it deselected as soon as slider values are adjusted.
+        modeNumber.getItems().addAll(modeNumberOne,modeNumberTwo,modeNumberThree,modeNumberFour,modeNumberFive,modeNumberSix);
 
         //Toggling grid visibility
         Menu objects = new Menu("Grid Display");
@@ -270,7 +286,8 @@ public class Waves extends Application {
 
         //Additional Settings
         MenuItem exitProgram = new MenuItem("Exit Program");
-        MenuButton menuBtn = new MenuButton("Menu", null, raysVis,theme, objects, showForces, menuHelp, exitProgram);
+        MenuButton menuBtn = new MenuButton("Menu", null, raysVis, modeNumber, theme, objects, showForces,
+                menuHelp, exitProgram);
         Image menuIcon = new Image(menuPic);
         Image nMenuIcon = new Image(nMenuPic);
         ImageView menuView = new ImageView(menuIcon);
@@ -565,8 +582,8 @@ public class Waves extends Application {
         xAxis.setEndY(wavesPane.getPrefHeight() / 2);
         Text xAxisTitle = new Text("X-Position (cm)");
         xAxisTitle.setFont(font);
-        xAxisTitle.setLayoutX(880);
-        xAxisTitle.setLayoutY(xAxis.getStartY() + 135);
+        xAxisTitle.setLayoutX(866);
+        xAxisTitle.setLayoutY(xAxis.getStartY() + 134);
 
         Line yAxis = new Line();
         yAxis.setStartX(30);
@@ -873,6 +890,23 @@ public class Waves extends Application {
         });
 
         /**
+         * Mode Number CheckMenuItems
+         */
+
+        modeNumberAction(modeNumberOne, modeNumberTwo, modeNumberThree, modeNumberFour, modeNumberFive, modeNumberSix,
+                freqSldr, wavSpdSldr, ampSldr, modeNumberOneValue);
+        modeNumberAction(modeNumberTwo, modeNumberOne, modeNumberThree, modeNumberFour, modeNumberFive, modeNumberSix,
+                freqSldr, wavSpdSldr, ampSldr, modeNumberTwoValue);
+        modeNumberAction(modeNumberThree, modeNumberOne, modeNumberTwo, modeNumberFour, modeNumberFive, modeNumberSix,
+                freqSldr, wavSpdSldr, ampSldr, modeNumberThreeValue);
+        modeNumberAction(modeNumberFour, modeNumberOne, modeNumberTwo, modeNumberThree, modeNumberFive, modeNumberSix,
+                freqSldr, wavSpdSldr, ampSldr, modeNumberFourValue);
+        modeNumberAction(modeNumberFive, modeNumberOne, modeNumberTwo, modeNumberThree, modeNumberFour, modeNumberSix,
+                freqSldr, wavSpdSldr, ampSldr, modeNumberFiveValue);
+        modeNumberAction(modeNumberSix, modeNumberOne, modeNumberTwo, modeNumberThree, modeNumberFour, modeNumberFive,
+                freqSldr, wavSpdSldr, ampSldr, modeNumberSixValue);
+
+        /**
          * Equations and AnimationTimer
          */
         AnimationTimer animateTimer = new AnimationTimer() {
@@ -966,6 +1000,25 @@ public class Waves extends Application {
         stage.setResizable(false);
         stage.setScene(scene);
         stage.show();
+    }
+
+    private void modeNumberAction(CheckMenuItem modeNumberOne, CheckMenuItem modeNumberTwo,
+                                  CheckMenuItem modeNumberThree, CheckMenuItem modeNumberFour,
+                                  CheckMenuItem modeNumberFive, CheckMenuItem modeNumberSix,
+                                  Slider freqSldr, Slider wavSpdSldr, Slider ampSldr, int modeNumberOneValue) {
+        modeNumberOne.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                modeNumberTwo.setSelected(false);
+                modeNumberThree.setSelected(false);
+                modeNumberFour.setSelected(false);
+                modeNumberFive.setSelected(false);
+                modeNumberSix.setSelected(false);
+                ampSldr.setValue(30);
+                freqSldr.setValue(0.53);
+                wavSpdSldr.setValue(modeNumberOneValue);
+            }
+        });
     }
 
     private void showCoordinates(Text coordinateTxt, ArrayList<Circle> standList) {
