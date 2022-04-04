@@ -3,6 +3,9 @@ package com.example.demo;
 // TODO make toggle wave options into check menu options
 // TODO fix dark mode text
 // TODO grid line (separator)
+// TODO feature: when a mode# is selected, have it deselected as soon as slider values are adjusted.
+// TODO fix when you're on help menu and you can just continuously scroll up
+
 import javafx.animation.*;
 import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
@@ -29,8 +32,6 @@ import javafx.stage.Stage;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-
-
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -40,30 +41,31 @@ public class Ui extends Application {
     static String menuPic, homePic, helpPic, nMenuPic;
     static Color omori = Color.web("#6c0ffe");
     static Circle c;
+    static Timer timer;
+    static Line vertGrid, horiGrid, xIndic, yIndic;
+    static Text xL, yL;
+    static Font font = Font.font("Consolas", FontWeight.NORMAL, FontPosture.REGULAR, 14);
 
     static ArrayList<Circle> standList = new ArrayList<>();
     static ArrayList<Circle> travelList = new ArrayList<>();
     static ArrayList<Circle> reTravelList = new ArrayList<>();
-
-    static Timer timer;
-    static Line vertGrid, horiGrid, xIndic, yIndic;
     static ArrayList<Line> hLineList = new ArrayList<>();
     static ArrayList<Line> vLineList = new ArrayList<>();
     static ArrayList<Line> xIndiList = new ArrayList<>();
     static ArrayList<Line> yIndiList = new ArrayList<>();
-    static Text xL, yL;
     static ArrayList<Text> xLabelList = new ArrayList<>();
     static ArrayList<Text> yLabelList = new ArrayList<>();
+
+    static int stringLength = 490;
     static int startPauseCounter, incidentCounter, reflectedCounter, standingCounter = 0;
     static int modeNumberOneValue, modeNumberTwoValue, modeNumberThreeValue, modeNumberFourValue, modeNumberFiveValue,
             modeNumberSixValue;
+
     static double A, f, T, omega, lambda, k, waveLength, timeElapsed, timeWhenStopped, totalTimeWhenStopped;
-    static int stringLength = 490;
     static double timeToReachEnd = 4.9;
     static double v = 100;
-    static Font font = Font.font("Consolas", FontWeight.NORMAL, FontPosture.REGULAR, 14);
 
-    //Ui(Stage travelWaveStage) {
+    //Ui(Stage travelWaveStage) { // constructor is not working
     //    start(travelWaveStage);
     //}
 
@@ -127,8 +129,8 @@ public class Ui extends Application {
         CheckMenuItem modeNumberFour = new CheckMenuItem("Mode no.4");
         CheckMenuItem modeNumberFive = new CheckMenuItem("Mode no.5");
         CheckMenuItem modeNumberSix = new CheckMenuItem("Mode no.6");
-        // feature: when a mode# is selected, have it deselected as soon as slider values are adjusted.
-        modeNumber.getItems().addAll(modeNumberOne,modeNumberTwo,modeNumberThree,modeNumberFour,modeNumberFive,modeNumberSix);
+        modeNumber.getItems().addAll(modeNumberOne, modeNumberTwo, modeNumberThree, modeNumberFour, modeNumberFive,
+                modeNumberSix);
 
         //Toggling grid visibility
         Menu objects = new Menu("Grid Display");
@@ -142,7 +144,7 @@ public class Ui extends Application {
         CheckMenuItem lightMode = new CheckMenuItem("Light Mode");
         CheckMenuItem darkMode = new CheckMenuItem("Dark Mode");
         lightMode.setSelected(true);
-        theme.getItems().addAll(lightMode,darkMode);
+        theme.getItems().addAll(lightMode, darkMode);
 
         //Time effects
         Menu showForces = new Menu("Time");
@@ -332,6 +334,7 @@ public class Ui extends Application {
 
         //Frequency: "clear" the values (for a split second) then implementing the new value
         VBox freqVBox = new VBox(5);
+        freqVBox.setAlignment(Pos.CENTER);
         Text freqText = new Text("Frequency [Hz]");
         TextField freqTf = new TextField("0.00 Hz");
         freqTf.setAlignment(Pos.CENTER);
@@ -376,6 +379,7 @@ public class Ui extends Application {
 
         //Wave Speed
         VBox wavSpdVBox = new VBox(5);
+        wavSpdVBox.setAlignment(Pos.CENTER);
         Text wavSpdText = new Text("Wave Speed [cm/s]");
         TextField wavSpdTf = new TextField("0.00 cm/s");
         wavSpdTf.setAlignment(Pos.CENTER);
@@ -420,6 +424,7 @@ public class Ui extends Application {
 
         //Amplitude
         VBox ampVBox = new VBox(5);
+        ampVBox.setAlignment(Pos.CENTER);
         Text ampText = new Text("Amplitude [cm]");
         TextField ampTf = new TextField("0.00 cm");
         ampTf.setAlignment(Pos.CENTER);
@@ -465,6 +470,8 @@ public class Ui extends Application {
         sliders.getChildren().addAll(freqVBox, wavSpdVBox, ampVBox);
         ui.getChildren().add(sliders);
 
+        Line separator = new Line(100, 207, 900, 207);
+        root.getChildren().add(separator);
         HBox actionData = new HBox(100);
         actionData.setAlignment(Pos.CENTER);
         controls.getChildren().add(actionData);
@@ -494,7 +501,8 @@ public class Ui extends Application {
         Text standLegTxt = new Text("Standing Wave");
         standLeg.getChildren().addAll(standLine, standLegTxt);
 
-        legend.getChildren().addAll(incidTraveLeg, refTravLeg, standLeg);
+        Text hoverInstruction = new Text("Hover over a point to display its coordinates.");
+        legend.getChildren().addAll(incidTraveLeg, refTravLeg, standLeg, hoverInstruction);
         actionData.getChildren().add(legend);
 
         /**
@@ -513,7 +521,7 @@ public class Ui extends Application {
          * Extra Displayed Values
          */
         VBox exData = new VBox(5);
-        Text coordinateTxt = new Text("Point Coordinates (x, y) = ");
+        Text coordinateTxt = new Text("Point Coordinates (x, y) = (           ,         )");
         Text periodTxt = new Text("Period = 0.00 s");
         Text omegaTxt = new Text("Angular Frequency = 0.00 rad/s");
         Text lambdaTxt = new Text("Wavelength = 0.00 cm");
@@ -530,13 +538,13 @@ public class Ui extends Application {
          */
         //Grid lines
         for(int i = 70; i <= wavesPane.getPrefHeight() - 60; i += 20) {
-            horiGrid = new Line(10, i + 2, 970, i + 2);
+            horiGrid = new Line(30, i + 2, 970, i + 2);
             horiGrid.setStroke(Color.LIGHTGRAY);
             hLineList.add(horiGrid);
             wavesPane.getChildren().add(horiGrid);
         }
 
-        for(int i = 10; i <= 990; i += 20) {
+        for(int i = 30; i <= 990; i += 20) {
             vertGrid = new Line(i, 72, i, wavesPane.getPrefHeight() - 73);
             vertGrid.setStroke(Color.LIGHTGRAY);
             vLineList.add(vertGrid);
@@ -674,6 +682,7 @@ public class Ui extends Application {
                 inciTravLine.setStroke(Color.CORNFLOWERBLUE);
                 refTravLine.setStroke(Color.MAROON);
                 standLine.setStroke(Color.DARKMAGENTA);
+                separator.setStroke(Color.BLACK);
                 xAxis.setStroke(Color.BLACK);
                 yAxis.setStroke(Color.BLACK);
 
@@ -689,6 +698,7 @@ public class Ui extends Application {
                 periodTxt.setFill(Color.BLACK);
                 omegaTxt.setFill(Color.BLACK);
                 lambdaTxt.setFill(Color.BLACK);
+                hoverInstruction.setFill(Color.BLACK);
                 kTxt.setFill(Color.BLACK);
                 xAxisTitle.setFill(Color.BLACK);
                 yAxisTitle.setFill(Color.BLACK);
@@ -747,6 +757,7 @@ public class Ui extends Application {
                 refTravLegTxt.setFill(Color.WHITE);
                 standLegTxt.setFill(Color.WHITE);
                 coordinateTxt.setFill(Color.WHITE);
+                hoverInstruction.setFill(Color.WHITE);
                 periodTxt.setFill(Color.WHITE);
                 omegaTxt.setFill(Color.WHITE);
                 lambdaTxt.setFill(Color.WHITE);
@@ -774,6 +785,7 @@ public class Ui extends Application {
                 menuView.setImage(nMenuIcon);
                 menuBtn.setStyle("-fx-background-color: #303030; -fx-border-color: white;");
 
+                separator.setStroke(Color.WHITE);
                 inciTravLine.setStroke(Color.CYAN);
                 refTravLine.setStroke(Color.ORANGERED);
                 standLine.setStroke(omori);
@@ -1028,7 +1040,7 @@ public class Ui extends Application {
                         (c.getCenterX() - 30)) + ", " + String.format("%.2f",  (192 - c.getCenterY())) + ")");
             });
             c.setOnMouseExited(mouseEvent -> {
-                coordinateTxt.setText("Point Coordinates (x, y) = ");
+                coordinateTxt.setText("Point Coordinates (x, y) = (           ,         )");
             });
         }
     }
