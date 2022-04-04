@@ -1,5 +1,5 @@
-package com.example.demo;
-// TODO polish everything
+package djangounchained.physics;
+
 import javafx.animation.*;
 import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
@@ -30,10 +30,12 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 
+// TODO polish everything
+
 public class Ui extends Application {
     static String menuPic, homePic, helpPic, nMenuPic;
     static int modeNumberOneValue, modeNumberTwoValue, modeNumberThreeValue, modeNumberFourValue, modeNumberFiveValue,
-               modeNumberSixValue;
+            modeNumberSixValue;
     static Color omori = Color.web("#6c0ffe");
     static Circle c;
 
@@ -75,7 +77,8 @@ public class Ui extends Application {
          */
         JSONParser jsonParser = new JSONParser();
         try {
-            Object o = jsonParser.parse(new FileReader(this.getClass().getClassLoader().getResource("index.json").getFile()));
+            Object o = jsonParser.parse(new FileReader(this.getClass().getClassLoader().getResource("index.json")
+                    .getFile()));
             JSONObject jsonObject = (JSONObject) o;
             menuPic = (String) jsonObject.get("menuIcon");
             homePic = (String) jsonObject.get("homeIcon");
@@ -123,7 +126,8 @@ public class Ui extends Application {
         CheckMenuItem modeNumberSix = new CheckMenuItem("Mode no.6");
         // add more mode numbers
         // feature: when a mode# is selected, have it deselected as soon as slider values are adjusted.
-        modeNumber.getItems().addAll(modeNumberOne,modeNumberTwo,modeNumberThree,modeNumberFour,modeNumberFive,modeNumberSix);
+        modeNumber.getItems().addAll(modeNumberOne, modeNumberTwo, modeNumberThree, modeNumberFour, modeNumberFive,
+                modeNumberSix);
 
         //Toggling grid visibility
         Menu objects = new Menu("Grid Display");
@@ -189,7 +193,7 @@ public class Ui extends Application {
         wavesEgDesc.setFont(font);
 
         ImageView wavesEg = new ImageView(new Image("https://upload.wikimedia.org/wikipedia/commons/thumb/5/5d/Waventerference.gif/620px-Waventerference.gif"));
-        wavesEg.setFitWidth(985);
+        wavesEg.setFitWidth(984);
         wavesEg.setFitHeight(420);
 
         Text theoryTxt2 = new Text("""
@@ -327,6 +331,7 @@ public class Ui extends Application {
 
         //Frequency: "clear" the values (for a split second) then implementing the new value
         VBox freqVBox = new VBox(5);
+        freqVBox.setAlignment(Pos.CENTER);
         Text freqText = new Text("Frequency [Hz]");
         TextField freqTf = new TextField("0.00 Hz");
         freqTf.setAlignment(Pos.CENTER);
@@ -371,6 +376,7 @@ public class Ui extends Application {
 
         //Wave Speed
         VBox wavSpdVBox = new VBox(5);
+        wavSpdVBox.setAlignment(Pos.CENTER);
         Text wavSpdText = new Text("Wave Speed [cm/s]");
         TextField wavSpdTf = new TextField("0.00 cm/s");
         wavSpdTf.setAlignment(Pos.CENTER);
@@ -415,6 +421,7 @@ public class Ui extends Application {
 
         //Amplitude
         VBox ampVBox = new VBox(5);
+        ampVBox.setAlignment(Pos.CENTER);
         Text ampText = new Text("Amplitude [cm]");
         TextField ampTf = new TextField("0.00 cm");
         ampTf.setAlignment(Pos.CENTER);
@@ -460,6 +467,10 @@ public class Ui extends Application {
         sliders.getChildren().addAll(freqVBox, wavSpdVBox, ampVBox);
         ui.getChildren().add(sliders);
 
+        //Line Separating the Sliders and the Displayed Data
+        Line separator = new Line(100, 207, 900, 207);
+        root.getChildren().add(separator);
+
         HBox actionData = new HBox(100);
         actionData.setAlignment(Pos.CENTER);
         controls.getChildren().add(actionData);
@@ -489,7 +500,9 @@ public class Ui extends Application {
         Text standLegTxt = new Text("Standing Wave");
         standLeg.getChildren().addAll(standLine, standLegTxt);
 
-        legend.getChildren().addAll(incidTraveLeg, refTravLeg, standLeg);
+        Text hoverInstruction = new Text("Hover over a point to display its coordinates.");
+
+        legend.getChildren().addAll(incidTraveLeg, refTravLeg, standLeg, hoverInstruction);
         actionData.getChildren().add(legend);
 
         /**
@@ -508,7 +521,7 @@ public class Ui extends Application {
          * Extra Displayed Values
          */
         VBox exData = new VBox(5);
-        Text coordinateTxt = new Text("Point Coordinates (x, y) = ");
+        Text coordinateTxt = new Text("Point Coordinates (x, y) = (           ,         )");
         Text periodTxt = new Text("Period = 0.00 s");
         Text omegaTxt = new Text("Angular Frequency = 0.00 rad/s");
         Text lambdaTxt = new Text("Wavelength = 0.00 cm");
@@ -673,6 +686,7 @@ public class Ui extends Application {
 
                 //Text in main window
                 colorBlack(simTitle, inciTravLegTxt, refTravLegTxt, ampText, wavSpdText, ampText, standLegTxt, coordinateTxt);
+                hoverInstruction.setFill(Color.BLACK);
                 periodTxt.setFill(Color.BLACK);
                 omegaTxt.setFill(Color.BLACK);
                 lambdaTxt.setFill(Color.BLACK);
@@ -727,6 +741,7 @@ public class Ui extends Application {
                 refTravLegTxt.setFill(Color.WHITE);
                 standLegTxt.setFill(Color.WHITE);
                 coordinateTxt.setFill(Color.WHITE);
+                hoverInstruction.setFill(Color.WHITE);
                 periodTxt.setFill(Color.WHITE);
                 omegaTxt.setFill(Color.WHITE);
                 lambdaTxt.setFill(Color.WHITE);
@@ -996,7 +1011,7 @@ public class Ui extends Application {
     }
 
     public void colorBlack(Text theoryTxt, Text wavesEgDesc, Text theoryTxt2, Text theoEqn, Text sourcesTitle,
-                              Text profDaveRef, Text britAmpRef, Text britWaveRef) {
+                           Text profDaveRef, Text britAmpRef, Text britWaveRef) {
         theoryTxt.setFill(Color.BLACK);
         wavesEgDesc.setFill(Color.BLACK);
         theoryTxt2.setFill(Color.BLACK);
@@ -1014,7 +1029,7 @@ public class Ui extends Application {
                         (c.getCenterX() - 30)) + ", " + String.format("%.2f",  ((192 - c.getCenterY())) / 4) + ")");
             });
             c.setOnMouseExited(mouseEvent -> {
-                coordinateTxt.setText("Point Coordinates (x, y) = ");
+                coordinateTxt.setText("Point Coordinates (x, y) = (           ,         )");
             });
         }
     }
