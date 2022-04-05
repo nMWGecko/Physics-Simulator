@@ -1,22 +1,20 @@
-package com.example.demo;
+package djangounchained.physics;
 
-// TODO fix dark mode text (ex. #'s under sliders)
-// TODO grid line (separator)
-// TODO fix when you're on help menu and you can just continuously scroll up
+// TODO fix dark mode text under sliders & refine theme code
 
-import javafx.animation.AnimationTimer;
+import javafx.animation.*;
 import javafx.application.Application;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
-import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
@@ -28,11 +26,9 @@ import javafx.stage.Stage;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Objects;
 
 public class Ui extends Application {
@@ -43,7 +39,6 @@ public class Ui extends Application {
     static Line vertGrid, horiGrid, xIndic, yIndic;
     static Text xL, yL;
     static Font font = Font.font("Consolas", FontWeight.NORMAL, FontPosture.REGULAR, 14);
-    // are consolas and consanas fonts supposed to be two different things?
 
     static ArrayList<Circle> standList = new ArrayList<>();
     static ArrayList<Circle> travelList = new ArrayList<>();
@@ -57,9 +52,14 @@ public class Ui extends Application {
 
     static int stringLength = 940;
     static int startPauseCounter, incidentCounter, reflectedCounter, standingCounter = 0;
-    static double A, f, T, v, omega, wavelength, k, waveLength, timeToReachEnd, timeElapsed, timeWhenStopped,
-            totalTimeWhenStopped, modeNumberOneValue, modeNumberTwoValue, modeNumberThreeValue, modeNumberFourValue,
-            modeNumberFiveValue, modeNumberSixValue;
+    static double modeNumberOneValue, modeNumberTwoValue, modeNumberThreeValue, modeNumberFourValue, modeNumberFiveValue,
+            modeNumberSixValue;
+
+    static double A, f, T, v, omega, lambda, k, waveLength, timeToReachEnd, timeElapsed, timeWhenStopped, totalTimeWhenStopped;
+
+    //Ui(Stage travelWaveStage) { // constructor is not working
+    //    start(travelWaveStage);
+    //}
 
     @Override
     public void start(Stage stage) {
@@ -69,6 +69,9 @@ public class Ui extends Application {
         wavesPane.setPrefWidth(960);
         wavesPane.setPrefHeight(384);
 
+        /**
+         * JSON file
+         */
         JSONParser jsonParser = new JSONParser();
         try {
             Object o = jsonParser.parse(new FileReader(Objects.requireNonNull(
@@ -89,16 +92,21 @@ public class Ui extends Application {
             e.printStackTrace();
         }
 
-        // Setting up the Main Page
+        /**
+         * Setting up the Main Page
+         */
         BorderPane root = new BorderPane();
         root.setPadding(new Insets(10));
 
-        // Navigation Button
+        /**
+         * Navigation Button
+         */
+        //Pane for settings
         HBox navigationHBox = new HBox(303);
         navigationHBox.setPadding(new Insets(10, 5, 5, 5));
         Pane menuPane = new Pane();
 
-        // Toggling the incident and reflect rays visibility
+        //Toggling the incident and reflect rays visibility
         Menu raysVis = new Menu("Toggle Waves");
         CheckMenuItem toggleIncident = new CheckMenuItem("Incident");
         CheckMenuItem toggleReflected = new CheckMenuItem("Reflected");
@@ -119,21 +127,21 @@ public class Ui extends Application {
         modeNumber.getItems().addAll(modeNumberOne, modeNumberTwo, modeNumberThree, modeNumberFour, modeNumberFive,
                 modeNumberSix);
 
-        // Toggling grid visibility
+        //Toggling grid visibility
         Menu objects = new Menu("Grid Display");
         CheckMenuItem gridOn = new CheckMenuItem("On");
         CheckMenuItem gridOff = new CheckMenuItem("Off");
         gridOn.setSelected(true);
         objects.getItems().addAll(gridOn, gridOff);
 
-        // Change themes
+        //Change themes
         Menu theme = new Menu("Theme");
         CheckMenuItem lightMode = new CheckMenuItem("Light Mode");
         CheckMenuItem darkMode = new CheckMenuItem("Dark Mode");
         lightMode.setSelected(true);
         theme.getItems().addAll(lightMode, darkMode);
 
-        // Time effects
+        //Time effects
         Menu showForces = new Menu("Time");
         CheckMenuItem slowMotion = new CheckMenuItem("Slow Motion");
         CheckMenuItem normalMotion = new CheckMenuItem("Normal");
@@ -141,132 +149,129 @@ public class Ui extends Application {
         normalMotion.setSelected(true);
         showForces.getItems().addAll(slowMotion, normalMotion, fastMotion);
 
-        // Help MenuItem
+        //Help MenuItem
         MenuItem menuHelp = new MenuItem("Help");
-        Pane helpPane = new Pane();
+        ScrollPane helpPane = new ScrollPane();
+        helpPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         helpPane.setPadding(new Insets(10));
         VBox theoVbox = new VBox(10);
-        ScrollBar sb = new ScrollBar();
-        sb.setOrientation(Orientation.VERTICAL);
-        sb.setPrefHeight(650);
-        sb.setLayoutX(985);
-        sb.setMax(650);
-        sb.valueProperty().addListener((observableValue, number, t1) -> theoVbox.setLayoutY(-t1.doubleValue()));
-        theoVbox.setOnScroll(scrollEvent -> theoVbox.setTranslateY(theoVbox.getTranslateY() + scrollEvent.getDeltaY()));
 
         Text theoryTxt = new Text("""
-                 Crash Course on Standing Waves
-
+                Crash Course on Standing Waves
+                
                     In the settings of this simulation, you will find the option to switch between light and dark mode, the option to toggle
-                 the visibility of the travelling and standing waves.
+                the visibility of the travelling and standing waves.
 
                     To interact with the Standing wave simulation, simply press ‘start’ after adjusting the values on the three sliders. In
-                 this simulation, there are sliders for each of the following parameters: amplitude, wave speed, and mode number. Adjusting
-                 these parameters will result in standing waves being formed for a string fixed on both ends.
+                this simulation, there are sliders for each of the following parameters: amplitude, wave speed, and mode number. Adjusting
+                these parameters will result in standing waves being formed for a string fixed on both ends.
 
-                 * Amplitude [m]: the maximum displacement or distance moved by a point on a vibrating body or wave measured from its
-                   equilibrium position. It is equal to one-half the length of the vibration path.
-                 * Wave Speed [m/s]: the distance the disturbance travels across a medium in a given amount of time. It can be calculated by
-                   multiplying frequency with the wavelength of a wave.
-                 * Frequency [Hz]: the number of waves that pass a fixed point in a given amount of time. The hertz measurement, abbreviated
-                   Hz, is the number of waves that pass by per second.
+                * Amplitude [m]: the maximum displacement or distance moved by a point on a vibrating body or wave measured from its
+                  equilibrium position. It is equal to one-half the length of the vibration path.
+                * Wave Speed [m/s]: the distance the disturbance travels across a medium in a given amount of time. It can be calculated by
+                  multiplying frequency with the wavelength of a wave.
+                * Frequency [Hz]: the number of waves that pass a fixed point in a given amount of time. The hertz measurement, abbreviated
+                  Hz, is the number of waves that pass by per second.
                 """);
         theoryTxt.setFont(font);
 
-        Text wavesEgDesc = new Text(" Pictured below are visual representations of two travelling waves (green and" +
+        Text wavesEgDesc = new Text("Pictured below are visual representations of two travelling waves (green and " +
                 "blue) that form a standing wave (red).");
         wavesEgDesc.setFont(font);
 
         ImageView wavesEg = new ImageView(new Image("https://upload.wikimedia.org/wikipedia/commons/thumb/5/5d/Waventerference.gif/620px-Waventerference.gif"));
-        wavesEg.setFitWidth(985);
-        wavesEg.setFitHeight(420);
+        wavesEg.setFitWidth(980);
+        wavesEg.setFitHeight(265 * (49/31));
 
         Text theoryTxt2 = new Text("""
-                 What are standing waves and how are they created?
-
-                    First, consider that waves always originate from some sort of event or disturbance. When two waves with the same amplitude
-                 and frequency move in opposite directions, they will respect the superposition principle and create what is known as an
-                 interference pattern. To elaborate, these two linear waves will either be added together or cancelled out.
+                What are standing waves and how are they created?
+                
+                    First, consider that waves always originate from some sort of event or disturbance. When two waves with the same
+                amplitude and frequency move in opposite directions, they will respect the superposition principle and create what is known
+                as an interference pattern. To elaborate, these two linear waves will either be added together or cancelled out.
 
                     Interestingly enough, you might have even come across this phenomena without realising it yourself: interference patterns
-                 are so common to our daily lives, and can be produced by waves in the water, sound waves, or even light waves.
+                are so common to our daily lives, and can be produced by waves in the water, sound waves, or even light waves.
 
                     Should you make the choice to further explore the concepts related to waves, a great starting point would be to consult
-                 these interesting articles written by Stephen Cohen (on his website, The Engineer’s Pulse, under the “For Physics Students”
-                 section:
+                these interesting articles written by Stephen Cohen (on his website, The Engineer’s Pulse, under the “For Physics Students”
+                section:
                 """);
         theoryTxt2.setFont(font);
 
         Hyperlink cohenBlog = new Hyperlink("theengineerspulse.blogspot.com/p/for-physics-students.html");
         cohenBlog.setFont(font);
         cohenBlog.setTextFill(Color.DODGERBLUE);
-        cohenBlog.setOnAction(actionEvent -> getHostServices().showDocument(cohenBlog.getText()));
+        cohenBlog.setOnAction(actionEvent -> {
+            getHostServices().showDocument(cohenBlog.getText());
+        });
 
         Text theoEqn = new Text("""
+                
                                 Standing Wave: y(x, t) = 2Asin(kx)cos(ωt) [m]       Traveling Wave: y(x, t) = Asin(kx ± ωt) [m]
                  
                                                     Wave Speed: v = λf [m/s]        Wave Number: k = 2π/λ [rad/m]
                  
                                                                 Angular Frequency: ⍵ = 2πf [rad/s]
                  
-                 Where:
-                 x [m]: a particle's x-axis position at a certain time
-                 y [m]: a particle's y-axis position at a certain time
-                 k [rad/m]: wave number
-                 A [m]: amplitude
-                 t [s]: time elapsed
-                 ω [rad/s]: angular frequency
-                 
-                 
-                 ______________________________________________________________________________________________________________________________
+                Where:
+                x [m]: a particle's x-axis position at a certain time
+                y [m]: a particle's y-axis position at a certain time
+                k [rad/m]: wave number
+                A [m]: amplitude
+                t [s]: time elapsed
+                ω [rad/s]: angular frequency
                 """);
         theoEqn.setFont(font);
+
+        Line helpSeparator = new Line(0, 0, 1000, 0);
 
         Text sourcesTitle = new Text("Additional Sources Consulted");
         sourcesTitle.setFont(font);
         sourcesTitle.setUnderline(true);
 
-        Text profDaveRef = new Text("""
-
-                Youtube - Professor Dave Explains: Interference, Reflection, and Diffraction
-                Consulted on 2022/02/27""".indent(1));
+        Text profDaveRef = new Text("\nYoutube - Professor Dave Explains: Interference, Reflection, and Diffraction\n" +
+                " Consulted on 2022/02/27");
         profDaveRef.setFont(font);
         Hyperlink profDaveLink = new Hyperlink("www.youtube.com/watch?v=eW5VGGJuWtQ&t=195s");
         profDaveLink.setFont(font);
         profDaveLink.setTextFill(Color.DODGERBLUE);
-        profDaveLink.setOnAction(actionEvent -> getHostServices().showDocument(profDaveLink.getText()));
+        profDaveLink.setOnAction(actionEvent -> {
+            getHostServices().showDocument(profDaveLink.getText());
+        });
 
-        Text britAmpRef = new Text("""
-
-                Brittanica.com - Physics: Amplitude
-                Consulted on 2022/02/27""".indent(1));
+        Text britAmpRef = new Text("\nBrittanica.com - Physics: Amplitude\n" +
+                " Consulted on 2022/02/27");
         britAmpRef.setFont(font);
         Hyperlink britAmpLink = new Hyperlink("www.britannica.com/science/amplitude-physics");
         britAmpLink.setFont(font);
         britAmpLink.setTextFill(Color.DODGERBLUE);
-        britAmpLink.setOnAction(actionEvent -> getHostServices().showDocument(britAmpLink.getText()));
+        britAmpLink.setOnAction(actionEvent -> {
+            getHostServices().showDocument(britAmpLink.getText());
+        });
 
-        Text britWaveRef = new Text("""
-
-                Brittanica.com - Physics: Standing Wave
-                Consulted on 2022/02/27""".indent(1));
+        Text britWaveRef = new Text("\nBrittanica.com - Physics: Standing Wave\n" +
+                " Consulted on 2022/02/27");
         britWaveRef.setFont(font);
         Hyperlink britWaveLink = new Hyperlink("www.britannica.com/science/standing-wave-physics");
         britWaveLink.setFont(font);
         britWaveLink.setTextFill(Color.DODGERBLUE);
-        britWaveLink.setOnAction(actionEvent -> getHostServices().showDocument(britWaveLink.getText()));
+        britWaveLink.setOnAction(actionEvent -> {
+            getHostServices().showDocument(britWaveLink.getText());
+        });
 
-        theoVbox.getChildren().addAll(theoryTxt, wavesEgDesc, wavesEg, theoryTxt2, cohenBlog, theoEqn, sourcesTitle,
-                profDaveRef, profDaveLink, britAmpRef, britAmpLink, britWaveRef, britWaveLink);
-        helpPane.getChildren().addAll(theoVbox, sb);
+        theoVbox.getChildren().addAll(theoryTxt, wavesEgDesc, wavesEg, theoryTxt2, cohenBlog, theoEqn, helpSeparator,
+                sourcesTitle, profDaveRef, profDaveLink, britAmpRef, britAmpLink, britWaveRef, britWaveLink);
+        helpPane.setContent(theoVbox);
+
         Scene theoryScene = new Scene(helpPane, 1000, 650);
         Stage secondaryStage = new Stage();
-        secondaryStage.setTitle("Loss");
+        secondaryStage.setTitle("Help");
         secondaryStage.setResizable(false);
         secondaryStage.setScene(theoryScene);
         menuHelp.setOnAction(actionEvent -> secondaryStage.show());
 
-        // Additional Settings
+        //Additional Settings
         MenuItem exitProgram = new MenuItem("Exit Program");
         MenuButton menuBtn = new MenuButton("Menu", null, raysVis, modeNumber, theme, objects, showForces,
                 menuHelp, exitProgram);
@@ -279,7 +284,7 @@ public class Ui extends Application {
         menuBtn.setId("navigation");
         menuPane.getChildren().addAll(menuBtn);
 
-        // Menu Settings
+        //Menu Settings
         Image homeIcon = new Image(homePic);
         ImageView homeView = new ImageView(homeIcon);
         homeView.setPreserveRatio(true);
@@ -288,31 +293,34 @@ public class Ui extends Application {
         homeBtn.setGraphic(homeView);
         homeBtn.setId("navigation");
 
-        // Finishing Up the top HBox
+        //Finishing Up the top HBox
         Text simTitle = new Text("Standing Wave Simulator");
         simTitle.setFont(Font.font("Consanas", FontWeight.BOLD, FontPosture.REGULAR, 20));
         navigationHBox.getChildren().addAll(homeBtn, simTitle, menuPane);
         navigationHBox.setAlignment(Pos.CENTER);
 
-        // The Top Buttons
+        //The Top Buttons
         VBox controls = new VBox(20);
         root.setTop(controls);
         HBox menuCtrl = new HBox();
         menuCtrl.getChildren().add(navigationHBox);
         controls.getChildren().add(menuCtrl);
 
-        // The UI Controls
+        //The UI Controls
         HBox ui = new HBox(120);
         ui.setAlignment(Pos.CENTER);
         controls.getChildren().add(ui);
 
-        Text coordinateTxt = new Text("Point Coordinates (x, y)  =  (           ,         )");
+        Text coordinateTxt = new Text("Point Coordinates (x, y) = (           ,         )");
         Text periodTxt = new Text("Period = 0.00 s");
         Text omegaTxt = new Text("Angular Frequency = 0.00 rad/s");
-        Text wavelengthTxt = new Text("Wavelength = 0.00 cm");
+        Text lambdaTxt = new Text("Wavelength = 0.00 cm");
         Text kTxt = new Text("Wave Number = 0.00 rad/cm");
 
-        // Sliders - Always make the waves "snap" (clear first and then implement new values)
+        /**
+         * Sliders
+         * Always make the waves "snap" (clear first and then implement new values)
+         */
         HBox sliders = new HBox(100);
 
         //Frequency: "clear" the values (for a split second) then implementing the new value
@@ -322,149 +330,158 @@ public class Ui extends Application {
         TextField freqTf = new TextField("0.00 Hz");
         freqTf.setAlignment(Pos.CENTER);
         freqTf.setEditable(false);
-        Slider freqSlider = new Slider(0, 5, 0); //we're sorry mr cohen
-        freqSlider.setShowTickLabels(true);
-        freqSlider.setShowTickMarks(true);
-        freqSlider.setMajorTickUnit(1);
-        freqSlider.setMinorTickCount(4);
+        Slider freqSldr = new Slider(0, 5, 0); //we're sorry mr cohen
+        freqSldr.setShowTickLabels(true);
+        freqSldr.setShowTickMarks(true);
+        freqSldr.setMajorTickUnit(1);
+        freqSldr.setMinorTickCount(4);
 
-        freqSlider.valueProperty().addListener((observableValue, number, t1) -> {
-            f = freqSlider.getValue();
-            freqTf.setText(String.format("%.2f", freqSlider.getValue()) + " Hz");
-            if (startPauseCounter > 0 && playBtn.getText().equals("Play")) {
-                for (Circle c : standList) {
-                    double sinTing = Math.sin(k * (c.getCenterX() - 30));
-                    double cosTing = Math.cos(omega * (totalTimeWhenStopped));
-                    double eq = 2 * A * sinTing * cosTing;
-                    c.setCenterY(192 + eq);
+        freqSldr.valueProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observableValue, Number number, Number t1) {
+                f = freqSldr.getValue();
+                freqTf.setText(String.format("%.2f", freqSldr.getValue()) + " Hz");
+                if (startPauseCounter > 0 && playBtn.getText() == "Play") {
+                    for (Circle c : standList) {
+                        double sinTing = Math.sin(k * (c.getCenterX() - 30));
+                        double cosTing = Math.cos(omega * (totalTimeWhenStopped));
+                        double eq = 2 * A * sinTing * cosTing;
+                        c.setCenterY(192 + eq);
+                    }
+                    for (Circle c : travelList) {
+                        double sinTing = Math.sin((k * (c.getCenterX() - 30)) - (omega * (totalTimeWhenStopped)));
+                        double eq = A * sinTing;
+                        c.setCenterY(192 + eq);
+                    }
+                    for (Circle c : reTravelList) {
+                        double sinTing = Math.sin((k * (c.getCenterX() - 30)) + (omega * (totalTimeWhenStopped)));
+                        double eq = A * sinTing;
+                        c.setCenterY(192 + eq);
+                    }
                 }
-                for (Circle c : travelList) {
-                    double sinTing = Math.sin((k * (c.getCenterX() - 30)) - (omega * (totalTimeWhenStopped)));
-                    double eq = A * sinTing;
-                    c.setCenterY(192 + eq);
-                }
-                for (Circle c : reTravelList) {
-                    double sinTing = Math.sin((k * (c.getCenterX() - 30)) + (omega * (totalTimeWhenStopped)));
-                    double eq = A * sinTing;
-                    c.setCenterY(192 + eq);
-                }
+                T = 1 / f;
+                omega = 2 * Math.PI * f;
+                waveLength = v / f;
+                k = (2 * Math.PI) / waveLength;
+                timeToReachEnd = stringLength / v;
+                periodTxt.setText("Period = " + String.format("%.3f", T) + " s");
+                omegaTxt.setText("Angular Frequency = " + String.format("%.3f", omega) + " rad/s");
+                lambdaTxt.setText("Wavelength = " + String.format("%.3f", lambda) + " cm");
+                kTxt.setText("Wave Number = " + String.format("%.3f", k) + " rad/cm");
+                modeNumberOne.setSelected(false);
+                modeNumberTwo.setSelected(false);
+                modeNumberThree.setSelected(false);
+                modeNumberFour.setSelected(false);
+                modeNumberFive.setSelected(false);
+                modeNumberSix.setSelected(false);
             }
-            T = 1 / f;
-            omega = 2 * Math.PI * f;
-            waveLength = v / f;
-            k = (2 * Math.PI) / waveLength;
-            timeToReachEnd = stringLength / v;
-            periodTxt.setText("Period = " + String.format("%.3f", T) + " s");
-            omegaTxt.setText("Angular Frequency = " + String.format("%.3f", omega) + " rad/s");
-            wavelengthTxt.setText("Wavelength = " + String.format("%.3f", wavelength) + " cm");
-            kTxt.setText("Wave Number = " + String.format("%.3f", k) + " rad/cm");
-            modeNumberOne.setSelected(false);
-            modeNumberTwo.setSelected(false);
-            modeNumberThree.setSelected(false);
-            modeNumberFour.setSelected(false);
-            modeNumberFive.setSelected(false);
-            modeNumberSix.setSelected(false);
         });
-        freqVBox.getChildren().addAll(freqText,freqTf, freqSlider);
+        freqVBox.getChildren().addAll(freqText,freqTf, freqSldr);
 
-        // Wave Speed
+        //Wave Speed
         VBox wavSpdVBox = new VBox(5);
         wavSpdVBox.setAlignment(Pos.CENTER);
         Text wavSpdText = new Text("Wave Speed [cm/s]");
         TextField wavSpdTf = new TextField("0.00 cm/s");
         wavSpdTf.setAlignment(Pos.CENTER);
         wavSpdTf.setEditable(false);
-        Slider waveSpeedSlider = new Slider(0, 1000, 0);
-        waveSpeedSlider.setShowTickLabels(true);
-        waveSpeedSlider.setShowTickMarks(true);
-        waveSpeedSlider.setMajorTickUnit(100);
-        waveSpeedSlider.setMinorTickCount(4);
+        Slider wavSpdSldr = new Slider(0, 1000, 0);
+        wavSpdSldr.setShowTickLabels(true);
+        wavSpdSldr.setShowTickMarks(true);
+        wavSpdSldr.setMajorTickUnit(100);
+        wavSpdSldr.setMinorTickCount(4);
 
-        waveSpeedSlider.valueProperty().addListener((observableValue, number, t1) -> {
-            v = waveSpeedSlider.getValue();
-            wavSpdTf.setText(String.format("%.2f", waveSpeedSlider.getValue()) + " cm/s");
-            if (startPauseCounter > 0 && playBtn.getText().equals("Play")) {
-                for (Circle c : standList) {
-                    double sinTing = Math.sin(k * (c.getCenterX() - 30));
-                    double cosTing = Math.cos(omega * (totalTimeWhenStopped));
-                    double eq = 2 * A * sinTing * cosTing;
-                    c.setCenterY(192 + eq);
+        wavSpdSldr.valueProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observableValue, Number number, Number t1) {
+                v = wavSpdSldr.getValue();
+                wavSpdTf.setText(String.format("%.2f", wavSpdSldr.getValue()) + " cm/s");
+                if (startPauseCounter > 0 && playBtn.getText() == "Play") {
+                    for (Circle c : standList) {
+                        double sinTing = Math.sin(k * (c.getCenterX() - 30));
+                        double cosTing = Math.cos(omega * (totalTimeWhenStopped));
+                        double eq = 2 * A * sinTing * cosTing;
+                        c.setCenterY(192 + eq);
+                    }
+                    for (Circle c : travelList) {
+                        double sinTing = Math.sin((k * (c.getCenterX() - 30)) - (omega * (totalTimeWhenStopped)));
+                        double eq = A * sinTing;
+                        c.setCenterY(192 + eq);
+                    }
+                    for (Circle c : reTravelList) {
+                        double sinTing = Math.sin((k * (c.getCenterX() - 30)) + (omega * (totalTimeWhenStopped)));
+                        double eq = A * sinTing;
+                        c.setCenterY(192 + eq);
+                    }
                 }
-                for (Circle c : travelList) {
-                    double sinTing = Math.sin((k * (c.getCenterX() - 30)) - (omega * (totalTimeWhenStopped)));
-                    double eq = A * sinTing;
-                    c.setCenterY(192 + eq);
-                }
-                for (Circle c : reTravelList) {
-                    double sinTing = Math.sin((k * (c.getCenterX() - 30)) + (omega * (totalTimeWhenStopped)));
-                    double eq = A * sinTing;
-                    c.setCenterY(192 + eq);
-                }
+                T = 1 / f;
+                omega = 2 * Math.PI * f;
+                waveLength = v / f;
+                k = (2 * Math.PI) / waveLength;
+                timeToReachEnd = stringLength / v;
+                periodTxt.setText("Period = " + String.format("%.3f", T) + " s");
+                omegaTxt.setText("Angular Frequency = " + String.format("%.3f", omega) + " rad/s");
+                lambdaTxt.setText("Wavelength = " + String.format("%.3f", lambda) + " cm");
+                kTxt.setText("Wave Number = " + String.format("%.3f", k) + " rad/cm");
+                modeNumberOne.setSelected(false);
+                modeNumberTwo.setSelected(false);
+                modeNumberThree.setSelected(false);
+                modeNumberFour.setSelected(false);
+                modeNumberFive.setSelected(false);
+                modeNumberSix.setSelected(false);
             }
-            T = 1 / f;
-            omega = 2 * Math.PI * f;
-            waveLength = v / f;
-            k = (2 * Math.PI) / waveLength;
-            timeToReachEnd = stringLength / v;
-            periodTxt.setText("Period = " + String.format("%.3f", T) + " s");
-            omegaTxt.setText("Angular Frequency = " + String.format("%.3f", omega) + " rad/s");
-            wavelengthTxt.setText("Wavelength = " + String.format("%.3f", wavelength) + " cm");
-            kTxt.setText("Wave Number = " + String.format("%.3f", k) + " rad/cm");
-            modeNumberOne.setSelected(false);
-            modeNumberTwo.setSelected(false);
-            modeNumberThree.setSelected(false);
-            modeNumberFour.setSelected(false);
-            modeNumberFive.setSelected(false);
-            modeNumberSix.setSelected(false);
         });
-        wavSpdVBox.getChildren().addAll(wavSpdText,wavSpdTf,waveSpeedSlider);
+        wavSpdVBox.getChildren().addAll(wavSpdText,wavSpdTf,wavSpdSldr);
 
-        // Amplitude
+        //Amplitude
         VBox ampVBox = new VBox(5);
         ampVBox.setAlignment(Pos.CENTER);
         Text ampText = new Text("Amplitude [cm]");
         TextField ampTf = new TextField("0.00 cm");
         ampTf.setAlignment(Pos.CENTER);
         ampTf.setEditable(false);
-        Slider ampSlider = new Slider(0, 60, 0);
-        ampSlider.setShowTickMarks(true);
-        ampSlider.setShowTickLabels(true);
-        ampSlider.setMajorTickUnit(5);
-        ampSlider.setMinorTickCount(4);
+        Slider ampSldr = new Slider(0, 60, 0);
+        ampSldr.setShowTickMarks(true);
+        ampSldr.setShowTickLabels(true);
+        ampSldr.setMajorTickUnit(5);
+        ampSldr.setMinorTickCount(4);
 
-        ampSlider.valueProperty().addListener((observableValue, number, t1) -> {
-            A = ampSlider.getValue();
-            ampTf.setText(String.format("%.2f", ampSlider.getValue()) + " cm");
-            if (startPauseCounter > 0 && playBtn.getText().equals("Play")) {
-                for (Circle c : standList) {
-                    double sinTing = Math.sin(k * (c.getCenterX() - 30));
-                    double cosTing = Math.cos(omega * (totalTimeWhenStopped));
-                    double eq = 2 * A * sinTing * cosTing;
-                    c.setCenterY(192 + eq);
+        ampSldr.valueProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observableValue, Number number, Number t1) {
+                A = ampSldr.getValue();
+                ampTf.setText(String.format("%.2f", ampSldr.getValue()) + " cm");
+                if (startPauseCounter > 0 && playBtn.getText() == "Play") {
+                    for (Circle c : standList) {
+                        double sinTing = Math.sin(k * (c.getCenterX() - 30));
+                        double cosTing = Math.cos(omega * (totalTimeWhenStopped));
+                        double eq = 2 * A * sinTing * cosTing;
+                        c.setCenterY(192 + eq);
+                    }
+                    for (Circle c : travelList) {
+                        double sinTing = Math.sin((k * (c.getCenterX() - 30)) - (omega * (totalTimeWhenStopped)));
+                        double eq = A * sinTing;
+                        c.setCenterY(192 + eq);
+                    }
+                    for (Circle c : reTravelList) {
+                        double sinTing = Math.sin((k * (c.getCenterX() - 30)) + (omega * (totalTimeWhenStopped)));
+                        double eq = A * sinTing;
+                        c.setCenterY(192 + eq);
+                    }
                 }
-                for (Circle c : travelList) {
-                    double sinTing = Math.sin((k * (c.getCenterX() - 30)) - (omega * (totalTimeWhenStopped)));
-                    double eq = A * sinTing;
-                    c.setCenterY(192 + eq);
-                }
-                for (Circle c : reTravelList) {
-                    double sinTing = Math.sin((k * (c.getCenterX() - 30)) + (omega * (totalTimeWhenStopped)));
-                    double eq = A * sinTing;
-                    c.setCenterY(192 + eq);
-                }
+                T = 1 / f;
+                omega = 2 * Math.PI * f;
+                waveLength = v / f;
+                k = (2 * Math.PI) / waveLength;
+                timeToReachEnd = stringLength / v;
+                periodTxt.setText("Period = " + String.format("%.3f", T) + " s");
+                omegaTxt.setText("Angular Frequency = " + String.format("%.3f", omega) + " rad/s");
+                lambdaTxt.setText("Wavelength = " + String.format("%.3f", lambda) + " cm");
+                kTxt.setText("Wave Number = " + String.format("%.3f", k) + " rad/cm");
             }
-            T = 1 / f;
-            omega = 2 * Math.PI * f;
-            waveLength = v / f;
-            k = (2 * Math.PI) / waveLength;
-            timeToReachEnd = stringLength / v;
-            periodTxt.setText("Period = " + String.format("%.3f", T) + " s");
-            omegaTxt.setText("Angular Frequency = " + String.format("%.3f", omega) + " rad/s");
-            wavelengthTxt.setText("Wavelength = " + String.format("%.3f", wavelength) + " cm");
-            kTxt.setText("Wave Number = " + String.format("%.3f", k) + " rad/cm");
         });
 
-        ampVBox.getChildren().addAll(ampText,ampTf,ampSlider);
+        ampVBox.getChildren().addAll(ampText,ampTf,ampSldr);
         sliders.getChildren().addAll(freqVBox, wavSpdVBox, ampVBox);
         ui.getChildren().add(sliders);
 
@@ -474,7 +491,9 @@ public class Ui extends Application {
         actionData.setAlignment(Pos.CENTER);
         controls.getChildren().add(actionData);
 
-        // Legend
+        /**
+         * Legend
+         */
         VBox legend = new VBox(5);
         HBox incidTraveLeg = new HBox(10);
         Line inciTravLine = new Line(0, 0, 10, 0);
@@ -501,18 +520,37 @@ public class Ui extends Application {
         legend.getChildren().addAll(incidTraveLeg, refTravLeg, standLeg, hoverInstruction);
         actionData.getChildren().add(legend);
 
-        // Start Button
+        /**
+         * Start Button
+         */
         Button btn3 = new Button("Help");
-        btn3.setOnAction(actionEvent -> System.out.println("What did the ocean say to the beach?\nNothing, it just waved.\n"));
+        btn3.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                System.out.println("What did the ocean say to the beach?\nNothing, it just waved.\n");
+            }
+        });
         actionData.getChildren().add(playBtn);
 
-        // Extra Displayed Values
+        /**
+         * Extra Displayed Values
+         */
         VBox exData = new VBox(5);
 
-        exData.getChildren().addAll(coordinateTxt,periodTxt, omegaTxt, wavelengthTxt, kTxt);
+        exData.getChildren().addAll(coordinateTxt,periodTxt, omegaTxt, lambdaTxt, kTxt);
         actionData.getChildren().add(exData);
 
-        // Grid lines
+//        Line separator2 = new Line(0, 346, 1000, 346);
+//        root.getChildren().add(separator2);
+
+        /**
+         * Displaying the waves
+         */
+
+        /**
+         * Setting up the grid
+         */
+        //Grid lines
         for(int i = 70; i <= wavesPane.getPrefHeight() - 60; i += 20) {
             horiGrid = new Line(30, i + 2, 970, i + 2);
             horiGrid.setStroke(Color.LIGHTGRAY);
@@ -527,30 +565,40 @@ public class Ui extends Application {
             wavesPane.getChildren().add(vertGrid);
         }
 
-        // Toggle Grid
-        gridOn.setOnAction(actionEvent -> {
-            for (Line l : hLineList) {
-                l.setVisible(true);
+        /**
+         * Toggle Grid
+         */
+        gridOn.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                for(Line l: hLineList) {
+                    l.setVisible(true);
+                }
+                for(Line l: vLineList) {
+                    l.setVisible(true);
+                }
+                gridOff.setSelected(false);
+                gridOn.setSelected(true);
             }
-            for (Line l : vLineList) {
-                l.setVisible(true);
-            }
-            gridOff.setSelected(false);
-            gridOn.setSelected(true);
         });
 
-        gridOff.setOnAction(actionEvent -> {
-            for (Line l : hLineList) {
-                l.setVisible(false);
+        gridOff.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                for(Line l: hLineList) {
+                    l.setVisible(false);
+                }
+                for(Line l: vLineList) {
+                    l.setVisible(false);
+                }
+                gridOn.setSelected(false);
+                gridOff.setSelected(true);
             }
-            for (Line l : vLineList) {
-                l.setVisible(false);
-            }
-            gridOn.setSelected(false);
-            gridOff.setSelected(true);
         });
 
-        // Creating Axis Lines
+        /**
+         * Creating Axis Lines
+         */
         Line xAxis = new Line();
         xAxis.setStartX(10);
         xAxis.setEndX(970);
@@ -573,7 +621,7 @@ public class Ui extends Application {
 
         wavesPane.getChildren().addAll(xAxis, xAxisTitle, yAxis, yAxisTitle);
 
-        // X-Axis indices
+        //X-Axis indices
         for(int i = 40; i < 980; i += 20) {
             xIndic = new Line(i + 10, xAxis.getStartY() - 5, i + 10, xAxis.getStartY() + 5);
             xIndiList.add(xIndic);
@@ -589,7 +637,7 @@ public class Ui extends Application {
             wavesPane.getChildren().add(xL);
         }
 
-        // Y-Axis indices
+        //Y-Axis indices
         for(int i = (int) wavesPane.getPrefHeight() - 70; i >= 60; i -= 20) {
             yIndic = new Line(yAxis.getStartX() - 5, i - 2, yAxis.getStartX() + 5, i - 2);
             yIndiList.add(yIndic);
@@ -600,13 +648,14 @@ public class Ui extends Application {
             int dd = (actNb * -1 + 14) * 2;
             yL = new Text("" + (dd));
             yL.setFont(Font.font("Consanas", FontWeight.BOLD, FontPosture.REGULAR, 11));
-            yL.setLayoutX(5);
             yL.setLayoutY(i - 24);
             yLabelList.add(yL);
             wavesPane.getChildren().add(yL);
         }
 
-        // Creating the incident traveling wave
+        /**
+         * Creating the incident traveling wave
+         */
         for(int i = 30; i <= 970; i++) {
             c = new Circle(i, wavesPane.getPrefHeight()/2, 2, Color.CORNFLOWERBLUE);
             travelList.add(c);
@@ -615,7 +664,9 @@ public class Ui extends Application {
             wavesPane.getChildren().add(c);
         }
 
-        // Creating the reflected traveling wave
+        /**
+         * Creating the reflected traveling wave
+         */
         for(int i = 30; i <= 970; i++) {
             c = new Circle(i, wavesPane.getPrefHeight()/2, 2, Color.ORANGERED);
             reTravelList.add(c);
@@ -624,7 +675,9 @@ public class Ui extends Application {
             wavesPane.getChildren().add(c);
         }
 
-        // Creating the standing wave
+        /**
+         * Creating the standing wave
+         */
         for(int i = 30; i <= 970; i++) {
             c = new Circle(i, wavesPane.getPrefHeight()/2, 3, Color.DARKMAGENTA);
             standList.add(c);
@@ -633,209 +686,285 @@ public class Ui extends Application {
             wavesPane.getChildren().add(c);
         }
 
-        // Change Theme
-        lightMode.setOnAction(actionEvent -> {
-            root.setStyle("-fx-background-color: white");
+        /**
+         * Change Theme
+         */
+        lightMode.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                root.setStyle("-fx-background-color: white");
 
-            inciTravLine.setStroke(Color.CORNFLOWERBLUE);
-            refTravLine.setStroke(Color.ORANGERED);
-            standLine.setStroke(Color.DARKMAGENTA);
-            separator.setStroke(Color.BLACK);
-            xAxis.setStroke(Color.BLACK);
-            yAxis.setStroke(Color.BLACK);
+                inciTravLine.setStroke(Color.CORNFLOWERBLUE);
+                refTravLine.setStroke(Color.ORANGERED);
+                standLine.setStroke(Color.DARKMAGENTA);
+                separator.setStroke(Color.BLACK);
+                xAxis.setStroke(Color.BLACK);
+                yAxis.setStroke(Color.BLACK);
 
-            //Text in main window
-            for (Text text : Arrays.asList(simTitle, inciTravLegTxt, refTravLegTxt, ampText, wavSpdText, ampText,
-                    standLegTxt, coordinateTxt, periodTxt, omegaTxt, wavelengthTxt, hoverInstruction, kTxt,
-                    xAxisTitle, yAxisTitle)) {
-                text.setFill(Color.BLACK);
-            }
+                //Text in main window
+                simTitle.setFill(Color.BLACK);
+                inciTravLegTxt.setFill(Color.BLACK);
+                refTravLegTxt.setFill(Color.BLACK);
+                ampText.setFill(Color.BLACK);
+                wavSpdText.setFill(Color.BLACK);
+                ampText.setFill(Color.BLACK);
+                standLegTxt.setFill(Color.BLACK);
+                coordinateTxt.setFill(Color.BLACK);
+                periodTxt.setFill(Color.BLACK);
+                omegaTxt.setFill(Color.BLACK);
+                lambdaTxt.setFill(Color.BLACK);
+                hoverInstruction.setFill(Color.BLACK);
+                kTxt.setFill(Color.BLACK);
+                xAxisTitle.setFill(Color.BLACK);
+                yAxisTitle.setFill(Color.BLACK);
 
-            //Text in Help window
-            helpPane.setStyle("-fx-background-color: white");
-            theoryTxt.setFill(Color.BLACK);
-            wavesEgDesc.setFill(Color.BLACK);
-            theoryTxt2.setFill(Color.BLACK);
-            theoEqn.setFill(Color.BLACK);
-            sourcesTitle.setFill(Color.BLACK);
-            profDaveRef.setFill(Color.BLACK);
-            britAmpRef.setFill(Color.BLACK);
-            britWaveRef.setFill(Color.BLACK);
+                //Text in Help window
+                helpPane.setStyle("-fx-background-color: whitesmoke");
+                theoVbox.setStyle("-fx-background-color: whitesmoke");
+                theoryTxt.setFill(Color.BLACK);
+                wavesEgDesc.setFill(Color.BLACK);
+                theoryTxt2.setFill(Color.BLACK);
+                theoEqn.setFill(Color.BLACK);
+                sourcesTitle.setFill(Color.BLACK);
+                profDaveRef.setFill(Color.BLACK);
+                britAmpRef.setFill(Color.BLACK);
+                britWaveRef.setFill(Color.BLACK);
 
-            menuView.setImage(menuIcon);
-            menuBtn.setStyle("-fx-background-color: #ffffff;-fx-border-color: black;");
-            ampTf.setStyle("-fx-background-color: #ffffff;-fx-border-color: black;");
-            freqTf.setStyle("-fx-background-color: #ffffff;-fx-border-color: black;");
-            wavSpdTf.setStyle("-fx-background-color: #ffffff;-fx-border-color: black;");
+                helpSeparator.setStroke(Color.BLACK);
 
-            for (Line l : xIndiList) {
-                l.setStroke(Color.BLACK);
-            }
-            for (Text t : xLabelList) {
-                t.setFill(Color.BLACK);
-            }
-            for (Line l : yIndiList) {
-                l.setStroke(Color.BLACK);
-            }
-            for (Text t : yLabelList) {
-                t.setFill(Color.BLACK);
-            }
-            for (Circle c : travelList) {
-                c.setStroke(Color.CORNFLOWERBLUE);
-            }
-            for (Circle c : reTravelList) {
-                c.setStroke(Color.MAROON);
-            }
-            for (Circle c : standList) {
-                c.setStroke(Color.DARKMAGENTA);
-            }
+                menuView.setImage(menuIcon);
+                menuBtn.setStyle("-fx-background-color: #ffffff;-fx-border-color: black;");
+                ampTf.setStyle("-fx-background-color: #ffffff;-fx-border-color: black;");
+                freqTf.setStyle("-fx-background-color: #ffffff;-fx-border-color: black;");
+                wavSpdTf.setStyle("-fx-background-color: #ffffff;-fx-border-color: black;");
 
-            darkMode.setSelected(false);
-            lightMode.setSelected(true);
+                for(Line l: xIndiList) {
+                    l.setStroke(Color.BLACK);
+                }
+                for(Text t: xLabelList) {
+                    t.setFill(Color.BLACK);
+                }
+                for(Line l: yIndiList) {
+                    l.setStroke(Color.BLACK);
+                }
+                for(Text t: yLabelList) {
+                    t.setFill(Color.BLACK);
+                }
+                for(Circle c: travelList) {
+                    c.setStroke(Color.CORNFLOWERBLUE);
+                }
+                for(Circle c: reTravelList) {
+                    c.setStroke(Color.MAROON);
+                }
+                for(Circle c: standList) {
+                    c.setStroke(Color.DARKMAGENTA);
+                }
+
+                darkMode.setSelected(false);
+                lightMode.setSelected(true);
+            }
         });
 
-        darkMode.setOnAction(actionEvent -> {
-            setBackground(root, simTitle, inciTravLegTxt, refTravLegTxt, standLegTxt, coordinateTxt, hoverInstruction, periodTxt, omegaTxt);
-            setFillColorWhite(wavelengthTxt, kTxt, ampText, xAxisTitle, freqText, wavSpdText, yAxisTitle);
+        darkMode.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                root.setStyle("-fx-background-color: #303030");
 
-            //Text in the Help window
-            setBackground(helpPane, theoryTxt, wavesEgDesc, theoryTxt2, theoEqn, sourcesTitle, profDaveRef, britAmpRef, britWaveRef);
+                //Text in main window
+                simTitle.setFill(Color.WHITE);
+                inciTravLegTxt.setFill(Color.WHITE);
+                refTravLegTxt.setFill(Color.WHITE);
+                standLegTxt.setFill(Color.WHITE);
+                coordinateTxt.setFill(Color.WHITE);
+                hoverInstruction.setFill(Color.WHITE);
+                periodTxt.setFill(Color.WHITE);
+                omegaTxt.setFill(Color.WHITE);
+                lambdaTxt.setFill(Color.WHITE);
+                kTxt.setFill(Color.WHITE);
+                ampText.setFill(Color.WHITE);
+                xAxisTitle.setFill(Color.WHITE);
+                freqText.setFill(Color.WHITE);
+                wavSpdText.setFill(Color.WHITE);
+                yAxisTitle.setFill(Color.WHITE);
 
-            ampTf.setStyle("-fx-background-color: #303030; -fx-text-fill: white;");
-            freqTf.setStyle("-fx-background-color: #303030; -fx-text-fill: white;");
-            wavSpdTf.setStyle("-fx-background-color: #303030; -fx-text-fill: white;");
-            menuView.setImage(nMenuIcon);
-            menuBtn.setStyle("-fx-background-color: #303030; -fx-border-color: white;");
+                //Text in the Help window
+                helpPane.setStyle("-fx-background-color: #303030");
+                theoVbox.setStyle("-fx-background-color: #303030");
+                theoryTxt.setFill(Color.WHITE);
+                wavesEgDesc.setFill(Color.WHITE);
+                theoryTxt2.setFill(Color.WHITE);
+                theoEqn.setFill(Color.WHITE);
+                sourcesTitle.setFill(Color.WHITE);
+                profDaveRef.setFill(Color.WHITE);
+                britAmpRef.setFill(Color.WHITE);
+                britWaveRef.setFill(Color.WHITE);
 
-            separator.setStroke(Color.WHITE);
-            inciTravLine.setStroke(Color.CYAN);
-            refTravLine.setStroke(Color.ORANGERED);
-            standLine.setStroke(omori);
-            xAxis.setStroke(Color.WHITE);
-            yAxis.setStroke(Color.WHITE);
+                helpSeparator.setStroke(Color.WHITE);
 
-            for (Line l : xIndiList) {
-                l.setStroke(Color.WHITE);
-            }
-            for (Text t : xLabelList) {
-                t.setFill(Color.WHITE);
-            }
-            for (Line l : yIndiList) {
-                l.setStroke(Color.WHITE);
-            }
-            for (Text t : yLabelList) {
-                t.setFill(Color.WHITE);
-            }
-            for (Circle c : travelList) {
-                c.setStroke(Color.CYAN);
-            }
-            for (Circle c : reTravelList) {
-                c.setStroke(Color.ORANGERED);
-            }
-            for (Circle c : standList) {
-                c.setStroke(omori);
-            }
+                ampTf.setStyle("-fx-background-color: #303030; -fx-text-fill: white;");
+                freqTf.setStyle("-fx-background-color: #303030; -fx-text-fill: white;");
+                wavSpdTf.setStyle("-fx-background-color: #303030; -fx-text-fill: white;");
+                menuView.setImage(nMenuIcon);
+                menuBtn.setStyle("-fx-background-color: #303030; -fx-border-color: white;");
 
-            lightMode.setSelected(false);
-            darkMode.setSelected(true);
+                separator.setStroke(Color.WHITE);
+                inciTravLine.setStroke(Color.CYAN);
+                refTravLine.setStroke(Color.ORANGERED);
+                standLine.setStroke(omori);
+                xAxis.setStroke(Color.WHITE);
+                yAxis.setStroke(Color.WHITE);
+
+                for(Line l: xIndiList) {
+                    l.setStroke(Color.WHITE);
+                }
+                for(Text t: xLabelList) {
+                    t.setFill(Color.WHITE);
+                }
+                for(Line l: yIndiList) {
+                    l.setStroke(Color.WHITE);
+                }
+                for(Text t: yLabelList) {
+                    t.setFill(Color.WHITE);
+                }
+                for(Circle c: travelList) {
+                    c.setStroke(Color.CYAN);
+                }
+                for(Circle c: reTravelList) {
+                    c.setStroke(Color.ORANGERED);
+                }
+                for(Circle c: standList) {
+                    c.setStroke(omori);
+                }
+
+                lightMode.setSelected(false);
+                darkMode.setSelected(true);
+            }
         });
 
-        // Toggle Wave Visibility
-        toggleIncident.setOnAction(actionEvent -> {
-            incidentCounter += 1;
-            if (incidentCounter % 2 == 1) {
-                toggleIncident.setSelected(false);
-                for (Circle c : travelList) {
-                    c.setVisible(false);
+        /**
+         * Toggle Wave Visibility
+         */
+
+        toggleIncident.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                incidentCounter += 1;
+                if (incidentCounter % 2 == 1) {
+                    toggleIncident.setSelected(false);
+                    for(Circle c: travelList) {
+                        c.setVisible(false);
+                    }
+                }
+
+                if (incidentCounter % 2 == 0) {
+                    toggleIncident.setSelected(true);
+                    for(Circle c: travelList) {
+                        c.setVisible(true);
+                    }
                 }
             }
+        });
 
-            if (incidentCounter % 2 == 0) {
-                toggleIncident.setSelected(true);
-                for (Circle c : travelList) {
-                    c.setVisible(true);
+        toggleReflected.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                reflectedCounter += 1;
+                if(reflectedCounter % 2 == 1) {
+                    toggleReflected.setSelected(false);
+                    for(Circle c: reTravelList) {
+                        c.setVisible(false);
+                    }
+                }
+                if(reflectedCounter % 2 == 0) {
+                    toggleReflected.setSelected(true);
+                    for(Circle c: reTravelList) {
+                        c.setVisible(true);
+                    }
                 }
             }
         });
 
-        toggleReflected.setOnAction(actionEvent -> {
-            reflectedCounter += 1;
-            if (reflectedCounter % 2 == 1) {
-                toggleReflected.setSelected(false);
-                for (Circle c : reTravelList) {
-                    c.setVisible(false);
+        toggleStanding.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                standingCounter += 1;
+                if(standingCounter % 2 == 1) {
+                    toggleStanding.setSelected(false);
+                    for(Circle c: standList) {
+                        c.setVisible(false);
+                    }
                 }
-            }
-            if (reflectedCounter % 2 == 0) {
-                toggleReflected.setSelected(true);
-                for (Circle c : reTravelList) {
-                    c.setVisible(true);
-                }
-            }
-        });
-
-        toggleStanding.setOnAction(actionEvent -> {
-            standingCounter += 1;
-            if (standingCounter % 2 == 1) {
-                toggleStanding.setSelected(false);
-                for (Circle c : standList) {
-                    c.setVisible(false);
-                }
-            }
-            if (standingCounter % 2 == 0) {
-                toggleStanding.setSelected(true);
-                for (Circle c : standList) {
-                    c.setVisible(true);
+                if(standingCounter % 2 == 0) {
+                    toggleStanding.setSelected(true);
+                    for(Circle c: standList) {
+                        c.setVisible(true);
+                    }
                 }
             }
         });
 
-        // Fast, Slow, & Normal motion speeds
-        normalMotion.setOnAction(actionEvent -> {
-            slowMotion.setSelected(false);
-            fastMotion.setSelected(false);
-            normalMotion.setSelected(true);
+        /**
+         * Fast, Slow, & Normal motion speeds
+         */
+        normalMotion.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                slowMotion.setSelected(false);
+                fastMotion.setSelected(false);
+                normalMotion.setSelected(true);
+            }
         });
 
-        fastMotion.setOnAction(actionEvent -> {
-            slowMotion.setSelected(false);
-            normalMotion.setSelected(false);
-            fastMotion.setSelected(true);
+        fastMotion.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                slowMotion.setSelected(false);
+                normalMotion.setSelected(false);
+                fastMotion.setSelected(true);
+            }
         });
 
-        slowMotion.setOnAction(actionEvent -> {
-            fastMotion.setSelected(false);
-            normalMotion.setSelected(false);
-            slowMotion.setSelected(true);
+        slowMotion.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                fastMotion.setSelected(false);
+                normalMotion.setSelected(false);
+                slowMotion.setSelected(true);
+            }
         });
 
-        // Mode Number CheckMenuItems
+        /**
+         * Mode Number CheckMenuItems
+         */
+
         modeNumberAction(modeNumberOne, modeNumberTwo, modeNumberThree, modeNumberFour, modeNumberFive, modeNumberSix,
-                freqSlider, waveSpeedSlider, modeNumberOneValue);
+                freqSldr, wavSpdSldr, ampSldr, modeNumberOneValue);
         modeNumberAction(modeNumberTwo, modeNumberOne, modeNumberThree, modeNumberFour, modeNumberFive, modeNumberSix,
-                freqSlider, waveSpeedSlider, modeNumberTwoValue);
+                freqSldr, wavSpdSldr, ampSldr, modeNumberTwoValue);
         modeNumberAction(modeNumberThree, modeNumberOne, modeNumberTwo, modeNumberFour, modeNumberFive, modeNumberSix,
-                freqSlider, waveSpeedSlider, modeNumberThreeValue);
+                freqSldr, wavSpdSldr, ampSldr, modeNumberThreeValue);
         modeNumberAction(modeNumberFour, modeNumberOne, modeNumberTwo, modeNumberThree, modeNumberFive, modeNumberSix,
-                freqSlider, waveSpeedSlider, modeNumberFourValue);
+                freqSldr, wavSpdSldr, ampSldr, modeNumberFourValue);
         modeNumberAction(modeNumberFive, modeNumberOne, modeNumberTwo, modeNumberThree, modeNumberFour, modeNumberSix,
-                freqSlider, waveSpeedSlider, modeNumberFiveValue);
+                freqSldr, wavSpdSldr, ampSldr, modeNumberFiveValue);
         modeNumberAction(modeNumberSix, modeNumberOne, modeNumberTwo, modeNumberThree, modeNumberFour, modeNumberFive,
-                freqSlider, waveSpeedSlider, modeNumberSixValue);
+                freqSldr, wavSpdSldr, ampSldr, modeNumberSixValue);
 
-        // Equations and AnimationTimer
+        /**
+         * Equations and AnimationTimer
+         */
         AnimationTimer animateTimer = new AnimationTimer() {
             @Override
             public void handle(long l) {
                 T = 1 / f;
                 omega = 2 * Math.PI * f;
-                wavelength = v / f;
-                k = (2 * Math.PI) / wavelength;
+                lambda = v / f;
+                k = (2 * Math.PI) / lambda;
                 timeToReachEnd = stringLength / v;
 
                 periodTxt.setText("Period = " + String.format("%.3f", T) + " s");
                 omegaTxt.setText("Angular Frequency = " + String.format("%.3f", omega) + " rad/s");
-                wavelengthTxt.setText("Wavelength = " + String.format("%.3f", wavelength) + " cm");
+                lambdaTxt.setText("Wavelength = " + String.format("%.3f", lambda) + " cm");
                 kTxt.setText("Wave Number = " + String.format("%.3f", k) + " rad/cm");
 
                 if(normalMotion.isSelected()) {
@@ -868,7 +997,9 @@ public class Ui extends Application {
             }
         };
 
-        // Setting up the Pause / Play button
+        /**
+         * Setting up the Pause / Play button
+         */
         playBtn.setOnAction(actionEvent -> {
             startPauseCounter += 1;
             if(startPauseCounter % 2 == 1) {
@@ -905,54 +1036,45 @@ public class Ui extends Application {
 
         root.setCenter(wavesPane);
 
-        // Brining it all together
+        /**
+         * Brining it all together
+         */
         Scene scene = new Scene(root, 1000, 650);
-        scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("waves.css")).toExternalForm());
+        scene.getStylesheets().add(getClass().getResource("waves.css").toExternalForm());
         stage.setTitle("Physics Learning Tool");
         stage.setResizable(false);
         stage.setScene(scene);
         stage.show();
     }
 
-    private void setBackground(Pane helpPane, Text theoryTxt, Text wavesEgDesc, Text theoryTxt2, Text theoEqn,
-                               Text sourcesTitle, Text profDaveRef, Text britAmpRef, Text britWaveRef) {
-        helpPane.setStyle("-fx-background-color: #303030");
-        setFillColorWhite(theoryTxt, wavesEgDesc, theoryTxt2, theoEqn, sourcesTitle, profDaveRef, britAmpRef);
-        britWaveRef.setFill(Color.WHITE);
-    }
-
-    private void setFillColorWhite(Text theoryTxt, Text wavesEgDesc, Text theoryTxt2, Text theoEqn, Text sourcesTitle,
-                                   Text profDaveRef, Text britAmpRef) {
-        theoryTxt.setFill(Color.WHITE);
-        wavesEgDesc.setFill(Color.WHITE);
-        theoryTxt2.setFill(Color.WHITE);
-        theoEqn.setFill(Color.WHITE);
-        sourcesTitle.setFill(Color.WHITE);
-        profDaveRef.setFill(Color.WHITE);
-        britAmpRef.setFill(Color.WHITE);
-    }
-
     private void modeNumberAction(CheckMenuItem modeNumberOne, CheckMenuItem modeNumberTwo,
                                   CheckMenuItem modeNumberThree, CheckMenuItem modeNumberFour,
                                   CheckMenuItem modeNumberFive, CheckMenuItem modeNumberSix,
-                                  Slider freqSlider, Slider wavSpdSlider, double modeNumberOneValue) {
-        modeNumberOne.setOnAction(actionEvent -> {
-            freqSlider.setValue(0.50);
-            wavSpdSlider.setValue(modeNumberOneValue);
-            modeNumberOne.setSelected(true);
-            modeNumberTwo.setSelected(false);
-            modeNumberThree.setSelected(false);
-            modeNumberFour.setSelected(false);
-            modeNumberFive.setSelected(false);
-            modeNumberSix.setSelected(false);
+                                  Slider freqSldr, Slider wavSpdSldr, Slider ampSldr, double modeNumberOneValue) {
+        modeNumberOne.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                freqSldr.setValue(0.50);
+                wavSpdSldr.setValue(modeNumberOneValue);
+                modeNumberOne.setSelected(true);
+                modeNumberTwo.setSelected(false);
+                modeNumberThree.setSelected(false);
+                modeNumberFour.setSelected(false);
+                modeNumberFive.setSelected(false);
+                modeNumberSix.setSelected(false);
+            }
         });
     }
 
     private void showCoordinates(Text coordinateTxt, ArrayList<Circle> standList) {
         for (Circle c : standList) {
-            c.setOnMouseEntered(mouseEvent -> coordinateTxt.setText("Point Coordinates (x, y)  =  (" + String.format("%.2f",
-                    (c.getCenterX() - 30)) + ", " + String.format("%.2f",  (192 - c.getCenterY())) + ")"));
-            c.setOnMouseExited(mouseEvent -> coordinateTxt.setText("Point Coordinates (x, y)  =  (           ,         )"));
+            c.setOnMouseEntered(mouseEvent -> {
+                coordinateTxt.setText("Point Coordinates (x, y) = (" + String.format("%.2f",
+                        (c.getCenterX() - 30)) + ", " + String.format("%.2f",  (192 - c.getCenterY())) + ")");
+            });
+            c.setOnMouseExited(mouseEvent -> {
+                coordinateTxt.setText("Point Coordinates (x, y) = (           ,         )");
+            });
         }
     }
 }
