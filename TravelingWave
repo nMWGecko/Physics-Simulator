@@ -3,7 +3,6 @@ package com.example.demo;
 // TODO fix dark mode text
 // TODO grid line (separator)
 // TODO fix when you're on help menu and you can just continuously scroll up
-// TODO put all settings in settings menu
 
 import javafx.animation.*;
 import javafx.application.Application;
