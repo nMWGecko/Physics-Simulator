@@ -1,9 +1,7 @@
 package com.example.demo;
 
-// TODO make toggle wave options into check menu options
 // TODO fix dark mode text
 // TODO grid line (separator)
-// TODO feature: when a mode# is selected, have it deselected as soon as slider values are adjusted.
 // TODO fix when you're on help menu and you can just continuously scroll up
 
 import javafx.animation.*;
@@ -56,14 +54,12 @@ public class Ui extends Application {
     static ArrayList<Text> xLabelList = new ArrayList<>();
     static ArrayList<Text> yLabelList = new ArrayList<>();
 
-    static int stringLength = 490;
+    static int stringLength = 940;
     static int startPauseCounter, incidentCounter, reflectedCounter, standingCounter = 0;
-    static int modeNumberOneValue, modeNumberTwoValue, modeNumberThreeValue, modeNumberFourValue, modeNumberFiveValue,
+    static double modeNumberOneValue, modeNumberTwoValue, modeNumberThreeValue, modeNumberFourValue, modeNumberFiveValue,
             modeNumberSixValue;
 
-    static double A, f, T, omega, lambda, k, waveLength, timeElapsed, timeWhenStopped, totalTimeWhenStopped;
-    static double timeToReachEnd = 4.9;
-    static double v = 100;
+    static double A, f, T, v, omega, lambda, k, waveLength, timeToReachEnd, timeElapsed, timeWhenStopped, totalTimeWhenStopped;
 
     //Ui(Stage travelWaveStage) { // constructor is not working
     //    start(travelWaveStage);
@@ -89,12 +85,12 @@ public class Ui extends Application {
             homePic = (String) jsonObject.get("homeIcon");
             helpPic = (String) jsonObject.get("newtonSecondStagePic");
             nMenuPic = (String) jsonObject.get("nMenuIcon");
-            modeNumberOneValue = Integer.parseInt((String) jsonObject.get("modeNumberOneValue"));
-            modeNumberTwoValue = Integer.parseInt((String) jsonObject.get("modeNumberTwoValue"));
-            modeNumberThreeValue = Integer.parseInt((String) jsonObject.get("modeNumberThreeValue"));
-            modeNumberFourValue = Integer.parseInt((String) jsonObject.get("modeNumberFourValue"));
-            modeNumberFiveValue = Integer.parseInt((String) jsonObject.get("modeNumberFiveValue"));
-            modeNumberSixValue = Integer.parseInt((String) jsonObject.get("modeNumberSixValue"));
+            modeNumberOneValue = Double.parseDouble((String) jsonObject.get("modeNumberOneValue"));
+            modeNumberTwoValue = Double.parseDouble((String) jsonObject.get("modeNumberTwoValue"));
+            modeNumberThreeValue = Double.parseDouble((String) jsonObject.get("modeNumberThreeValue"));
+            modeNumberFourValue = Double.parseDouble((String) jsonObject.get("modeNumberFourValue"));
+            modeNumberFiveValue = Double.parseDouble((String) jsonObject.get("modeNumberFiveValue"));
+            modeNumberSixValue = Double.parseDouble((String) jsonObject.get("modeNumberSixValue"));
         }
         catch (ParseException | IOException e) {
             e.printStackTrace();
@@ -116,19 +112,22 @@ public class Ui extends Application {
 
         //Toggling the incident and reflect rays visibility
         Menu raysVis = new Menu("Toggle Waves");
-        MenuItem toggleIncident = new MenuItem("Incident");
-        MenuItem toggleReflected = new MenuItem("Reflected");
-        MenuItem toggleStanding = new MenuItem("Standing");
+        CheckMenuItem toggleIncident = new CheckMenuItem("Incident");
+        CheckMenuItem toggleReflected = new CheckMenuItem("Reflected");
+        CheckMenuItem toggleStanding = new CheckMenuItem("Standing");
+        toggleIncident.setSelected(true);
+        toggleReflected.setSelected(true);
+        toggleStanding.setSelected(true);
         raysVis.getItems().addAll(toggleIncident, toggleReflected, toggleStanding);
 
         // Set 'mode numbers' (not accurate to actual values from mode # equation)
-        Menu modeNumber = new Menu("Mode #'s");
-        CheckMenuItem modeNumberOne = new CheckMenuItem("Mode no.1");
-        CheckMenuItem modeNumberTwo = new CheckMenuItem("Mode no.2");
-        CheckMenuItem modeNumberThree = new CheckMenuItem("Mode no.3");
-        CheckMenuItem modeNumberFour = new CheckMenuItem("Mode no.4");
-        CheckMenuItem modeNumberFive = new CheckMenuItem("Mode no.5");
-        CheckMenuItem modeNumberSix = new CheckMenuItem("Mode no.6");
+        Menu modeNumber = new Menu("Mode Shapes");
+        CheckMenuItem modeNumberOne = new CheckMenuItem("Mode Shape 1");
+        CheckMenuItem modeNumberTwo = new CheckMenuItem("Mode Shape 2");
+        CheckMenuItem modeNumberThree = new CheckMenuItem("Mode Shape 3");
+        CheckMenuItem modeNumberFour = new CheckMenuItem("Mode Shape 4");
+        CheckMenuItem modeNumberFive = new CheckMenuItem("Mode Shape 5");
+        CheckMenuItem modeNumberSix = new CheckMenuItem("Mode Shape 6");
         modeNumber.getItems().addAll(modeNumberOne, modeNumberTwo, modeNumberThree, modeNumberFour, modeNumberFive,
                 modeNumberSix);
 
@@ -173,7 +172,7 @@ public class Ui extends Application {
         });
 
         Text theoryTxt = new Text("""
-                 Crash Course on Traveling Waves
+                 Crash Course on Standing Waves
 
                     In the settings of this simulation, you will find the option to switch between light and dark mode, the option to toggle
                  the visibility of the travelling and standing waves.
@@ -309,7 +308,7 @@ public class Ui extends Application {
         homeBtn.setId("navigation");
 
         //Finishing Up the top HBox
-        Text simTitle = new Text("Traveling Wave Simulator");
+        Text simTitle = new Text("Standing Wave Simulator");
         simTitle.setFont(Font.font("Consanas", FontWeight.BOLD, FontPosture.REGULAR, 20));
         navigationHBox.getChildren().addAll(homeBtn, simTitle, menuPane);
         navigationHBox.setAlignment(Pos.CENTER);
@@ -325,6 +324,12 @@ public class Ui extends Application {
         HBox ui = new HBox(120);
         ui.setAlignment(Pos.CENTER);
         controls.getChildren().add(ui);
+
+        Text coordinateTxt = new Text("Point Coordinates (x, y) = (           ,         )");
+        Text periodTxt = new Text("Period = 0.00 s");
+        Text omegaTxt = new Text("Angular Frequency = 0.00 rad/s");
+        Text lambdaTxt = new Text("Wavelength = 0.00 cm");
+        Text kTxt = new Text("Wave Number = 0.00 rad/cm");
 
         /**
          * Sliders
@@ -373,6 +378,16 @@ public class Ui extends Application {
                 waveLength = v / f;
                 k = (2 * Math.PI) / waveLength;
                 timeToReachEnd = stringLength / v;
+                periodTxt.setText("Period = " + String.format("%.3f", T) + " s");
+                omegaTxt.setText("Angular Frequency = " + String.format("%.3f", omega) + " rad/s");
+                lambdaTxt.setText("Wavelength = " + String.format("%.3f", lambda) + " cm");
+                kTxt.setText("Wave Number = " + String.format("%.3f", k) + " rad/cm");
+                modeNumberOne.setSelected(false);
+                modeNumberTwo.setSelected(false);
+                modeNumberThree.setSelected(false);
+                modeNumberFour.setSelected(false);
+                modeNumberFive.setSelected(false);
+                modeNumberSix.setSelected(false);
             }
         });
         freqVBox.getChildren().addAll(freqText,freqTf, freqSldr);
@@ -418,6 +433,16 @@ public class Ui extends Application {
                 waveLength = v / f;
                 k = (2 * Math.PI) / waveLength;
                 timeToReachEnd = stringLength / v;
+                periodTxt.setText("Period = " + String.format("%.3f", T) + " s");
+                omegaTxt.setText("Angular Frequency = " + String.format("%.3f", omega) + " rad/s");
+                lambdaTxt.setText("Wavelength = " + String.format("%.3f", lambda) + " cm");
+                kTxt.setText("Wave Number = " + String.format("%.3f", k) + " rad/cm");
+                modeNumberOne.setSelected(false);
+                modeNumberTwo.setSelected(false);
+                modeNumberThree.setSelected(false);
+                modeNumberFour.setSelected(false);
+                modeNumberFive.setSelected(false);
+                modeNumberSix.setSelected(false);
             }
         });
         wavSpdVBox.getChildren().addAll(wavSpdText,wavSpdTf,wavSpdSldr);
@@ -463,6 +488,10 @@ public class Ui extends Application {
                 waveLength = v / f;
                 k = (2 * Math.PI) / waveLength;
                 timeToReachEnd = stringLength / v;
+                periodTxt.setText("Period = " + String.format("%.3f", T) + " s");
+                omegaTxt.setText("Angular Frequency = " + String.format("%.3f", omega) + " rad/s");
+                lambdaTxt.setText("Wavelength = " + String.format("%.3f", lambda) + " cm");
+                kTxt.setText("Wave Number = " + String.format("%.3f", k) + " rad/cm");
             }
         });
 
@@ -489,7 +518,7 @@ public class Ui extends Application {
 
         HBox refTravLeg = new HBox(10);
         Line refTravLine = new Line(0, 30, 10, 30);
-        refTravLine.setStroke(Color.MAROON);
+        refTravLine.setStroke(Color.ORANGERED);
         refTravLine.setStrokeWidth(3);
         Text refTravLegTxt = new Text("Reflected Traveling Wave");
         refTravLeg.getChildren().addAll(refTravLine, refTravLegTxt);
@@ -521,11 +550,7 @@ public class Ui extends Application {
          * Extra Displayed Values
          */
         VBox exData = new VBox(5);
-        Text coordinateTxt = new Text("Point Coordinates (x, y) = (           ,         )");
-        Text periodTxt = new Text("Period = 0.00 s");
-        Text omegaTxt = new Text("Angular Frequency = 0.00 rad/s");
-        Text lambdaTxt = new Text("Wavelength = 0.00 cm");
-        Text kTxt = new Text("Wave Number = 0.00 rad/cm");
+
         exData.getChildren().addAll(coordinateTxt,periodTxt, omegaTxt, lambdaTxt, kTxt);
         actionData.getChildren().add(exData);
 
@@ -558,12 +583,13 @@ public class Ui extends Application {
             @Override
             public void handle(ActionEvent actionEvent) {
                 for(Line l: hLineList) {
-                    wavesPane.getChildren().add(l);
+                    l.setVisible(true);
                 }
                 for(Line l: vLineList) {
-                    wavesPane.getChildren().add(l);
+                    l.setVisible(true);
                 }
                 gridOff.setSelected(false);
+                gridOn.setSelected(true);
             }
         });
 
@@ -571,12 +597,13 @@ public class Ui extends Application {
             @Override
             public void handle(ActionEvent actionEvent) {
                 for(Line l: hLineList) {
-                    wavesPane.getChildren().remove(l);
+                    l.setVisible(false);
                 }
                 for(Line l: vLineList) {
-                    wavesPane.getChildren().remove(l);
+                    l.setVisible(false);
                 }
                 gridOn.setSelected(false);
+                gridOff.setSelected(true);
             }
         });
 
@@ -653,7 +680,7 @@ public class Ui extends Application {
          * Creating the reflected traveling wave
          */
         for(int i = 30; i <= 970; i++) {
-            c = new Circle(i, wavesPane.getPrefHeight()/2, 2, Color.MAROON);
+            c = new Circle(i, wavesPane.getPrefHeight()/2, 2, Color.ORANGERED);
             reTravelList.add(c);
         }
         for(Circle c: reTravelList) {
@@ -680,7 +707,7 @@ public class Ui extends Application {
                 root.setStyle("-fx-background-color: white");
 
                 inciTravLine.setStroke(Color.CORNFLOWERBLUE);
-                refTravLine.setStroke(Color.MAROON);
+                refTravLine.setStroke(Color.ORANGERED);
                 standLine.setStroke(Color.DARKMAGENTA);
                 separator.setStroke(Color.BLACK);
                 xAxis.setStroke(Color.BLACK);
@@ -743,6 +770,7 @@ public class Ui extends Application {
                 }
 
                 darkMode.setSelected(false);
+                lightMode.setSelected(true);
             }
         });
 
@@ -815,6 +843,7 @@ public class Ui extends Application {
                 }
 
                 lightMode.setSelected(false);
+                darkMode.setSelected(true);
             }
         });
 
@@ -827,14 +856,16 @@ public class Ui extends Application {
             public void handle(ActionEvent actionEvent) {
                 incidentCounter += 1;
                 if (incidentCounter % 2 == 1) {
+                    toggleIncident.setSelected(false);
                     for(Circle c: travelList) {
-                        wavesPane.getChildren().remove(c);
+                        c.setVisible(false);
                     }
                 }
 
                 if (incidentCounter % 2 == 0) {
+                    toggleIncident.setSelected(true);
                     for(Circle c: travelList) {
-                        wavesPane.getChildren().add(c);
+                        c.setVisible(true);
                     }
                 }
             }
@@ -845,13 +876,15 @@ public class Ui extends Application {
             public void handle(ActionEvent actionEvent) {
                 reflectedCounter += 1;
                 if(reflectedCounter % 2 == 1) {
+                    toggleReflected.setSelected(false);
                     for(Circle c: reTravelList) {
-                        wavesPane.getChildren().remove(c);
+                        c.setVisible(false);
                     }
                 }
                 if(reflectedCounter % 2 == 0) {
+                    toggleReflected.setSelected(true);
                     for(Circle c: reTravelList) {
-                        wavesPane.getChildren().add(c);
+                        c.setVisible(true);
                     }
                 }
             }
@@ -862,13 +895,15 @@ public class Ui extends Application {
             public void handle(ActionEvent actionEvent) {
                 standingCounter += 1;
                 if(standingCounter % 2 == 1) {
+                    toggleStanding.setSelected(false);
                     for(Circle c: standList) {
-                        wavesPane.getChildren().remove(c);
+                        c.setVisible(false);
                     }
                 }
                 if(standingCounter % 2 == 0) {
+                    toggleStanding.setSelected(true);
                     for(Circle c: standList) {
-                        wavesPane.getChildren().add(c);
+                        c.setVisible(true);
                     }
                 }
             }
@@ -882,6 +917,7 @@ public class Ui extends Application {
             public void handle(ActionEvent actionEvent) {
                 slowMotion.setSelected(false);
                 fastMotion.setSelected(false);
+                normalMotion.setSelected(true);
             }
         });
 
@@ -890,6 +926,7 @@ public class Ui extends Application {
             public void handle(ActionEvent actionEvent) {
                 slowMotion.setSelected(false);
                 normalMotion.setSelected(false);
+                fastMotion.setSelected(true);
             }
         });
 
@@ -898,6 +935,7 @@ public class Ui extends Application {
             public void handle(ActionEvent actionEvent) {
                 fastMotion.setSelected(false);
                 normalMotion.setSelected(false);
+                slowMotion.setSelected(true);
             }
         });
 
@@ -928,6 +966,7 @@ public class Ui extends Application {
                 omega = 2 * Math.PI * f;
                 lambda = v / f;
                 k = (2 * Math.PI) / lambda;
+                timeToReachEnd = stringLength / v;
 
                 periodTxt.setText("Period = " + String.format("%.3f", T) + " s");
                 omegaTxt.setText("Angular Frequency = " + String.format("%.3f", omega) + " rad/s");
@@ -938,10 +977,10 @@ public class Ui extends Application {
                     timeElapsed = timer.elapsed();
                 }
                 if(slowMotion.isSelected()) {
-                    timeElapsed = timer.elapsed() / 10;
+                    timeElapsed = timer.elapsed() / 5;
                 }
                 if(fastMotion.isSelected()) {
-                    timeElapsed = timer.elapsed() * 10;
+                    timeElapsed = timer.elapsed() * 5;
                 }
                 for(Circle c : standList) {
                     double sinTing = Math.sin(k * (c.getCenterX() - 30));
@@ -1017,18 +1056,18 @@ public class Ui extends Application {
     private void modeNumberAction(CheckMenuItem modeNumberOne, CheckMenuItem modeNumberTwo,
                                   CheckMenuItem modeNumberThree, CheckMenuItem modeNumberFour,
                                   CheckMenuItem modeNumberFive, CheckMenuItem modeNumberSix,
-                                  Slider freqSldr, Slider wavSpdSldr, Slider ampSldr, int modeNumberOneValue) {
+                                  Slider freqSldr, Slider wavSpdSldr, Slider ampSldr, double modeNumberOneValue) {
         modeNumberOne.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
+                freqSldr.setValue(0.50);
+                wavSpdSldr.setValue(modeNumberOneValue);
+                modeNumberOne.setSelected(true);
                 modeNumberTwo.setSelected(false);
                 modeNumberThree.setSelected(false);
                 modeNumberFour.setSelected(false);
                 modeNumberFive.setSelected(false);
                 modeNumberSix.setSelected(false);
-                ampSldr.setValue(30);
-                freqSldr.setValue(0.53);
-                wavSpdSldr.setValue(modeNumberOneValue);
             }
         });
     }
