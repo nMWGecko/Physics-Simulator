@@ -3,6 +3,7 @@ package com.example.demo;
 // TODO fix dark mode text
 // TODO grid line (separator)
 // TODO fix when you're on help menu and you can just continuously scroll up
+// TODO put all settings in settings menu
 
 import javafx.animation.*;
 import javafx.application.Application;
@@ -110,6 +111,7 @@ public class Ui extends Application {
         navigationHBox.setPadding(new Insets(10, 5, 5, 5));
         Pane menuPane = new Pane();
 
+        Menu settings = new Menu("Settings");
         //Toggling the incident and reflect rays visibility
         Menu raysVis = new Menu("Toggle Waves");
         CheckMenuItem toggleIncident = new CheckMenuItem("Incident");
@@ -152,6 +154,7 @@ public class Ui extends Application {
         CheckMenuItem fastMotion = new CheckMenuItem("Fast Motion");
         normalMotion.setSelected(true);
         showForces.getItems().addAll(slowMotion, normalMotion, fastMotion);
+        settings.getItems().addAll(raysVis, modeNumber, objects, theme, showForces);
 
         //Help MenuItem
         MenuItem menuHelp = new MenuItem("Help");
@@ -287,8 +290,7 @@ public class Ui extends Application {
 
         //Additional Settings
         MenuItem exitProgram = new MenuItem("Exit Program");
-        MenuButton menuBtn = new MenuButton("Menu", null, raysVis, modeNumber, theme, objects, showForces,
-                menuHelp, exitProgram);
+        MenuButton menuBtn = new MenuButton("Menu", null, settings, menuHelp, exitProgram);
         Image menuIcon = new Image(menuPic);
         Image nMenuIcon = new Image(nMenuPic);
         ImageView menuView = new ImageView(menuIcon);
@@ -310,7 +312,7 @@ public class Ui extends Application {
         //Finishing Up the top HBox
         Text simTitle = new Text("Standing Wave Simulator");
         simTitle.setFont(Font.font("Consanas", FontWeight.BOLD, FontPosture.REGULAR, 20));
-        navigationHBox.getChildren().addAll(homeBtn, simTitle, menuPane);
+        navigationHBox.getChildren().addAll(menuPane, simTitle, homeBtn);
         navigationHBox.setAlignment(Pos.CENTER);
 
         //The Top Buttons
