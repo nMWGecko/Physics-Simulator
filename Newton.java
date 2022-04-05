@@ -1,6 +1,5 @@
 package com.example.physics;
 
-
 // TODO help window
 // TODO align text in imperial
 
@@ -410,25 +409,6 @@ public class Newton extends Application {
         });
 
         startBtn.setOnAction(actionEvent -> {
-            counter++;
-            if (counter % 2 == 1) {
-                startBtn.setText("Pause");
-                timer.start();
-                timer2.stop();
-                accTime = 0;
-                decTime = 0;
-                totalTime = 0;
-            }
-            if (counter % 2 == 0) {
-                startBtn.setText("Play");
-                timer.stop();
-                timeWhenStopped = totalTime;
-                accTimeWhenStopped = accTime;
-                decTimeWhenStopped = decTime;
-                totalTimeWhenStopped += timeWhenStopped;
-                accTotalTimeWhenStopped += accTimeWhenStopped;
-                decTotalTimeWhenStopped += decTimeWhenStopped;
-            }
             String forceInput = forceTextField.getText();
             String massInput = massTextField.getText();
             String frictionForceInput = frictionForceTextField.getText();
@@ -582,6 +562,7 @@ public class Newton extends Application {
                     warning.setVisible(true);
                 }
                 else {
+                    counter++;
                     if(darkMode.isSelected()) {
                         forceTextField.setStyle("-fx-background-color: #303030");
                         massTextField.setStyle("-fx-background-color: #303030");
@@ -590,6 +571,24 @@ public class Newton extends Application {
                         forceTextField.setStyle("-fx-background-color: White");
                         massTextField.setStyle("-fx-background-color: White");
                         frictionForceTextField.setStyle("-fx-background-color: White");
+                    }
+                    if (counter % 2 == 1) {
+                        startBtn.setText("Pause");
+                        timer.start();
+                        timer2.stop();
+                        accTime = 0;
+                        decTime = 0;
+                        totalTime = 0;
+                    }
+                    if (counter % 2 == 0) {
+                        startBtn.setText("Play");
+                        timer.stop();
+                        timeWhenStopped = totalTime;
+                        accTimeWhenStopped = accTime;
+                        decTimeWhenStopped = decTime;
+                        totalTimeWhenStopped += timeWhenStopped;
+                        accTotalTimeWhenStopped += accTimeWhenStopped;
+                        decTotalTimeWhenStopped += decTimeWhenStopped;
                     }
                     resetBtn.setDisable(true);
                     warning.setVisible(false);
