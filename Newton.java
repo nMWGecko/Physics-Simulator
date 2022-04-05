@@ -2,7 +2,8 @@ package com.example.physics;
 
 
 // TODO help window
-// TODO center value text
+// TODO update velocity values
+// TODO align text in imperial
 
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
@@ -159,18 +160,19 @@ public class Newton extends Application {
         frictionForceHBox.getChildren().addAll(surfaceLabel,frictionForceTextField);
         tfVbox.getChildren().addAll(appliedForceHBox,massHBox,frictionForceHBox);
 //tfVBoxSettings
-        Label velocityDisplayLabel = new Label("Velocity: 0.00km/h       ");
+        Label velocityDisplayLabel = new Label("Velocity: 0.00km/h");
         velocityDisplayLabel.setTextFill(Color.RED);
         Label accelerationDisplayLabel = new Label("Acceleration: 0.00m/s²");
 
         accelerationDisplayLabel.setTextFill(Color.ORANGE);
-        Label timeDisplayLabel = new Label("Time: 0.00s                   ");
+        Label timeDisplayLabel = new Label("Time: 0.00s");
         Color color = Color.web("#9784ed");
         timeDisplayLabel.setTextFill(color);
-        Label distanceDisplayLabel = new Label("Distance: 0.00m           ");
+        Label distanceDisplayLabel = new Label("Distance: 0.00m");
         Color omori = Color.web("#6c0ffe");
         distanceDisplayLabel.setTextFill(omori);
         labelVBox.getChildren().addAll(velocityDisplayLabel,accelerationDisplayLabel,timeDisplayLabel,distanceDisplayLabel);
+
 //labelVboxSettings
         Button startBtn = new Button("Start");
         startBtn.setId("controlButton");
@@ -341,24 +343,25 @@ public class Newton extends Application {
                     }
                     totalTime += 1/60d;
                     if (metric.isSelected()) {
-                        velocityDisplayLabel.setText("Velocity: " + String.format("%.2f", (speed * 3.6)) + "km/h");
+                        velocityDisplayLabel.setText("Velocity: " + String.format("%.2f", ((speed + oppSpeed) * 3.6)) + "km/h");
                         timeDisplayLabel.setText("Time: " + String.format("%.2f", totalTime + totalTimeWhenStopped) + "s");
                         distanceDisplayLabel.setText("Distance: " + String.format("%.2f", distance + distancePerFrame) + "m");
                     }
                     if (imperial.isSelected()){
-                        velocityDisplayLabel.setText("Velocity: " + String.format("%.2f", (speed * 3.6 * 0.621371)) + "mi/h");
+                        velocityDisplayLabel.setText("Velocity: " + String.format("%.2f", ((speed + oppSpeed) * 3.6 * 0.621371)) + "mi/h");
                         timeDisplayLabel.setText("Time: " + String.format("%.2f", totalTime + totalTimeWhenStopped) + "s");
                         distanceDisplayLabel.setText("Distance: " + String.format("%.2f", (distance + distancePerFrame)* 1.09361) + "yd");
                     }
                     if ((speed + oppSpeed) < 0) {
                         timer.stop();
-                        System.out.println("distance: " + (distance + distancePerFrame));
-                        System.out.println("time: " + totalTime);
                         if (imperial.isSelected()) {
                             velocityDisplayLabel.setText("Velocity: 0.00mi/h");
+                            accelerationDisplayLabel.setText("Acceleration: 0.00ft/s²");
                         }
                         if (metric.isSelected()) {
                             velocityDisplayLabel.setText("Velocity: 0.00km/h");
+                            accelerationDisplayLabel.setText("Acceleration: 0.00m/s²");
+
                         }
                         resetBtn.setDisable(false);
                         arrowForceLabel.setText("0N");
