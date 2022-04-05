@@ -2,7 +2,6 @@ package com.example.physics;
 
 
 // TODO help window
-// TODO update velocity values
 // TODO align text in imperial
 
 import javafx.animation.AnimationTimer;
