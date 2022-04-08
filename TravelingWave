@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 public class Ui extends Application {
+    // Class Variables
     static String menuPic, homePic, helpPic, nMenuPic;
     static Color omori = Color.web("#6c0ffe");
     static Circle c;
@@ -37,7 +38,6 @@ public class Ui extends Application {
     static Line vertGrid, horiGrid, xIndic, yIndic;
     static Text xL, yL;
     static Font font = Font.font("Verdana", FontWeight.NORMAL, FontPosture.REGULAR, 14);
-
     static ArrayList<Circle> standList = new ArrayList<>();
     static ArrayList<Circle> travelList = new ArrayList<>();
     static ArrayList<Circle> reTravelList = new ArrayList<>();
@@ -47,13 +47,11 @@ public class Ui extends Application {
     static ArrayList<Line> yIndiList = new ArrayList<>();
     static ArrayList<Text> xLabelList = new ArrayList<>();
     static ArrayList<Text> yLabelList = new ArrayList<>();
-
     static int stringLength = 940;
     static int startPauseCounter, incidentCounter, reflectedCounter, standingCounter = 0;
-    static double modeNumberOneValue, modeNumberTwoValue, modeNumberThreeValue, modeNumberFourValue, modeNumberFiveValue,
-            modeNumberSixValue;
-
-    static double A, f, T, v, omega, lambda, k, waveLength, timeToReachEnd, timeElapsed, timeWhenStopped, totalTimeWhenStopped;
+    static double A, f, T, v, omega, lambda, k, waveLength, timeToReachEnd, timeElapsed, timeWhenStopped,
+            totalTimeWhenStopped, modeNumberOneValue, modeNumberTwoValue, modeNumberThreeValue, modeNumberFourValue,
+            modeNumberFiveValue, modeNumberSixValue;
     static Pane wavesPane;
 
     Ui(Stage travelWaveStage) {
@@ -1012,7 +1010,8 @@ public class Ui extends Application {
                 playBtn.setText("Pause");
                 animateTimer.start();
                 timer = new Timer();
-                hoverInstruction.setText("Pause and hover over a point to display its coordinates");
+                hoverInstruction.setText("Pause the animation and hover over a point to display its precise " +
+                        "coordinates.");
                 hoverInstruction.setLayoutX(310);
             }
             if(startPauseCounter % 2 == 0) {
