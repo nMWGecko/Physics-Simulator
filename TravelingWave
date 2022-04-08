@@ -1,7 +1,5 @@
 package djangounchained.physics;
 
-// TODO fix dark mode text under sliders & refine theme code
-
 import javafx.animation.*;
 import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
@@ -38,7 +36,7 @@ public class Ui extends Application {
     static Timer timer;
     static Line vertGrid, horiGrid, xIndic, yIndic;
     static Text xL, yL;
-    static Font font = Font.font("Consolas", FontWeight.NORMAL, FontPosture.REGULAR, 14);
+    static Font font = Font.font("Verdana", FontWeight.NORMAL, FontPosture.REGULAR, 14);
 
     static ArrayList<Circle> standList = new ArrayList<>();
     static ArrayList<Circle> travelList = new ArrayList<>();
@@ -56,8 +54,9 @@ public class Ui extends Application {
             modeNumberSixValue;
 
     static double A, f, T, v, omega, lambda, k, waveLength, timeToReachEnd, timeElapsed, timeWhenStopped, totalTimeWhenStopped;
+    static Pane wavesPane;
 
-    //Ui(Stage travelWaveStage) { // constructor is not working
+    //Ui(Stage travelWaveStage) {
     //    start(travelWaveStage);
     //}
 
@@ -65,7 +64,7 @@ public class Ui extends Application {
     public void start(Stage stage) {
         Button playBtn = new Button("Play");
         playBtn.setId("controlButton");
-        Pane wavesPane = new Pane();
+        wavesPane = new Pane();
         wavesPane.setPrefWidth(960);
         wavesPane.setPrefHeight(384);
 
@@ -102,10 +101,9 @@ public class Ui extends Application {
          * Navigation Button
          */
         //Pane for settings
-        HBox navigationHBox = new HBox(303);
-        navigationHBox.setPadding(new Insets(10, 5, 5, 5));
-        Pane menuPane = new Pane();
+        Pane navigationHBox = new Pane();
 
+        Menu settings = new Menu("Settings");
         //Toggling the incident and reflect rays visibility
         Menu raysVis = new Menu("Toggle Waves");
         CheckMenuItem toggleIncident = new CheckMenuItem("Incident");
@@ -148,6 +146,7 @@ public class Ui extends Application {
         CheckMenuItem fastMotion = new CheckMenuItem("Fast Motion");
         normalMotion.setSelected(true);
         showForces.getItems().addAll(slowMotion, normalMotion, fastMotion);
+        settings.getItems().addAll(raysVis, modeNumber, objects, theme, showForces);
 
         //Help MenuItem
         MenuItem menuHelp = new MenuItem("Help");
@@ -162,9 +161,9 @@ public class Ui extends Application {
                     In the settings of this simulation, you will find the option to switch between light and dark mode, the option to toggle
                 the visibility of the travelling and standing waves.
 
-                    To interact with the Standing wave simulation, simply press ‘start’ after adjusting the values on the three sliders. In
+                    To interact with the standing wave simulation, simply press ‘start’ after adjusting the values on the three sliders. In
                 this simulation, there are sliders for each of the following parameters: amplitude, wave speed, and mode number. Adjusting
-                these parameters will result in standing waves being formed for a string fixed on both ends.
+                these parameters will result in a standing wave being formed.
 
                 * Amplitude [m]: the maximum displacement or distance moved by a point on a vibrating body or wave measured from its
                   equilibrium position. It is equal to one-half the length of the vibration path.
@@ -273,8 +272,7 @@ public class Ui extends Application {
 
         //Additional Settings
         MenuItem exitProgram = new MenuItem("Exit Program");
-        MenuButton menuBtn = new MenuButton("Menu", null, raysVis, modeNumber, theme, objects, showForces,
-                menuHelp, exitProgram);
+        MenuButton menuBtn = new MenuButton("Menu", null, settings, menuHelp, exitProgram);
         Image menuIcon = new Image(menuPic);
         Image nMenuIcon = new Image(nMenuPic);
         ImageView menuView = new ImageView(menuIcon);
@@ -282,7 +280,6 @@ public class Ui extends Application {
         menuView.setFitHeight(25);
         menuBtn.setGraphic(menuView);
         menuBtn.setId("navigation");
-        menuPane.getChildren().addAll(menuBtn);
 
         //Menu Settings
         Image homeIcon = new Image(homePic);
@@ -295,16 +292,16 @@ public class Ui extends Application {
 
         //Finishing Up the top HBox
         Text simTitle = new Text("Standing Wave Simulator");
-        simTitle.setFont(Font.font("Consanas", FontWeight.BOLD, FontPosture.REGULAR, 20));
-        navigationHBox.getChildren().addAll(homeBtn, simTitle, menuPane);
-        navigationHBox.setAlignment(Pos.CENTER);
-
+        simTitle.setFont(Font.font("Verdana", FontWeight.BOLD, FontPosture.REGULAR, 20));
+        navigationHBox.getChildren().addAll(menuBtn, simTitle, homeBtn);
+        menuBtn.setLayoutX(10);
+        homeBtn.setLayoutX(910);
+        simTitle.setLayoutX(355);
+        simTitle.setLayoutY(35);
         //The Top Buttons
         VBox controls = new VBox(20);
         root.setTop(controls);
-        HBox menuCtrl = new HBox();
-        menuCtrl.getChildren().add(navigationHBox);
-        controls.getChildren().add(menuCtrl);
+        controls.getChildren().add(navigationHBox);
 
         //The UI Controls
         HBox ui = new HBox(120);
@@ -312,27 +309,30 @@ public class Ui extends Application {
         controls.getChildren().add(ui);
 
         Text coordinateTxt = new Text("Point Coordinates (x, y) = (           ,         )");
-        Text periodTxt = new Text("Period = 0.00 s");
-        Text omegaTxt = new Text("Angular Frequency = 0.00 rad/s");
-        Text lambdaTxt = new Text("Wavelength = 0.00 cm");
-        Text kTxt = new Text("Wave Number = 0.00 rad/cm");
+        Text periodTxt = new Text("Period = 0.000 s");
+        Text omegaTxt = new Text("Angular Frequency = 0.000 rad/s");
+        Text lambdaTxt = new Text("Wavelength = 0.000 cm");
+        Text kTxt = new Text("Wave Number = 0.000 rad/cm");
+        coordinateTxt.setId("texts");
+        periodTxt.setId("texts");
+        omegaTxt.setId("texts");
+        lambdaTxt.setId("texts");
+        kTxt.setId("texts");
 
         /**
          * Sliders
          * Always make the waves "snap" (clear first and then implement new values)
          */
-        HBox sliders = new HBox(100);
+        Pane sliders = new Pane();
 
         //Frequency: "clear" the values (for a split second) then implementing the new value
         VBox freqVBox = new VBox(5);
         freqVBox.setAlignment(Pos.CENTER);
         Text freqText = new Text("Frequency [Hz]");
-        TextField freqTf = new TextField("0.00 Hz");
+        TextField freqTf = new TextField("0.000 Hz");
         freqTf.setAlignment(Pos.CENTER);
         freqTf.setEditable(false);
-        Slider freqSldr = new Slider(0, 5, 0); //we're sorry mr cohen
-        freqSldr.setShowTickLabels(true);
-        freqSldr.setShowTickMarks(true);
+        Slider freqSldr = new Slider(0, 5, 0);
         freqSldr.setMajorTickUnit(1);
         freqSldr.setMinorTickCount(4);
 
@@ -340,7 +340,7 @@ public class Ui extends Application {
             @Override
             public void changed(ObservableValue<? extends Number> observableValue, Number number, Number t1) {
                 f = freqSldr.getValue();
-                freqTf.setText(String.format("%.2f", freqSldr.getValue()) + " Hz");
+                freqTf.setText(String.format("%.3f", freqSldr.getValue()) + " Hz");
                 if (startPauseCounter > 0 && playBtn.getText() == "Play") {
                     for (Circle c : standList) {
                         double sinTing = Math.sin(k * (c.getCenterX() - 30));
@@ -368,6 +368,31 @@ public class Ui extends Application {
                 omegaTxt.setText("Angular Frequency = " + String.format("%.3f", omega) + " rad/s");
                 lambdaTxt.setText("Wavelength = " + String.format("%.3f", lambda) + " cm");
                 kTxt.setText("Wave Number = " + String.format("%.3f", k) + " rad/cm");
+                if (Double.isInfinite(T)) {
+                    periodTxt.setText("Period = 0.000 s");
+                }
+                if (Double.isInfinite(omega)) {
+                    omegaTxt.setText("Angular Frequency = 0.000 rad/s");
+                }
+                if (Double.isInfinite(lambda)) {
+                    lambdaTxt.setText("Wavelength = 0.000 cm");
+                }
+                if (Double.isInfinite(k)) {
+                    kTxt.setText("Wave Number = 0.000 rad/cm");
+                }
+                if (Double.isNaN(T)) {
+                    periodTxt.setText("Period = 0.000 s");
+                }
+                if (Double.isNaN(omega)) {
+                    omegaTxt.setText("Angular Frequency = 0.000 rad/s");
+                }
+                if (Double.isNaN(lambda)) {
+                    lambdaTxt.setText("Wavelength = 0.000 cm");
+                }
+                if (Double.isNaN(k)) {
+                    kTxt.setText("Wave Number = 0.000 rad/cm");
+                }
+
                 modeNumberOne.setSelected(false);
                 modeNumberTwo.setSelected(false);
                 modeNumberThree.setSelected(false);
@@ -382,12 +407,10 @@ public class Ui extends Application {
         VBox wavSpdVBox = new VBox(5);
         wavSpdVBox.setAlignment(Pos.CENTER);
         Text wavSpdText = new Text("Wave Speed [cm/s]");
-        TextField wavSpdTf = new TextField("0.00 cm/s");
+        TextField wavSpdTf = new TextField("0.000 cm/s");
         wavSpdTf.setAlignment(Pos.CENTER);
         wavSpdTf.setEditable(false);
         Slider wavSpdSldr = new Slider(0, 1000, 0);
-        wavSpdSldr.setShowTickLabels(true);
-        wavSpdSldr.setShowTickMarks(true);
         wavSpdSldr.setMajorTickUnit(100);
         wavSpdSldr.setMinorTickCount(4);
 
@@ -395,7 +418,7 @@ public class Ui extends Application {
             @Override
             public void changed(ObservableValue<? extends Number> observableValue, Number number, Number t1) {
                 v = wavSpdSldr.getValue();
-                wavSpdTf.setText(String.format("%.2f", wavSpdSldr.getValue()) + " cm/s");
+                wavSpdTf.setText(String.format("%.3f", wavSpdSldr.getValue()) + " cm/s");
                 if (startPauseCounter > 0 && playBtn.getText() == "Play") {
                     for (Circle c : standList) {
                         double sinTing = Math.sin(k * (c.getCenterX() - 30));
@@ -423,6 +446,30 @@ public class Ui extends Application {
                 omegaTxt.setText("Angular Frequency = " + String.format("%.3f", omega) + " rad/s");
                 lambdaTxt.setText("Wavelength = " + String.format("%.3f", lambda) + " cm");
                 kTxt.setText("Wave Number = " + String.format("%.3f", k) + " rad/cm");
+                if (Double.isInfinite(T)) {
+                    periodTxt.setText("Period = 0.000 s");
+                }
+                if (Double.isInfinite(omega)) {
+                    omegaTxt.setText("Angular Frequency = 0.000 rad/s");
+                }
+                if (Double.isInfinite(lambda)) {
+                    lambdaTxt.setText("Wavelength = 0.000 cm");
+                }
+                if (Double.isInfinite(k)) {
+                    kTxt.setText("Wave Number = 0.000 rad/cm");
+                }
+                if (Double.isNaN(T)) {
+                    periodTxt.setText("Period = 0.000 s");
+                }
+                if (Double.isNaN(omega)) {
+                    omegaTxt.setText("Angular Frequency = 0.000 rad/s");
+                }
+                if (Double.isNaN(lambda)) {
+                    lambdaTxt.setText("Wavelength = 0.000 cm");
+                }
+                if (Double.isNaN(k)) {
+                    kTxt.setText("Wave Number = 0.000 rad/cm");
+                }
                 modeNumberOne.setSelected(false);
                 modeNumberTwo.setSelected(false);
                 modeNumberThree.setSelected(false);
@@ -433,16 +480,15 @@ public class Ui extends Application {
         });
         wavSpdVBox.getChildren().addAll(wavSpdText,wavSpdTf,wavSpdSldr);
 
+
         //Amplitude
         VBox ampVBox = new VBox(5);
         ampVBox.setAlignment(Pos.CENTER);
         Text ampText = new Text("Amplitude [cm]");
-        TextField ampTf = new TextField("0.00 cm");
+        TextField ampTf = new TextField("0.000 cm");
         ampTf.setAlignment(Pos.CENTER);
         ampTf.setEditable(false);
         Slider ampSldr = new Slider(0, 60, 0);
-        ampSldr.setShowTickMarks(true);
-        ampSldr.setShowTickLabels(true);
         ampSldr.setMajorTickUnit(5);
         ampSldr.setMinorTickCount(4);
 
@@ -450,7 +496,7 @@ public class Ui extends Application {
             @Override
             public void changed(ObservableValue<? extends Number> observableValue, Number number, Number t1) {
                 A = ampSldr.getValue();
-                ampTf.setText(String.format("%.2f", ampSldr.getValue()) + " cm");
+                ampTf.setText(String.format("%.3f", ampSldr.getValue()) + " cm");
                 if (startPauseCounter > 0 && playBtn.getText() == "Play") {
                     for (Circle c : standList) {
                         double sinTing = Math.sin(k * (c.getCenterX() - 30));
@@ -478,17 +524,52 @@ public class Ui extends Application {
                 omegaTxt.setText("Angular Frequency = " + String.format("%.3f", omega) + " rad/s");
                 lambdaTxt.setText("Wavelength = " + String.format("%.3f", lambda) + " cm");
                 kTxt.setText("Wave Number = " + String.format("%.3f", k) + " rad/cm");
+                if (Double.isInfinite(T)) {
+                    periodTxt.setText("Period = 0.000 s");
+                }
+                if (Double.isInfinite(omega)) {
+                    omegaTxt.setText("Angular Frequency = 0.000 rad/s");
+                }
+                if (Double.isInfinite(lambda)) {
+                    lambdaTxt.setText("Wavelength = 0.000 cm");
+                }
+                if (Double.isInfinite(k)) {
+                    kTxt.setText("Wave Number = 0.000 rad/cm");
+                }
+                if (Double.isNaN(T)) {
+                    periodTxt.setText("Period = 0.000 s");
+                }
+                if (Double.isNaN(omega)) {
+                    omegaTxt.setText("Angular Frequency = 0.000 rad/s");
+                }
+                if (Double.isNaN(lambda)) {
+                    lambdaTxt.setText("Wavelength = 0.000 cm");
+                }
+                if (Double.isNaN(k)) {
+                    kTxt.setText("Wave Number = 0.000 rad/cm");
+                }
             }
         });
 
         ampVBox.getChildren().addAll(ampText,ampTf,ampSldr);
         sliders.getChildren().addAll(freqVBox, wavSpdVBox, ampVBox);
         ui.getChildren().add(sliders);
+        freqVBox.setLayoutX(10);
+        wavSpdVBox.setLayoutX(260);
+        ampVBox.setLayoutX(500);
+        freqSldr.setId("light");
+        wavSpdSldr.setId("light");
+        ampSldr.setId("light");
+        freqText.setId("texts");
+        ampText.setId("texts");
+        wavSpdText.setId("texts");
+        freqTf.setId("texts");
+        ampTf.setId("texts");
+        wavSpdTf.setId("texts");
 
-        Line separator = new Line(100, 207, 900, 207);
+        Line separator = new Line(100, 190, 900, 190);
         root.getChildren().add(separator);
-        HBox actionData = new HBox(100);
-        actionData.setAlignment(Pos.CENTER);
+        Pane actionData = new Pane();
         controls.getChildren().add(actionData);
 
         /**
@@ -496,56 +577,52 @@ public class Ui extends Application {
          */
         VBox legend = new VBox(5);
         HBox incidTraveLeg = new HBox(10);
-        Line inciTravLine = new Line(0, 0, 10, 0);
+        Line inciTravLine = new Line(30, 0, 40, 0);
         inciTravLine.setStroke(Color.CORNFLOWERBLUE);
-        inciTravLine.setStrokeWidth(3);
+        inciTravLine.setStrokeWidth(5);
         Text inciTravLegTxt = new Text("Incident Traveling Wave");
+        inciTravLegTxt.setId("texts");
         incidTraveLeg.getChildren().addAll(inciTravLine, inciTravLegTxt);
 
         HBox refTravLeg = new HBox(10);
-        Line refTravLine = new Line(0, 30, 10, 30);
+        Line refTravLine = new Line(30, 30, 40, 30);
         refTravLine.setStroke(Color.ORANGERED);
-        refTravLine.setStrokeWidth(3);
+        refTravLine.setStrokeWidth(5);
         Text refTravLegTxt = new Text("Reflected Traveling Wave");
+        refTravLegTxt.setId("texts");
         refTravLeg.getChildren().addAll(refTravLine, refTravLegTxt);
 
         HBox standLeg = new HBox(10);
-        Line standLine = new Line(0, 40, 10, 40);
+        Line standLine = new Line(30, 40, 40, 40);
         standLine.setStroke(Color.DARKMAGENTA);
-        standLine.setStrokeWidth(3);
+        standLine.setStrokeWidth(5);
         Text standLegTxt = new Text("Standing Wave");
+        standLegTxt.setId("texts");
         standLeg.getChildren().addAll(standLine, standLegTxt);
 
-        Text hoverInstruction = new Text("Hover over a point to display its coordinates.");
-        legend.getChildren().addAll(incidTraveLeg, refTravLeg, standLeg, hoverInstruction);
+        Text hoverInstruction = new Text("Pause and hover over a point to display its coordinates");
+        hoverInstruction.setId("texts");
+        legend.getChildren().addAll(incidTraveLeg, refTravLeg, standLeg);
         actionData.getChildren().add(legend);
+        legend.setLayoutX(130);
+        legend.setLayoutY(20);
 
         /**
          * Start Button
          */
-        Button btn3 = new Button("Help");
-        btn3.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent actionEvent) {
-                System.out.println("What did the ocean say to the beach?\nNothing, it just waved.\n");
-            }
-        });
         actionData.getChildren().add(playBtn);
+        playBtn.setLayoutX(450);
+        playBtn.setLayoutY(50);
 
         /**
          * Extra Displayed Values
          */
         VBox exData = new VBox(5);
 
-        exData.getChildren().addAll(coordinateTxt,periodTxt, omegaTxt, lambdaTxt, kTxt);
+        exData.getChildren().addAll(periodTxt, omegaTxt, lambdaTxt, kTxt);
         actionData.getChildren().add(exData);
-
-//        Line separator2 = new Line(0, 346, 1000, 346);
-//        root.getChildren().add(separator2);
-
-        /**
-         * Displaying the waves
-         */
+        exData.setLayoutX(650);
+        exData.setLayoutY(20);
 
         /**
          * Setting up the grid
@@ -619,7 +696,9 @@ public class Ui extends Application {
         yAxisTitle.setLayoutX(0);
         yAxisTitle.setLayoutY(60);
 
-        wavesPane.getChildren().addAll(xAxis, xAxisTitle, yAxis, yAxisTitle);
+        wavesPane.getChildren().addAll(xAxis, xAxisTitle, yAxis, yAxisTitle, hoverInstruction);
+        hoverInstruction.setLayoutX(310);
+        hoverInstruction.setLayoutY(60);
 
         //X-Axis indices
         for(int i = 40; i < 980; i += 20) {
@@ -630,7 +709,7 @@ public class Ui extends Application {
         for(int i = 120; i < 980; i += 100) {
             int actNb = i - 20;
             xL = new Text("" + actNb);
-            xL.setFont(Font.font("Consolas", FontWeight.BOLD, FontPosture.REGULAR, 11));
+            xL.setFont(Font.font("Verdana", FontWeight.BOLD, FontPosture.REGULAR, 11));
             xL.setLayoutX(i);
             xL.setLayoutY(xAxis.getStartY() + 20);
             xLabelList.add(xL);
@@ -647,8 +726,9 @@ public class Ui extends Application {
             int actNb = (int) ((i - xAxis.getStartY()) / 2);
             int dd = (actNb * -1 + 14) * 2;
             yL = new Text("" + (dd));
-            yL.setFont(Font.font("Consanas", FontWeight.BOLD, FontPosture.REGULAR, 11));
+            yL.setFont(Font.font("Verdana", FontWeight.BOLD, FontPosture.REGULAR, 11));
             yL.setLayoutY(i - 24);
+            yL.setLayoutX(-5);
             yLabelList.add(yL);
             wavesPane.getChildren().add(yL);
         }
@@ -705,7 +785,7 @@ public class Ui extends Application {
                 simTitle.setFill(Color.BLACK);
                 inciTravLegTxt.setFill(Color.BLACK);
                 refTravLegTxt.setFill(Color.BLACK);
-                ampText.setFill(Color.BLACK);
+                freqText.setFill(Color.BLACK);
                 wavSpdText.setFill(Color.BLACK);
                 ampText.setFill(Color.BLACK);
                 standLegTxt.setFill(Color.BLACK);
@@ -737,6 +817,9 @@ public class Ui extends Application {
                 ampTf.setStyle("-fx-background-color: #ffffff;-fx-border-color: black;");
                 freqTf.setStyle("-fx-background-color: #ffffff;-fx-border-color: black;");
                 wavSpdTf.setStyle("-fx-background-color: #ffffff;-fx-border-color: black;");
+                freqSldr.setId("light");
+                wavSpdSldr.setId("light");
+                ampSldr.setId("light");
 
                 for(Line l: xIndiList) {
                     l.setStroke(Color.BLACK);
@@ -806,6 +889,9 @@ public class Ui extends Application {
                 wavSpdTf.setStyle("-fx-background-color: #303030; -fx-text-fill: white;");
                 menuView.setImage(nMenuIcon);
                 menuBtn.setStyle("-fx-background-color: #303030; -fx-border-color: white;");
+                freqSldr.setId("dark");
+                wavSpdSldr.setId("dark");
+                ampSldr.setId("dark");
 
                 separator.setStroke(Color.WHITE);
                 inciTravLine.setStroke(Color.CYAN);
@@ -962,11 +1048,35 @@ public class Ui extends Application {
                 k = (2 * Math.PI) / lambda;
                 timeToReachEnd = stringLength / v;
 
+
                 periodTxt.setText("Period = " + String.format("%.3f", T) + " s");
                 omegaTxt.setText("Angular Frequency = " + String.format("%.3f", omega) + " rad/s");
                 lambdaTxt.setText("Wavelength = " + String.format("%.3f", lambda) + " cm");
                 kTxt.setText("Wave Number = " + String.format("%.3f", k) + " rad/cm");
-
+                if (Double.isInfinite(T)) {
+                    periodTxt.setText("Period = 0.000 s");
+                }
+                if (Double.isInfinite(omega)) {
+                    omegaTxt.setText("Angular Frequency = 0.000 rad/s");
+                }
+                if (Double.isInfinite(lambda)) {
+                    lambdaTxt.setText("Wavelength = 0.000 cm");
+                }
+                if (Double.isInfinite(k)) {
+                    kTxt.setText("Wave Number = 0.000 rad/cm");
+                }
+                if (Double.isNaN(T)) {
+                    periodTxt.setText("Period = 0.000 s");
+                }
+                if (Double.isNaN(omega)) {
+                    omegaTxt.setText("Angular Frequency = 0.000 rad/s");
+                }
+                if (Double.isNaN(lambda)) {
+                    lambdaTxt.setText("Wavelength = 0.000 cm");
+                }
+                if (Double.isNaN(k)) {
+                    kTxt.setText("Wave Number = 0.000 rad/cm");
+                }
                 if(normalMotion.isSelected()) {
                     timeElapsed = timer.elapsed();
                 }
@@ -1006,20 +1116,17 @@ public class Ui extends Application {
                 playBtn.setText("Pause");
                 animateTimer.start();
                 timer = new Timer();
+                hoverInstruction.setText("Pause and hover over a point to display its coordinates");
+                hoverInstruction.setLayoutX(310);
             }
             if(startPauseCounter % 2 == 0) {
                 playBtn.setText("Play");
                 animateTimer.stop();
                 timeWhenStopped = timer.elapsed();
-                System.out.println("time when stopped: " + timeElapsed);
-                System.out.println("amplitude: " + A);
-                System.out.println("omega: " + omega);
-                System.out.println("wave number: " + k);
-                System.out.println("period: " + T);
-                System.out.println("frequency: " + f);
-                showCoordinates(coordinateTxt, standList);
-                showCoordinates(coordinateTxt, travelList);
-                showCoordinates(coordinateTxt, reTravelList);
+                showCoordinates(hoverInstruction, standList);
+                showCoordinates(hoverInstruction, travelList);
+                showCoordinates(hoverInstruction, reTravelList);
+                hoverInstruction.setLayoutX(310);
 
                 if(normalMotion.isSelected()) {
                     totalTimeWhenStopped += timeWhenStopped;
@@ -1034,6 +1141,37 @@ public class Ui extends Application {
             }
         });
 
+        homeBtn.setOnAction(actionEvent -> {
+            stage.close();
+            Main m = new Main();
+            m.start(new Stage());
+            animateTimer.stop();
+            startPauseCounter = 0;
+            incidentCounter = 0;
+            reflectedCounter = 0;
+            A = 0;
+            f = 0;
+            T = 0;
+            v = 0;
+            omega = 0;
+            lambda = 0;
+            k = 0;
+            waveLength = 0;
+            timeToReachEnd = 0;
+            timeElapsed = 0;
+            timeWhenStopped = 0;
+            totalTimeWhenStopped = 0;
+            for (Circle c : travelList) {
+                c.setCenterY(192);
+            }
+            for (Circle c : reTravelList) {
+                c.setCenterY(192);
+            }
+            for (Circle c : standList) {
+                c.setCenterY(192);
+            }
+        });
+
         root.setCenter(wavesPane);
 
         /**
@@ -1041,7 +1179,7 @@ public class Ui extends Application {
          */
         Scene scene = new Scene(root, 1000, 650);
         scene.getStylesheets().add(getClass().getResource("waves.css").toExternalForm());
-        stage.setTitle("Physics Learning Tool");
+        stage.setTitle("Standing Wave Simulator");
         stage.setResizable(false);
         stage.setScene(scene);
         stage.show();
@@ -1071,9 +1209,11 @@ public class Ui extends Application {
             c.setOnMouseEntered(mouseEvent -> {
                 coordinateTxt.setText("Point Coordinates (x, y) = (" + String.format("%.2f",
                         (c.getCenterX() - 30)) + ", " + String.format("%.2f",  (192 - c.getCenterY())) + ")");
+                coordinateTxt.setLayoutX(350);
             });
             c.setOnMouseExited(mouseEvent -> {
                 coordinateTxt.setText("Point Coordinates (x, y) = (           ,         )");
+                coordinateTxt.setLayoutX(350);
             });
         }
     }
