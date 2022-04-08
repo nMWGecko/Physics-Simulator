@@ -64,3 +64,10 @@
     -fx-border-width: 20.0;
     -fx-background-color: gold;
 }
+
+.darkMode {
+    -fx-background-color: #303030;
+    -fx-stroke: white;
+    -fx-text-fill: white;
+    -fx-tick-label-fill: white;
+}
