@@ -8,13 +8,12 @@
   "newton": "https://i.imgur.com/z7WMwlF.png",
   "board": "https://i.imgur.com/VhMIQGh.png",
   "god": "https://i.imgur.com/c2OpH6w.png",
-  "girl": "https://i.imgur.com/qR2ImmU.png",
   "nMenuIcon": "https://i.imgur.com/3sgLf8b.png",
   "wavesPic" : "https://i.imgur.com/jMNE65Q.png",
   "modeNumberOneValue": "940",
   "modeNumberTwoValue": "470",
-  "modeNumberThreeValue": "235",
-  "modeNumberFourValue": "117.5",
-  "modeNumberFiveValue": "58.75",
-  "modeNumberSixValue": "29.375"
+  "modeNumberThreeValue": "313.333333",
+  "modeNumberFourValue": "235",
+  "modeNumberFiveValue": "188",
+  "modeNumberSixValue": "156.666666"
 }
