@@ -9,58 +9,93 @@
     -fx-effect: innershadow(gaussian, Gray, 10, 0.05, 2.0, 2.0);
 }
 .root{
--fx-background-color: white;
+    -fx-background-color: white;
 }
 
 .menu-button > .arrow-button {
--fx-padding: 0;
+    -fx-padding: 0;
 }
 .menu-button > .arrow-button > .arrow {
--fx-padding: 0;
+    -fx-padding: 0;
 }
 .label{
--fx-font-weight: bold;
--fx-alignment: center;
--fx-pref-width: 175.0px;
--fx-font-family: "Verdana";
+    -fx-font-weight: bold;
+    -fx-alignment: center;
+    -fx-pref-width: 175.0px;
+    -fx-font-family: "Verdana";
 
 }
 #controlButton{
--fx-background-color: white;
--fx-text-fill: black;
--fx-font-size: 15;
--fx-font-family: "Verdana";
--fx-font-weight: bold;
--fx-alignment: center;
--fx-border-radius: 20px;
--fx-background-radius: 20 20 20 20;
--fx-border-color: black;
--fx-border-width: 2;
--fx-pref-width: 100;
+    -fx-background-color: white;
+    -fx-text-fill: black;
+    -fx-font-size: 15;
+    -fx-font-family: "Verdana";
+    -fx-font-weight: bold;
+    -fx-alignment: center;
+    -fx-border-radius: 20px;
+    -fx-background-radius: 20 20 20 20;
+    -fx-border-color: black;
+    -fx-border-width: 2;
+    -fx-pref-width: 100;
 }
 #warning{
--fx-pref-width: 400;
--fx-text-fill: red;
--fx-font-weight: bold;
--fx-font-family: "Verdana";
+    -fx-pref-width: 400;
+    -fx-text-fill: red;
+    -fx-font-weight: bold;
+    -fx-font-family: "Verdana";
 }
 #navigation{
--fx-border-color: black;
--fx-border-radius: 5em;
--fx-border-width: 5;
--fx-background-radius: 5em;
--fx-min-width: 60px;
--fx-min-height: 60px;
--fx-max-width: 60px;
--fx-max-height: 60px;
--fx-background-color: white;
--fx-text-fill: black;
--fx-font-size: 20;
--fx-font-weight: bold;
--fx-pref-width: 80;
--fx-pref-height: 30;
+    -fx-border-color: black;
+    -fx-border-radius: 5em;
+    -fx-border-width: 5;
+    -fx-background-radius: 5em;
+    -fx-min-width: 60px;
+    -fx-min-height: 60px;
+    -fx-max-width: 60px;
+    -fx-max-height: 60px;
+    -fx-background-color: white;
+    -fx-text-fill: black;
+    -fx-font-size: 20;
+    -fx-font-weight: bold;
+    -fx-pref-width: 80;
+    -fx-pref-height: 30;
 }
 .sPane {
     -fx-border-width: 20.0;
     -fx-background-color: gold;
+}
+#texts {
+    -fx-font-weight: bold;
+    -fx-font-family: "Verdana";
+}
+
+#light .thumb{
+    -fx-background-color: white;
+    -fx-border-color: black;
+    -fx-border-radius: 5em;
+    -fx-border-width: 2px;
+    -fx-background-radius: 5em;
+    -fx-min-width: 10px;
+    -fx-max-width: 10px;
+    -fx-min-height: 10px;
+    -fx-max-height: 10px;
+}
+#dark .thumb{
+    -fx-background-color: black;
+    -fx-border-color: white;
+    -fx-border-radius: 5em;
+    -fx-border-width: 2px;
+    -fx-background-radius: 5em;
+    -fx-min-width: 10px;
+    -fx-max-width: 10px;
+    -fx-min-height: 10px;
+    -fx-max-height: 10px;
+}
+#light .track{
+    -fx-background-color: white;
+    -fx-border-color: black;
+}
+#dark .track{
+    -fx-background-color: black;
+    -fx-border-color: white;
 }
