@@ -174,8 +174,6 @@ public class MainPage extends Application {
         primaryStage.setScene(s);
         primaryStage.setTitle("Physics Learning Tool");
         primaryStage.setResizable(false);
-        Image girlImg = new Image(girl);
-        ImageView girlView = new ImageView(girlImg);
         primaryStage.show();
 
 
@@ -209,7 +207,6 @@ public class MainPage extends Application {
 
         authors.hoverProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue) {
-                iView.setImage(girlImg);
                 iView.setX(-60);
                 al1.setVisible(true);
                 al2.setVisible(true);
@@ -234,10 +231,6 @@ public class MainPage extends Application {
         });
 
         Pane root2 = new Pane();
-        girlView.setX(500);
-        girlView.setY(175);
-        girlView.setPreserveRatio(true);
-        girlView.setFitHeight(350);
         root2.setStyle("-fx-background-color: " +
                 "linear-gradient(from 25% 25% to 100% 100%, #0f0c29, #302b63, #313149FF)");
         Scene s2 = new Scene(root2, 1000, 500);
@@ -262,7 +255,7 @@ public class MainPage extends Application {
         longtext.setY(100);
         longtext.setX(30);
         longtext.setStyle("-fx-font-family: 'Comic Sans MS'; -fx-font-size: 17");
-        root2.getChildren().addAll(longtext, girlView);
+        root2.getChildren().add(longtext);
 
 
         authors.setOnAction(actionEvent -> {
