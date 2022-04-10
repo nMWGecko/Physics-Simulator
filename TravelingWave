@@ -1,5 +1,7 @@
 package djangounchained.physics;
 
+// TODO help window
+
 import javafx.animation.*;
 import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
@@ -37,6 +39,7 @@ public class Ui extends Application {
     static Line vertGrid, horiGrid, xIndic, yIndic;
     static Text xL, yL;
     static Font font = Font.font("Verdana", FontWeight.NORMAL, FontPosture.REGULAR, 14);
+    static Font axisTitleFont = Font.font("Verdana", FontWeight.NORMAL, FontPosture.REGULAR, 10);
 
     static ArrayList<Circle> standList = new ArrayList<>();
     static ArrayList<Circle> travelList = new ArrayList<>();
@@ -53,7 +56,7 @@ public class Ui extends Application {
     static double modeNumberOneValue, modeNumberTwoValue, modeNumberThreeValue, modeNumberFourValue, modeNumberFiveValue,
             modeNumberSixValue;
 
-    static double A, f, T, v, omega, lambda, k, waveLength, timeToReachEnd, timeElapsed, timeWhenStopped, totalTimeWhenStopped;
+    static double A, f, T, v, omega, lambda, k, timeToReachEnd, timeElapsed, timeWhenStopped, totalTimeWhenStopped;
     static Pane wavesPane;
 
     //Ui(Stage travelWaveStage) {
@@ -194,7 +197,7 @@ public class Ui extends Application {
 
                     Should you make the choice to further explore the concepts related to waves, a great starting point would be to consult
                 these interesting articles written by Stephen Cohen (on his website, The Engineer’s Pulse, under the “For Physics Students”
-                section:
+                section):
                 """);
         theoryTxt2.setFont(font);
 
@@ -309,10 +312,14 @@ public class Ui extends Application {
         controls.getChildren().add(ui);
 
         Text coordinateTxt = new Text("Point Coordinates (x, y) = (           ,         )");
+        Text t = new Text("Resulting Standing Wave: ");
+        Text ampTxt = new Text("Amplitude = 0.000 cm");
         Text periodTxt = new Text("Period = 0.000 s");
         Text omegaTxt = new Text("Angular Frequency = 0.000 rad/s");
         Text lambdaTxt = new Text("Wavelength = 0.000 cm");
         Text kTxt = new Text("Wave Number = 0.000 rad/cm");
+        t.setId("texts");
+        ampTxt.setId("texts");
         coordinateTxt.setId("texts");
         periodTxt.setId("texts");
         omegaTxt.setId("texts");
@@ -328,7 +335,10 @@ public class Ui extends Application {
         //Frequency: "clear" the values (for a split second) then implementing the new value
         VBox freqVBox = new VBox(5);
         freqVBox.setAlignment(Pos.CENTER);
-        Text freqText = new Text("Frequency [Hz]");
+        Text freqText = new Text("""
+                Traveling Wave
+                Frequency [Hz]
+                """);
         TextField freqTf = new TextField("0.000 Hz");
         freqTf.setAlignment(Pos.CENTER);
         freqTf.setEditable(false);
@@ -361,9 +371,10 @@ public class Ui extends Application {
                 }
                 T = 1 / f;
                 omega = 2 * Math.PI * f;
-                waveLength = v / f;
-                k = (2 * Math.PI) / waveLength;
+                lambda = v / f;
+                k = (2 * Math.PI) / lambda;
                 timeToReachEnd = stringLength / v;
+                ampTxt.setText("Amplitude = " + String.format("%.3f", 2 * A) + " cm");
                 periodTxt.setText("Period = " + String.format("%.3f", T) + " s");
                 omegaTxt.setText("Angular Frequency = " + String.format("%.3f", omega) + " rad/s");
                 lambdaTxt.setText("Wavelength = " + String.format("%.3f", lambda) + " cm");
@@ -406,7 +417,10 @@ public class Ui extends Application {
         //Wave Speed
         VBox wavSpdVBox = new VBox(5);
         wavSpdVBox.setAlignment(Pos.CENTER);
-        Text wavSpdText = new Text("Wave Speed [cm/s]");
+        Text wavSpdText = new Text("""
+                   Traveling Wave
+                Wave Speed [cm/s]
+                """);
         TextField wavSpdTf = new TextField("0.000 cm/s");
         wavSpdTf.setAlignment(Pos.CENTER);
         wavSpdTf.setEditable(false);
@@ -439,9 +453,10 @@ public class Ui extends Application {
                 }
                 T = 1 / f;
                 omega = 2 * Math.PI * f;
-                waveLength = v / f;
-                k = (2 * Math.PI) / waveLength;
+                lambda = v / f;
+                k = (2 * Math.PI) / lambda;
                 timeToReachEnd = stringLength / v;
+                ampTxt.setText("Amplitude = " + String.format("%.3f", 2 * A) + " cm");
                 periodTxt.setText("Period = " + String.format("%.3f", T) + " s");
                 omegaTxt.setText("Angular Frequency = " + String.format("%.3f", omega) + " rad/s");
                 lambdaTxt.setText("Wavelength = " + String.format("%.3f", lambda) + " cm");
@@ -484,7 +499,10 @@ public class Ui extends Application {
         //Amplitude
         VBox ampVBox = new VBox(5);
         ampVBox.setAlignment(Pos.CENTER);
-        Text ampText = new Text("Amplitude [cm]");
+        Text ampText = new Text("""
+                Traveling Wave
+                Amplitude [cm]
+                """);
         TextField ampTf = new TextField("0.000 cm");
         ampTf.setAlignment(Pos.CENTER);
         ampTf.setEditable(false);
@@ -517,9 +535,10 @@ public class Ui extends Application {
                 }
                 T = 1 / f;
                 omega = 2 * Math.PI * f;
-                waveLength = v / f;
-                k = (2 * Math.PI) / waveLength;
+                lambda = v / f;
+                k = (2 * Math.PI) / lambda;
                 timeToReachEnd = stringLength / v;
+                ampTxt.setText("Amplitude = " + String.format("%.3f", 2 * A) + " cm");
                 periodTxt.setText("Period = " + String.format("%.3f", T) + " s");
                 omegaTxt.setText("Angular Frequency = " + String.format("%.3f", omega) + " rad/s");
                 lambdaTxt.setText("Wavelength = " + String.format("%.3f", lambda) + " cm");
@@ -555,8 +574,11 @@ public class Ui extends Application {
         sliders.getChildren().addAll(freqVBox, wavSpdVBox, ampVBox);
         ui.getChildren().add(sliders);
         freqVBox.setLayoutX(10);
+        freqVBox.setLayoutY(-10);
         wavSpdVBox.setLayoutX(260);
+        wavSpdVBox.setLayoutY(-10);
         ampVBox.setLayoutX(500);
+        ampVBox.setLayoutY(-10);
         freqSldr.setId("light");
         wavSpdSldr.setId("light");
         ampSldr.setId("light");
@@ -605,24 +627,22 @@ public class Ui extends Application {
         legend.getChildren().addAll(incidTraveLeg, refTravLeg, standLeg);
         actionData.getChildren().add(legend);
         legend.setLayoutX(130);
-        legend.setLayoutY(20);
 
         /**
          * Start Button
          */
         actionData.getChildren().add(playBtn);
         playBtn.setLayoutX(450);
-        playBtn.setLayoutY(50);
+        playBtn.setLayoutY(30);
 
         /**
          * Extra Displayed Values
          */
         VBox exData = new VBox(5);
 
-        exData.getChildren().addAll(periodTxt, omegaTxt, lambdaTxt, kTxt);
+        exData.getChildren().addAll(t, ampTxt, periodTxt, omegaTxt, lambdaTxt, kTxt);
         actionData.getChildren().add(exData);
         exData.setLayoutX(650);
-        exData.setLayoutY(20);
 
         /**
          * Setting up the grid
@@ -682,9 +702,9 @@ public class Ui extends Application {
         xAxis.setStartY(wavesPane.getPrefHeight() / 2);
         xAxis.setEndY(wavesPane.getPrefHeight() / 2);
         Text xAxisTitle = new Text("X-Position (cm)");
-        xAxisTitle.setFont(font);
-        xAxisTitle.setLayoutX(866);
-        xAxisTitle.setLayoutY(xAxis.getStartY() + 134);
+        xAxisTitle.setFont(axisTitleFont);
+        xAxisTitle.setLayoutX(886);
+        xAxisTitle.setLayoutY(xAxis.getStartY() + 130);
 
         Line yAxis = new Line();
         yAxis.setStartX(30);
@@ -692,7 +712,7 @@ public class Ui extends Application {
         yAxis.setStartY(72);
         yAxis.setEndY(wavesPane.getPrefHeight() - 72);
         Text yAxisTitle = new Text("Y-Position (cm)");
-        yAxisTitle.setFont(font);
+        yAxisTitle.setFont(axisTitleFont);
         yAxisTitle.setLayoutX(0);
         yAxisTitle.setLayoutY(60);
 
@@ -1024,17 +1044,17 @@ public class Ui extends Application {
          */
 
         modeNumberAction(modeNumberOne, modeNumberTwo, modeNumberThree, modeNumberFour, modeNumberFive, modeNumberSix,
-                freqSldr, wavSpdSldr, ampSldr, modeNumberOneValue);
+                freqSldr, wavSpdSldr, modeNumberOneValue);
         modeNumberAction(modeNumberTwo, modeNumberOne, modeNumberThree, modeNumberFour, modeNumberFive, modeNumberSix,
-                freqSldr, wavSpdSldr, ampSldr, modeNumberTwoValue);
+                freqSldr, wavSpdSldr, modeNumberTwoValue);
         modeNumberAction(modeNumberThree, modeNumberOne, modeNumberTwo, modeNumberFour, modeNumberFive, modeNumberSix,
-                freqSldr, wavSpdSldr, ampSldr, modeNumberThreeValue);
+                freqSldr, wavSpdSldr, modeNumberThreeValue);
         modeNumberAction(modeNumberFour, modeNumberOne, modeNumberTwo, modeNumberThree, modeNumberFive, modeNumberSix,
-                freqSldr, wavSpdSldr, ampSldr, modeNumberFourValue);
+                freqSldr, wavSpdSldr, modeNumberFourValue);
         modeNumberAction(modeNumberFive, modeNumberOne, modeNumberTwo, modeNumberThree, modeNumberFour, modeNumberSix,
-                freqSldr, wavSpdSldr, ampSldr, modeNumberFiveValue);
+                freqSldr, wavSpdSldr, modeNumberFiveValue);
         modeNumberAction(modeNumberSix, modeNumberOne, modeNumberTwo, modeNumberThree, modeNumberFour, modeNumberFive,
-                freqSldr, wavSpdSldr, ampSldr, modeNumberSixValue);
+                freqSldr, wavSpdSldr, modeNumberSixValue);
 
         /**
          * Equations and AnimationTimer
@@ -1156,7 +1176,6 @@ public class Ui extends Application {
             omega = 0;
             lambda = 0;
             k = 0;
-            waveLength = 0;
             timeToReachEnd = 0;
             timeElapsed = 0;
             timeWhenStopped = 0;
@@ -1188,7 +1207,7 @@ public class Ui extends Application {
     private void modeNumberAction(CheckMenuItem modeNumberOne, CheckMenuItem modeNumberTwo,
                                   CheckMenuItem modeNumberThree, CheckMenuItem modeNumberFour,
                                   CheckMenuItem modeNumberFive, CheckMenuItem modeNumberSix,
-                                  Slider freqSldr, Slider wavSpdSldr, Slider ampSldr, double modeNumberOneValue) {
+                                  Slider freqSldr, Slider wavSpdSldr, double modeNumberOneValue) {
         modeNumberOne.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
