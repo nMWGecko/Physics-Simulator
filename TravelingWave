@@ -1,20 +1,17 @@
 package djangounchained.physics;
 
-// TODO help window
-
-import javafx.animation.*;
+import javafx.animation.AnimationTimer;
 import javafx.application.Application;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.*;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
@@ -26,6 +23,7 @@ import javafx.stage.Stage;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -59,9 +57,9 @@ public class Ui extends Application {
     static double A, f, T, v, omega, lambda, k, timeToReachEnd, timeElapsed, timeWhenStopped, totalTimeWhenStopped;
     static Pane wavesPane;
 
-    //Ui(Stage travelWaveStage) {
-    //    start(travelWaveStage);
-    //}
+    Ui(Stage travelWaveStage) {
+        start(travelWaveStage);
+    }
 
     @Override
     public void start(Stage stage) {
@@ -71,8 +69,8 @@ public class Ui extends Application {
         wavesPane.setPrefWidth(960);
         wavesPane.setPrefHeight(384);
 
-        /**
-         * JSON file
+        /*
+          JSON file
          */
         JSONParser jsonParser = new JSONParser();
         try {
@@ -94,14 +92,14 @@ public class Ui extends Application {
             e.printStackTrace();
         }
 
-        /**
-         * Setting up the Main Page
+        /*
+          Setting up the Main Page
          */
         BorderPane root = new BorderPane();
         root.setPadding(new Insets(10));
 
-        /**
-         * Navigation Button
+        /*
+          Navigation Button
          */
         //Pane for settings
         Pane navigationHBox = new Pane();
@@ -159,21 +157,20 @@ public class Ui extends Application {
         VBox theoVbox = new VBox(10);
 
         Text theoryTxt = new Text("""
-                Crash Course on Standing Waves
-                
-                    In the settings of this simulation, you will find the option to switch between light and dark mode, the option to toggle
-                the visibility of the travelling and standing waves.
+                Instructions
+               
+                    To interact with the standing wave simulation, simply press ‘start’ after adjusting the values on
+                amplitude, wave speed, and mode number sliders. Doing so will result in the formation of incident,
+                reflected, and standing waves. Additional features can be accessed through the hamburger menu, such as
+                switching between light mode and dark mode, displaying waves formed by mode numbers, and more.
 
-                    To interact with the standing wave simulation, simply press ‘start’ after adjusting the values on the three sliders. In
-                this simulation, there are sliders for each of the following parameters: amplitude, wave speed, and mode number. Adjusting
-                these parameters will result in a standing wave being formed.
-
-                * Amplitude [m]: the maximum displacement or distance moved by a point on a vibrating body or wave measured from its
-                  equilibrium position. It is equal to one-half the length of the vibration path.
-                * Wave Speed [m/s]: the distance the disturbance travels across a medium in a given amount of time. It can be calculated by
-                  multiplying frequency with the wavelength of a wave.
-                * Frequency [Hz]: the number of waves that pass a fixed point in a given amount of time. The hertz measurement, abbreviated
-                  Hz, is the number of waves that pass by per second.
+                As mentioned above, each slider has a parameter that it controls:
+                > Amplitude [m]: the maximum displacement or distance moved by a point on a vibrating body or wave
+                measured from its equilibrium position. It is equal to one-half the length of the vibration path.
+                > Wave Speed [m/s]: the distance the disturbance travels across a medium in a given amount of time.
+                It can be calculated by multiplying the frequency of a wave with its wavelength.
+                > Frequency [Hz]: the number of waves that pass a fixed point in a given amount of time. The hertz
+                measurement (abbreviated as Hz), is the number of waves that pass by per second.
                 """);
         theoryTxt.setFont(font);
 
@@ -181,48 +178,46 @@ public class Ui extends Application {
                 "blue) that form a standing wave (red).");
         wavesEgDesc.setFont(font);
 
-        ImageView wavesEg = new ImageView(new Image("https://upload.wikimedia.org/wikipedia/commons/thumb/5/5d/Waventerference.gif/620px-Waventerference.gif"));
+        ImageView wavesEg = new ImageView(new Image(
+         "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5d/Waventerference.gif/620px-Waventerference.gif"));
         wavesEg.setFitWidth(980);
-        wavesEg.setFitHeight(265 * (49/31));
+        wavesEg.setFitHeight(418.8709677419355);
 
         Text theoryTxt2 = new Text("""
                 What are standing waves and how are they created?
                 
-                    First, consider that waves always originate from some sort of event or disturbance. When two waves with the same
-                amplitude and frequency move in opposite directions, they will respect the superposition principle and create what is known
-                as an interference pattern. To elaborate, these two linear waves will either be added together or cancelled out.
+                    First, consider that waves always originate from some sort of event or disturbance. When two waves
+                with the same amplitude and frequency move in opposite directions, they will respect the superposition
+                principle and create what is known as an interference pattern. To elaborate, these two linear waves will
+                either be added together or cancelled out.
 
-                    Interestingly enough, you might have even come across this phenomena without realising it yourself: interference patterns
-                are so common to our daily lives, and can be produced by waves in the water, sound waves, or even light waves.
+                    Interestingly enough, you might have even come across this phenomena without realising it yourself:
+               interference patterns are so common to our daily lives, and can be produced by waves in the water,
+               sound waves, or even light waves.
 
-                    Should you make the choice to further explore the concepts related to waves, a great starting point would be to consult
-                these interesting articles written by Stephen Cohen (on his website, The Engineer’s Pulse, under the “For Physics Students”
-                section):
-                """);
+                    Should you make the choice to further explore the concepts related to waves, a great starting point
+               would be to consult these interesting articles written by Stephen Cohen (on his website, The Engineer’s
+               Pulse, under the “For Physics Students“ section):
+               """);
         theoryTxt2.setFont(font);
 
         Hyperlink cohenBlog = new Hyperlink("theengineerspulse.blogspot.com/p/for-physics-students.html");
         cohenBlog.setFont(font);
         cohenBlog.setTextFill(Color.DODGERBLUE);
-        cohenBlog.setOnAction(actionEvent -> {
-            getHostServices().showDocument(cohenBlog.getText());
-        });
+        cohenBlog.setOnAction(actionEvent -> getHostServices().showDocument(cohenBlog.getText()));
 
         Text theoEqn = new Text("""
                 
-                                Standing Wave: y(x, t) = 2Asin(kx)cos(ωt) [m]       Traveling Wave: y(x, t) = Asin(kx ± ωt) [m]
+                         Standing Wave: y(x, t) = 2Asin(kx)cos(ωt) [m]       Traveling Wave: y(x, t) = Asin(kx ± ωt) [m]
                  
-                                                    Wave Speed: v = λf [m/s]        Wave Number: k = 2π/λ [rad/m]
+                                             Wave Speed: v = λf [m/s]        Wave Number: k = 2π/λ [rad/m]
                  
-                                                                Angular Frequency: ⍵ = 2πf [rad/s]
+                                                         Angular Frequency: ⍵ = 2πf [rad/s]
                  
                 Where:
-                x [m]: a particle's x-axis position at a certain time
-                y [m]: a particle's y-axis position at a certain time
-                k [rad/m]: wave number
-                A [m]: amplitude
-                t [s]: time elapsed
-                ω [rad/s]: angular frequency
+                > x [m]: a particle's x-axis position at a certain time      > k [rad/m]: wave number
+                > y [m]: a particle's y-axis position at a certain time      > A [m]: amplitude
+                > ω [rad/s]: angular frequency                                     > t [s]: time elapsed
                 """);
         theoEqn.setFont(font);
 
@@ -232,35 +227,35 @@ public class Ui extends Application {
         sourcesTitle.setFont(font);
         sourcesTitle.setUnderline(true);
 
-        Text profDaveRef = new Text("\nYoutube - Professor Dave Explains: Interference, Reflection, and Diffraction\n" +
-                " Consulted on 2022/02/27");
+        Text profDaveRef = new Text("""
+
+                Youtube - Professor Dave Explains: Interference, Reflection, and Diffraction
+                 Consulted on 2022/02/27""");
         profDaveRef.setFont(font);
         Hyperlink profDaveLink = new Hyperlink("www.youtube.com/watch?v=eW5VGGJuWtQ&t=195s");
         profDaveLink.setFont(font);
         profDaveLink.setTextFill(Color.DODGERBLUE);
-        profDaveLink.setOnAction(actionEvent -> {
-            getHostServices().showDocument(profDaveLink.getText());
-        });
+        profDaveLink.setOnAction(actionEvent -> getHostServices().showDocument(profDaveLink.getText()));
 
-        Text britAmpRef = new Text("\nBrittanica.com - Physics: Amplitude\n" +
-                " Consulted on 2022/02/27");
+        Text britAmpRef = new Text("""
+
+                Brittanica.com - Physics: Amplitude
+                 Consulted on 2022/02/27""");
         britAmpRef.setFont(font);
         Hyperlink britAmpLink = new Hyperlink("www.britannica.com/science/amplitude-physics");
         britAmpLink.setFont(font);
         britAmpLink.setTextFill(Color.DODGERBLUE);
-        britAmpLink.setOnAction(actionEvent -> {
-            getHostServices().showDocument(britAmpLink.getText());
-        });
+        britAmpLink.setOnAction(actionEvent -> getHostServices().showDocument(britAmpLink.getText()));
 
-        Text britWaveRef = new Text("\nBrittanica.com - Physics: Standing Wave\n" +
-                " Consulted on 2022/02/27");
+        Text britWaveRef = new Text("""
+
+                Brittanica.com - Physics: Standing Wave
+                 Consulted on 2022/02/27""");
         britWaveRef.setFont(font);
         Hyperlink britWaveLink = new Hyperlink("www.britannica.com/science/standing-wave-physics");
         britWaveLink.setFont(font);
         britWaveLink.setTextFill(Color.DODGERBLUE);
-        britWaveLink.setOnAction(actionEvent -> {
-            getHostServices().showDocument(britWaveLink.getText());
-        });
+        britWaveLink.setOnAction(actionEvent -> getHostServices().showDocument(britWaveLink.getText()));
 
         theoVbox.getChildren().addAll(theoryTxt, wavesEgDesc, wavesEg, theoryTxt2, cohenBlog, theoEqn, helpSeparator,
                 sourcesTitle, profDaveRef, profDaveLink, britAmpRef, britAmpLink, britWaveRef, britWaveLink);
@@ -268,7 +263,7 @@ public class Ui extends Application {
 
         Scene theoryScene = new Scene(helpPane, 1000, 650);
         Stage secondaryStage = new Stage();
-        secondaryStage.setTitle("Help");
+        secondaryStage.setTitle("Standing Waves Simulator - Help");
         secondaryStage.setResizable(false);
         secondaryStage.setScene(theoryScene);
         menuHelp.setOnAction(actionEvent -> secondaryStage.show());
@@ -326,9 +321,9 @@ public class Ui extends Application {
         lambdaTxt.setId("texts");
         kTxt.setId("texts");
 
-        /**
-         * Sliders
-         * Always make the waves "snap" (clear first and then implement new values)
+        /*
+          Sliders
+          Always make the waves "snap" (clear first and then implement new values)
          */
         Pane sliders = new Pane();
 
@@ -346,71 +341,68 @@ public class Ui extends Application {
         freqSldr.setMajorTickUnit(1);
         freqSldr.setMinorTickCount(4);
 
-        freqSldr.valueProperty().addListener(new ChangeListener<Number>() {
-            @Override
-            public void changed(ObservableValue<? extends Number> observableValue, Number number, Number t1) {
-                f = freqSldr.getValue();
-                freqTf.setText(String.format("%.3f", freqSldr.getValue()) + " Hz");
-                if (startPauseCounter > 0 && playBtn.getText() == "Play") {
-                    for (Circle c : standList) {
-                        double sinTing = Math.sin(k * (c.getCenterX() - 30));
-                        double cosTing = Math.cos(omega * (totalTimeWhenStopped));
-                        double eq = 2 * A * sinTing * cosTing;
-                        c.setCenterY(192 + eq);
-                    }
-                    for (Circle c : travelList) {
-                        double sinTing = Math.sin((k * (c.getCenterX() - 30)) - (omega * (totalTimeWhenStopped)));
-                        double eq = A * sinTing;
-                        c.setCenterY(192 + eq);
-                    }
-                    for (Circle c : reTravelList) {
-                        double sinTing = Math.sin((k * (c.getCenterX() - 30)) + (omega * (totalTimeWhenStopped)));
-                        double eq = A * sinTing;
-                        c.setCenterY(192 + eq);
-                    }
+        freqSldr.valueProperty().addListener((observableValue, number, t1) -> {
+            f = freqSldr.getValue();
+            freqTf.setText(String.format("%.3f", freqSldr.getValue()) + " Hz");
+            if (startPauseCounter > 0 && Objects.equals(playBtn.getText(), "Play")) {
+                for (Circle c : standList) {
+                    double sinTing = Math.sin(k * (c.getCenterX() - 30));
+                    double cosTing = Math.cos(omega * (totalTimeWhenStopped));
+                    double eq = 2 * A * sinTing * cosTing;
+                    c.setCenterY(192 + eq);
                 }
-                T = 1 / f;
-                omega = 2 * Math.PI * f;
-                lambda = v / f;
-                k = (2 * Math.PI) / lambda;
-                timeToReachEnd = stringLength / v;
-                ampTxt.setText("Amplitude = " + String.format("%.3f", 2 * A) + " cm");
-                periodTxt.setText("Period = " + String.format("%.3f", T) + " s");
-                omegaTxt.setText("Angular Frequency = " + String.format("%.3f", omega) + " rad/s");
-                lambdaTxt.setText("Wavelength = " + String.format("%.3f", lambda) + " cm");
-                kTxt.setText("Wave Number = " + String.format("%.3f", k) + " rad/cm");
-                if (Double.isInfinite(T)) {
-                    periodTxt.setText("Period = 0.000 s");
+                for (Circle c : travelList) {
+                    double sinTing = Math.sin((k * (c.getCenterX() - 30)) - (omega * (totalTimeWhenStopped)));
+                    double eq = A * sinTing;
+                    c.setCenterY(192 + eq);
                 }
-                if (Double.isInfinite(omega)) {
-                    omegaTxt.setText("Angular Frequency = 0.000 rad/s");
+                for (Circle c : reTravelList) {
+                    double sinTing = Math.sin((k * (c.getCenterX() - 30)) + (omega * (totalTimeWhenStopped)));
+                    double eq = A * sinTing;
+                    c.setCenterY(192 + eq);
                 }
-                if (Double.isInfinite(lambda)) {
-                    lambdaTxt.setText("Wavelength = 0.000 cm");
-                }
-                if (Double.isInfinite(k)) {
-                    kTxt.setText("Wave Number = 0.000 rad/cm");
-                }
-                if (Double.isNaN(T)) {
-                    periodTxt.setText("Period = 0.000 s");
-                }
-                if (Double.isNaN(omega)) {
-                    omegaTxt.setText("Angular Frequency = 0.000 rad/s");
-                }
-                if (Double.isNaN(lambda)) {
-                    lambdaTxt.setText("Wavelength = 0.000 cm");
-                }
-                if (Double.isNaN(k)) {
-                    kTxt.setText("Wave Number = 0.000 rad/cm");
-                }
-
-                modeNumberOne.setSelected(false);
-                modeNumberTwo.setSelected(false);
-                modeNumberThree.setSelected(false);
-                modeNumberFour.setSelected(false);
-                modeNumberFive.setSelected(false);
-                modeNumberSix.setSelected(false);
             }
+            T = 1 / f;
+            omega = 2 * Math.PI * f;
+            lambda = v / f;
+            k = (2 * Math.PI) / lambda;
+            timeToReachEnd = stringLength / v;
+            ampTxt.setText("Amplitude = " + String.format("%.3f", 2 * A) + " cm");
+            periodTxt.setText("Period = " + String.format("%.3f", T) + " s");
+            omegaTxt.setText("Angular Frequency = " + String.format("%.3f", omega) + " rad/s");
+            lambdaTxt.setText("Wavelength = " + String.format("%.3f", lambda) + " cm");
+            kTxt.setText("Wave Number = " + String.format("%.3f", k) + " rad/cm");
+            if (Double.isInfinite(T)) {
+                periodTxt.setText("Period = 0.000 s");
+            }
+            if (Double.isInfinite(omega)) {
+                omegaTxt.setText("Angular Frequency = 0.000 rad/s");
+            }
+            if (Double.isInfinite(lambda)) {
+                lambdaTxt.setText("Wavelength = 0.000 cm");
+            }
+            if (Double.isInfinite(k)) {
+                kTxt.setText("Wave Number = 0.000 rad/cm");
+            }
+            if (Double.isNaN(T)) {
+                periodTxt.setText("Period = 0.000 s");
+            }
+            if (Double.isNaN(omega)) {
+                omegaTxt.setText("Angular Frequency = 0.000 rad/s");
+            }
+            if (Double.isNaN(lambda)) {
+                lambdaTxt.setText("Wavelength = 0.000 cm");
+            }
+            if (Double.isNaN(k)) {
+                kTxt.setText("Wave Number = 0.000 rad/cm");
+            }
+
+            modeNumberOne.setSelected(false);
+            modeNumberTwo.setSelected(false);
+            modeNumberThree.setSelected(false);
+            modeNumberFour.setSelected(false);
+            modeNumberFive.setSelected(false);
+            modeNumberSix.setSelected(false);
         });
         freqVBox.getChildren().addAll(freqText,freqTf, freqSldr);
 
@@ -428,73 +420,69 @@ public class Ui extends Application {
         wavSpdSldr.setMajorTickUnit(100);
         wavSpdSldr.setMinorTickCount(4);
 
-        wavSpdSldr.valueProperty().addListener(new ChangeListener<Number>() {
-            @Override
-            public void changed(ObservableValue<? extends Number> observableValue, Number number, Number t1) {
-                v = wavSpdSldr.getValue();
-                wavSpdTf.setText(String.format("%.3f", wavSpdSldr.getValue()) + " cm/s");
-                if (startPauseCounter > 0 && playBtn.getText() == "Play") {
-                    for (Circle c : standList) {
-                        double sinTing = Math.sin(k * (c.getCenterX() - 30));
-                        double cosTing = Math.cos(omega * (totalTimeWhenStopped));
-                        double eq = 2 * A * sinTing * cosTing;
-                        c.setCenterY(192 + eq);
-                    }
-                    for (Circle c : travelList) {
-                        double sinTing = Math.sin((k * (c.getCenterX() - 30)) - (omega * (totalTimeWhenStopped)));
-                        double eq = A * sinTing;
-                        c.setCenterY(192 + eq);
-                    }
-                    for (Circle c : reTravelList) {
-                        double sinTing = Math.sin((k * (c.getCenterX() - 30)) + (omega * (totalTimeWhenStopped)));
-                        double eq = A * sinTing;
-                        c.setCenterY(192 + eq);
-                    }
+        wavSpdSldr.valueProperty().addListener((observableValue, number, t1) -> {
+            v = wavSpdSldr.getValue();
+            wavSpdTf.setText(String.format("%.3f", wavSpdSldr.getValue()) + " cm/s");
+            if (startPauseCounter > 0 && Objects.equals(playBtn.getText(), "Play")) {
+                for (Circle c : standList) {
+                    double sinTing = Math.sin(k * (c.getCenterX() - 30));
+                    double cosTing = Math.cos(omega * (totalTimeWhenStopped));
+                    double eq = 2 * A * sinTing * cosTing;
+                    c.setCenterY(192 + eq);
                 }
-                T = 1 / f;
-                omega = 2 * Math.PI * f;
-                lambda = v / f;
-                k = (2 * Math.PI) / lambda;
-                timeToReachEnd = stringLength / v;
-                ampTxt.setText("Amplitude = " + String.format("%.3f", 2 * A) + " cm");
-                periodTxt.setText("Period = " + String.format("%.3f", T) + " s");
-                omegaTxt.setText("Angular Frequency = " + String.format("%.3f", omega) + " rad/s");
-                lambdaTxt.setText("Wavelength = " + String.format("%.3f", lambda) + " cm");
-                kTxt.setText("Wave Number = " + String.format("%.3f", k) + " rad/cm");
-                if (Double.isInfinite(T)) {
-                    periodTxt.setText("Period = 0.000 s");
+                for (Circle c : travelList) {
+                    double sinTing = Math.sin((k * (c.getCenterX() - 30)) - (omega * (totalTimeWhenStopped)));
+                    double eq = A * sinTing;
+                    c.setCenterY(192 + eq);
                 }
-                if (Double.isInfinite(omega)) {
-                    omegaTxt.setText("Angular Frequency = 0.000 rad/s");
+                for (Circle c : reTravelList) {
+                    double sinTing = Math.sin((k * (c.getCenterX() - 30)) + (omega * (totalTimeWhenStopped)));
+                    double eq = A * sinTing;
+                    c.setCenterY(192 + eq);
                 }
-                if (Double.isInfinite(lambda)) {
-                    lambdaTxt.setText("Wavelength = 0.000 cm");
-                }
-                if (Double.isInfinite(k)) {
-                    kTxt.setText("Wave Number = 0.000 rad/cm");
-                }
-                if (Double.isNaN(T)) {
-                    periodTxt.setText("Period = 0.000 s");
-                }
-                if (Double.isNaN(omega)) {
-                    omegaTxt.setText("Angular Frequency = 0.000 rad/s");
-                }
-                if (Double.isNaN(lambda)) {
-                    lambdaTxt.setText("Wavelength = 0.000 cm");
-                }
-                if (Double.isNaN(k)) {
-                    kTxt.setText("Wave Number = 0.000 rad/cm");
-                }
-                modeNumberOne.setSelected(false);
-                modeNumberTwo.setSelected(false);
-                modeNumberThree.setSelected(false);
-                modeNumberFour.setSelected(false);
-                modeNumberFive.setSelected(false);
-                modeNumberSix.setSelected(false);
             }
+            T = 1 / f;
+            omega = 2 * Math.PI * f;
+            lambda = v / f;
+            k = (2 * Math.PI) / lambda;
+            timeToReachEnd = stringLength / v;
+            ampTxt.setText("Amplitude = " + String.format("%.3f", 2 * A) + " cm");
+            periodTxt.setText("Period = " + String.format("%.3f", T) + " s");
+            omegaTxt.setText("Angular Frequency = " + String.format("%.3f", omega) + " rad/s");
+            lambdaTxt.setText("Wavelength = " + String.format("%.3f", lambda) + " cm");
+            kTxt.setText("Wave Number = " + String.format("%.3f", k) + " rad/cm");
+            if (Double.isInfinite(T)) {
+                periodTxt.setText("Period = 0.000 s");
+            }
+            if (Double.isInfinite(omega)) {
+                omegaTxt.setText("Angular Frequency = 0.000 rad/s");
+            }
+            if (Double.isInfinite(lambda)) {
+                lambdaTxt.setText("Wavelength = 0.000 cm");
+            }
+            if (Double.isInfinite(k)) {
+                kTxt.setText("Wave Number = 0.000 rad/cm");
+            }
+            if (Double.isNaN(T)) {
+                periodTxt.setText("Period = 0.000 s");
+            }
+            if (Double.isNaN(omega)) {
+                omegaTxt.setText("Angular Frequency = 0.000 rad/s");
+            }
+            if (Double.isNaN(lambda)) {
+                lambdaTxt.setText("Wavelength = 0.000 cm");
+            }
+            if (Double.isNaN(k)) {
+                kTxt.setText("Wave Number = 0.000 rad/cm");
+            }
+            modeNumberOne.setSelected(false);
+            modeNumberTwo.setSelected(false);
+            modeNumberThree.setSelected(false);
+            modeNumberFour.setSelected(false);
+            modeNumberFive.setSelected(false);
+            modeNumberSix.setSelected(false);
         });
         wavSpdVBox.getChildren().addAll(wavSpdText,wavSpdTf,wavSpdSldr);
-
 
         //Amplitude
         VBox ampVBox = new VBox(5);
@@ -510,63 +498,60 @@ public class Ui extends Application {
         ampSldr.setMajorTickUnit(5);
         ampSldr.setMinorTickCount(4);
 
-        ampSldr.valueProperty().addListener(new ChangeListener<Number>() {
-            @Override
-            public void changed(ObservableValue<? extends Number> observableValue, Number number, Number t1) {
-                A = ampSldr.getValue();
-                ampTf.setText(String.format("%.3f", ampSldr.getValue()) + " cm");
-                if (startPauseCounter > 0 && playBtn.getText() == "Play") {
-                    for (Circle c : standList) {
-                        double sinTing = Math.sin(k * (c.getCenterX() - 30));
-                        double cosTing = Math.cos(omega * (totalTimeWhenStopped));
-                        double eq = 2 * A * sinTing * cosTing;
-                        c.setCenterY(192 + eq);
-                    }
-                    for (Circle c : travelList) {
-                        double sinTing = Math.sin((k * (c.getCenterX() - 30)) - (omega * (totalTimeWhenStopped)));
-                        double eq = A * sinTing;
-                        c.setCenterY(192 + eq);
-                    }
-                    for (Circle c : reTravelList) {
-                        double sinTing = Math.sin((k * (c.getCenterX() - 30)) + (omega * (totalTimeWhenStopped)));
-                        double eq = A * sinTing;
-                        c.setCenterY(192 + eq);
-                    }
+        ampSldr.valueProperty().addListener((observableValue, number, t1) -> {
+            A = ampSldr.getValue();
+            ampTf.setText(String.format("%.3f", ampSldr.getValue()) + " cm");
+            if (startPauseCounter > 0 && Objects.equals(playBtn.getText(), "Play")) {
+                for (Circle c : standList) {
+                    double sinTing = Math.sin(k * (c.getCenterX() - 30));
+                    double cosTing = Math.cos(omega * (totalTimeWhenStopped));
+                    double eq = 2 * A * sinTing * cosTing;
+                    c.setCenterY(192 + eq);
                 }
-                T = 1 / f;
-                omega = 2 * Math.PI * f;
-                lambda = v / f;
-                k = (2 * Math.PI) / lambda;
-                timeToReachEnd = stringLength / v;
-                ampTxt.setText("Amplitude = " + String.format("%.3f", 2 * A) + " cm");
-                periodTxt.setText("Period = " + String.format("%.3f", T) + " s");
-                omegaTxt.setText("Angular Frequency = " + String.format("%.3f", omega) + " rad/s");
-                lambdaTxt.setText("Wavelength = " + String.format("%.3f", lambda) + " cm");
-                kTxt.setText("Wave Number = " + String.format("%.3f", k) + " rad/cm");
-                if (Double.isInfinite(T)) {
-                    periodTxt.setText("Period = 0.000 s");
+                for (Circle c : travelList) {
+                    double sinTing = Math.sin((k * (c.getCenterX() - 30)) - (omega * (totalTimeWhenStopped)));
+                    double eq = A * sinTing;
+                    c.setCenterY(192 + eq);
                 }
-                if (Double.isInfinite(omega)) {
-                    omegaTxt.setText("Angular Frequency = 0.000 rad/s");
+                for (Circle c : reTravelList) {
+                    double sinTing = Math.sin((k * (c.getCenterX() - 30)) + (omega * (totalTimeWhenStopped)));
+                    double eq = A * sinTing;
+                    c.setCenterY(192 + eq);
                 }
-                if (Double.isInfinite(lambda)) {
-                    lambdaTxt.setText("Wavelength = 0.000 cm");
-                }
-                if (Double.isInfinite(k)) {
-                    kTxt.setText("Wave Number = 0.000 rad/cm");
-                }
-                if (Double.isNaN(T)) {
-                    periodTxt.setText("Period = 0.000 s");
-                }
-                if (Double.isNaN(omega)) {
-                    omegaTxt.setText("Angular Frequency = 0.000 rad/s");
-                }
-                if (Double.isNaN(lambda)) {
-                    lambdaTxt.setText("Wavelength = 0.000 cm");
-                }
-                if (Double.isNaN(k)) {
-                    kTxt.setText("Wave Number = 0.000 rad/cm");
-                }
+            }
+            T = 1 / f;
+            omega = 2 * Math.PI * f;
+            lambda = v / f;
+            k = (2 * Math.PI) / lambda;
+            timeToReachEnd = stringLength / v;
+            ampTxt.setText("Amplitude = " + String.format("%.3f", 2 * A) + " cm");
+            periodTxt.setText("Period = " + String.format("%.3f", T) + " s");
+            omegaTxt.setText("Angular Frequency = " + String.format("%.3f", omega) + " rad/s");
+            lambdaTxt.setText("Wavelength = " + String.format("%.3f", lambda) + " cm");
+            kTxt.setText("Wave Number = " + String.format("%.3f", k) + " rad/cm");
+            if (Double.isInfinite(T)) {
+                periodTxt.setText("Period = 0.000 s");
+            }
+            if (Double.isInfinite(omega)) {
+                omegaTxt.setText("Angular Frequency = 0.000 rad/s");
+            }
+            if (Double.isInfinite(lambda)) {
+                lambdaTxt.setText("Wavelength = 0.000 cm");
+            }
+            if (Double.isInfinite(k)) {
+                kTxt.setText("Wave Number = 0.000 rad/cm");
+            }
+            if (Double.isNaN(T)) {
+                periodTxt.setText("Period = 0.000 s");
+            }
+            if (Double.isNaN(omega)) {
+                omegaTxt.setText("Angular Frequency = 0.000 rad/s");
+            }
+            if (Double.isNaN(lambda)) {
+                lambdaTxt.setText("Wavelength = 0.000 cm");
+            }
+            if (Double.isNaN(k)) {
+                kTxt.setText("Wave Number = 0.000 rad/cm");
             }
         });
 
@@ -594,8 +579,8 @@ public class Ui extends Application {
         Pane actionData = new Pane();
         controls.getChildren().add(actionData);
 
-        /**
-         * Legend
+        /*
+          Legend
          */
         VBox legend = new VBox(5);
         HBox incidTraveLeg = new HBox(10);
@@ -628,15 +613,15 @@ public class Ui extends Application {
         actionData.getChildren().add(legend);
         legend.setLayoutX(130);
 
-        /**
-         * Start Button
+        /*
+          Start Button
          */
         actionData.getChildren().add(playBtn);
         playBtn.setLayoutX(450);
         playBtn.setLayoutY(30);
 
-        /**
-         * Extra Displayed Values
+        /*
+          Extra Displayed Values
          */
         VBox exData = new VBox(5);
 
@@ -644,8 +629,8 @@ public class Ui extends Application {
         actionData.getChildren().add(exData);
         exData.setLayoutX(650);
 
-        /**
-         * Setting up the grid
+        /*
+          Setting up the grid
          */
         //Grid lines
         for(int i = 70; i <= wavesPane.getPrefHeight() - 60; i += 20) {
@@ -662,39 +647,33 @@ public class Ui extends Application {
             wavesPane.getChildren().add(vertGrid);
         }
 
-        /**
-         * Toggle Grid
+        /*
+          Toggle Grid
          */
-        gridOn.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent actionEvent) {
-                for(Line l: hLineList) {
-                    l.setVisible(true);
-                }
-                for(Line l: vLineList) {
-                    l.setVisible(true);
-                }
-                gridOff.setSelected(false);
-                gridOn.setSelected(true);
+        gridOn.setOnAction(actionEvent -> {
+            for (Line l : hLineList) {
+                l.setVisible(true);
             }
+            for (Line l : vLineList) {
+                l.setVisible(true);
+            }
+            gridOff.setSelected(false);
+            gridOn.setSelected(true);
         });
 
-        gridOff.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent actionEvent) {
-                for(Line l: hLineList) {
-                    l.setVisible(false);
-                }
-                for(Line l: vLineList) {
-                    l.setVisible(false);
-                }
-                gridOn.setSelected(false);
-                gridOff.setSelected(true);
+        gridOff.setOnAction(actionEvent -> {
+            for(Line l: hLineList) {
+                l.setVisible(false);
             }
+            for(Line l: vLineList) {
+                l.setVisible(false);
+            }
+            gridOn.setSelected(false);
+            gridOff.setSelected(true);
         });
 
-        /**
-         * Creating Axis Lines
+        /*
+          Creating Axis Lines
          */
         Line xAxis = new Line();
         xAxis.setStartX(10);
@@ -753,8 +732,8 @@ public class Ui extends Application {
             wavesPane.getChildren().add(yL);
         }
 
-        /**
-         * Creating the incident traveling wave
+        /*
+          Creating the incident traveling wave
          */
         for(int i = 30; i <= 970; i++) {
             c = new Circle(i, wavesPane.getPrefHeight()/2, 2, Color.CORNFLOWERBLUE);
@@ -764,8 +743,8 @@ public class Ui extends Application {
             wavesPane.getChildren().add(c);
         }
 
-        /**
-         * Creating the reflected traveling wave
+        /*
+          Creating the reflected traveling wave
          */
         for(int i = 30; i <= 970; i++) {
             c = new Circle(i, wavesPane.getPrefHeight()/2, 2, Color.ORANGERED);
@@ -775,8 +754,8 @@ public class Ui extends Application {
             wavesPane.getChildren().add(c);
         }
 
-        /**
-         * Creating the standing wave
+        /*
+          Creating the standing wave
          */
         for(int i = 30; i <= 970; i++) {
             c = new Circle(i, wavesPane.getPrefHeight()/2, 3, Color.DARKMAGENTA);
@@ -786,261 +765,237 @@ public class Ui extends Application {
             wavesPane.getChildren().add(c);
         }
 
-        /**
-         * Change Theme
+        /*
+          Change Theme
          */
-        lightMode.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent actionEvent) {
-                root.setStyle("-fx-background-color: white");
+        lightMode.setOnAction(actionEvent -> {
+            root.setStyle("-fx-background-color: white");
 
-                inciTravLine.setStroke(Color.CORNFLOWERBLUE);
-                refTravLine.setStroke(Color.ORANGERED);
-                standLine.setStroke(Color.DARKMAGENTA);
-                separator.setStroke(Color.BLACK);
-                xAxis.setStroke(Color.BLACK);
-                yAxis.setStroke(Color.BLACK);
+            inciTravLine.setStroke(Color.CORNFLOWERBLUE);
+            refTravLine.setStroke(Color.ORANGERED);
+            standLine.setStroke(Color.DARKMAGENTA);
+            separator.setStroke(Color.BLACK);
+            xAxis.setStroke(Color.BLACK);
+            yAxis.setStroke(Color.BLACK);
 
-                //Text in main window
-                simTitle.setFill(Color.BLACK);
-                inciTravLegTxt.setFill(Color.BLACK);
-                refTravLegTxt.setFill(Color.BLACK);
-                freqText.setFill(Color.BLACK);
-                wavSpdText.setFill(Color.BLACK);
-                ampText.setFill(Color.BLACK);
-                standLegTxt.setFill(Color.BLACK);
-                coordinateTxt.setFill(Color.BLACK);
-                periodTxt.setFill(Color.BLACK);
-                omegaTxt.setFill(Color.BLACK);
-                lambdaTxt.setFill(Color.BLACK);
-                hoverInstruction.setFill(Color.BLACK);
-                kTxt.setFill(Color.BLACK);
-                xAxisTitle.setFill(Color.BLACK);
-                yAxisTitle.setFill(Color.BLACK);
+            //Text in main window
+            simTitle.setFill(Color.BLACK);
+            inciTravLegTxt.setFill(Color.BLACK);
+            refTravLegTxt.setFill(Color.BLACK);
+            freqText.setFill(Color.BLACK);
+            wavSpdText.setFill(Color.BLACK);
+            ampText.setFill(Color.BLACK);
+            standLegTxt.setFill(Color.BLACK);
+            coordinateTxt.setFill(Color.BLACK);
+            periodTxt.setFill(Color.BLACK);
+            omegaTxt.setFill(Color.BLACK);
+            lambdaTxt.setFill(Color.BLACK);
+            hoverInstruction.setFill(Color.BLACK);
+            kTxt.setFill(Color.BLACK);
+            xAxisTitle.setFill(Color.BLACK);
+            yAxisTitle.setFill(Color.BLACK);
 
-                //Text in Help window
-                helpPane.setStyle("-fx-background-color: whitesmoke");
-                theoVbox.setStyle("-fx-background-color: whitesmoke");
-                theoryTxt.setFill(Color.BLACK);
-                wavesEgDesc.setFill(Color.BLACK);
-                theoryTxt2.setFill(Color.BLACK);
-                theoEqn.setFill(Color.BLACK);
-                sourcesTitle.setFill(Color.BLACK);
-                profDaveRef.setFill(Color.BLACK);
-                britAmpRef.setFill(Color.BLACK);
-                britWaveRef.setFill(Color.BLACK);
+            //Text in Help window
+            helpPane.setStyle("-fx-background-color: whitesmoke");
+            theoVbox.setStyle("-fx-background-color: whitesmoke");
+            theoryTxt.setFill(Color.BLACK);
+            wavesEgDesc.setFill(Color.BLACK);
+            theoryTxt2.setFill(Color.BLACK);
+            theoEqn.setFill(Color.BLACK);
+            sourcesTitle.setFill(Color.BLACK);
+            profDaveRef.setFill(Color.BLACK);
+            britAmpRef.setFill(Color.BLACK);
+            britWaveRef.setFill(Color.BLACK);
 
-                helpSeparator.setStroke(Color.BLACK);
+            helpSeparator.setStroke(Color.BLACK);
 
-                menuView.setImage(menuIcon);
-                menuBtn.setStyle("-fx-background-color: #ffffff;-fx-border-color: black;");
-                ampTf.setStyle("-fx-background-color: #ffffff;-fx-border-color: black;");
-                freqTf.setStyle("-fx-background-color: #ffffff;-fx-border-color: black;");
-                wavSpdTf.setStyle("-fx-background-color: #ffffff;-fx-border-color: black;");
-                freqSldr.setId("light");
-                wavSpdSldr.setId("light");
-                ampSldr.setId("light");
+            menuView.setImage(menuIcon);
+            menuBtn.setStyle("-fx-background-color: #ffffff;-fx-border-color: black;");
+            ampTf.setStyle("-fx-background-color: #ffffff;-fx-border-color: black;");
+            freqTf.setStyle("-fx-background-color: #ffffff;-fx-border-color: black;");
+            wavSpdTf.setStyle("-fx-background-color: #ffffff;-fx-border-color: black;");
+            freqSldr.setId("light");
+            wavSpdSldr.setId("light");
+            ampSldr.setId("light");
 
-                for(Line l: xIndiList) {
-                    l.setStroke(Color.BLACK);
-                }
-                for(Text t: xLabelList) {
-                    t.setFill(Color.BLACK);
-                }
-                for(Line l: yIndiList) {
-                    l.setStroke(Color.BLACK);
-                }
-                for(Text t: yLabelList) {
-                    t.setFill(Color.BLACK);
-                }
+            for (Line l : xIndiList) {
+                l.setStroke(Color.BLACK);
+            }
+            for (Text t12 : xLabelList) {
+                t12.setFill(Color.BLACK);
+            }
+            for (Line l : yIndiList) {
+                l.setStroke(Color.BLACK);
+            }
+            for (Text t12 : yLabelList) {
+                t12.setFill(Color.BLACK);
+            }
+            for (Circle c : travelList) {
+                c.setStroke(Color.CORNFLOWERBLUE);
+            }
+            for (Circle c : reTravelList) {
+                c.setStroke(Color.MAROON);
+            }
+            for (Circle c : standList) {
+                c.setStroke(Color.DARKMAGENTA);
+            }
+
+            darkMode.setSelected(false);
+            lightMode.setSelected(true);
+        });
+
+        darkMode.setOnAction(actionEvent -> {
+            root.setStyle("-fx-background-color: #303030");
+
+            //Text in main window
+            simTitle.setFill(Color.WHITE);
+            inciTravLegTxt.setFill(Color.WHITE);
+            refTravLegTxt.setFill(Color.WHITE);
+            standLegTxt.setFill(Color.WHITE);
+            coordinateTxt.setFill(Color.WHITE);
+            hoverInstruction.setFill(Color.WHITE);
+            periodTxt.setFill(Color.WHITE);
+            omegaTxt.setFill(Color.WHITE);
+            lambdaTxt.setFill(Color.WHITE);
+            kTxt.setFill(Color.WHITE);
+            ampText.setFill(Color.WHITE);
+            xAxisTitle.setFill(Color.WHITE);
+            freqText.setFill(Color.WHITE);
+            wavSpdText.setFill(Color.WHITE);
+            yAxisTitle.setFill(Color.WHITE);
+
+            //Text in the Help window
+            helpPane.setStyle("-fx-background-color: #303030");
+            theoVbox.setStyle("-fx-background-color: #303030");
+            theoryTxt.setFill(Color.WHITE);
+            wavesEgDesc.setFill(Color.WHITE);
+            theoryTxt2.setFill(Color.WHITE);
+            theoEqn.setFill(Color.WHITE);
+            sourcesTitle.setFill(Color.WHITE);
+            profDaveRef.setFill(Color.WHITE);
+            britAmpRef.setFill(Color.WHITE);
+            britWaveRef.setFill(Color.WHITE);
+
+            helpSeparator.setStroke(Color.WHITE);
+
+            ampTf.setStyle("-fx-background-color: #303030; -fx-text-fill: white;");
+            freqTf.setStyle("-fx-background-color: #303030; -fx-text-fill: white;");
+            wavSpdTf.setStyle("-fx-background-color: #303030; -fx-text-fill: white;");
+            menuView.setImage(nMenuIcon);
+            menuBtn.setStyle("-fx-background-color: #303030; -fx-border-color: white;");
+            freqSldr.setId("dark");
+            wavSpdSldr.setId("dark");
+            ampSldr.setId("dark");
+
+            separator.setStroke(Color.WHITE);
+            inciTravLine.setStroke(Color.CYAN);
+            refTravLine.setStroke(Color.ORANGERED);
+            standLine.setStroke(omori);
+            xAxis.setStroke(Color.WHITE);
+            yAxis.setStroke(Color.WHITE);
+
+            for (Line l : xIndiList) {
+                l.setStroke(Color.WHITE);
+            }
+            for (Text t13 : xLabelList) {
+                t13.setFill(Color.WHITE);
+            }
+            for (Line l : yIndiList) {
+                l.setStroke(Color.WHITE);
+            }
+            for (Text t13 : yLabelList) {
+                t13.setFill(Color.WHITE);
+            }
+            for (Circle c : travelList) {
+                c.setStroke(Color.CYAN);
+            }
+            for (Circle c : reTravelList) {
+                c.setStroke(Color.ORANGERED);
+            }
+            for (Circle c : standList) {
+                c.setStroke(omori);
+            }
+
+            lightMode.setSelected(false);
+            darkMode.setSelected(true);
+        });
+
+        /*
+          Toggle Wave Visibility
+         */
+
+        toggleIncident.setOnAction(actionEvent -> {
+            incidentCounter += 1;
+            if (incidentCounter % 2 == 1) {
+                toggleIncident.setSelected(false);
                 for(Circle c: travelList) {
-                    c.setStroke(Color.CORNFLOWERBLUE);
+                    c.setVisible(false);
                 }
-                for(Circle c: reTravelList) {
-                    c.setStroke(Color.MAROON);
-                }
-                for(Circle c: standList) {
-                    c.setStroke(Color.DARKMAGENTA);
-                }
-
-                darkMode.setSelected(false);
-                lightMode.setSelected(true);
             }
-        });
 
-        darkMode.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent actionEvent) {
-                root.setStyle("-fx-background-color: #303030");
-
-                //Text in main window
-                simTitle.setFill(Color.WHITE);
-                inciTravLegTxt.setFill(Color.WHITE);
-                refTravLegTxt.setFill(Color.WHITE);
-                standLegTxt.setFill(Color.WHITE);
-                coordinateTxt.setFill(Color.WHITE);
-                hoverInstruction.setFill(Color.WHITE);
-                periodTxt.setFill(Color.WHITE);
-                omegaTxt.setFill(Color.WHITE);
-                lambdaTxt.setFill(Color.WHITE);
-                kTxt.setFill(Color.WHITE);
-                ampText.setFill(Color.WHITE);
-                xAxisTitle.setFill(Color.WHITE);
-                freqText.setFill(Color.WHITE);
-                wavSpdText.setFill(Color.WHITE);
-                yAxisTitle.setFill(Color.WHITE);
-
-                //Text in the Help window
-                helpPane.setStyle("-fx-background-color: #303030");
-                theoVbox.setStyle("-fx-background-color: #303030");
-                theoryTxt.setFill(Color.WHITE);
-                wavesEgDesc.setFill(Color.WHITE);
-                theoryTxt2.setFill(Color.WHITE);
-                theoEqn.setFill(Color.WHITE);
-                sourcesTitle.setFill(Color.WHITE);
-                profDaveRef.setFill(Color.WHITE);
-                britAmpRef.setFill(Color.WHITE);
-                britWaveRef.setFill(Color.WHITE);
-
-                helpSeparator.setStroke(Color.WHITE);
-
-                ampTf.setStyle("-fx-background-color: #303030; -fx-text-fill: white;");
-                freqTf.setStyle("-fx-background-color: #303030; -fx-text-fill: white;");
-                wavSpdTf.setStyle("-fx-background-color: #303030; -fx-text-fill: white;");
-                menuView.setImage(nMenuIcon);
-                menuBtn.setStyle("-fx-background-color: #303030; -fx-border-color: white;");
-                freqSldr.setId("dark");
-                wavSpdSldr.setId("dark");
-                ampSldr.setId("dark");
-
-                separator.setStroke(Color.WHITE);
-                inciTravLine.setStroke(Color.CYAN);
-                refTravLine.setStroke(Color.ORANGERED);
-                standLine.setStroke(omori);
-                xAxis.setStroke(Color.WHITE);
-                yAxis.setStroke(Color.WHITE);
-
-                for(Line l: xIndiList) {
-                    l.setStroke(Color.WHITE);
-                }
-                for(Text t: xLabelList) {
-                    t.setFill(Color.WHITE);
-                }
-                for(Line l: yIndiList) {
-                    l.setStroke(Color.WHITE);
-                }
-                for(Text t: yLabelList) {
-                    t.setFill(Color.WHITE);
-                }
+            if (incidentCounter % 2 == 0) {
+                toggleIncident.setSelected(true);
                 for(Circle c: travelList) {
-                    c.setStroke(Color.CYAN);
+                    c.setVisible(true);
                 }
+            }
+        });
+
+        toggleReflected.setOnAction(actionEvent -> {
+            reflectedCounter += 1;
+            if(reflectedCounter % 2 == 1) {
+                toggleReflected.setSelected(false);
                 for(Circle c: reTravelList) {
-                    c.setStroke(Color.ORANGERED);
+                    c.setVisible(false);
                 }
+            }
+            if(reflectedCounter % 2 == 0) {
+                toggleReflected.setSelected(true);
+                for(Circle c: reTravelList) {
+                    c.setVisible(true);
+                }
+            }
+        });
+
+        toggleStanding.setOnAction(actionEvent -> {
+            standingCounter += 1;
+            if(standingCounter % 2 == 1) {
+                toggleStanding.setSelected(false);
                 for(Circle c: standList) {
-                    c.setStroke(omori);
+                    c.setVisible(false);
                 }
-
-                lightMode.setSelected(false);
-                darkMode.setSelected(true);
+            }
+            if(standingCounter % 2 == 0) {
+                toggleStanding.setSelected(true);
+                for(Circle c: standList) {
+                    c.setVisible(true);
+                }
             }
         });
 
-        /**
-         * Toggle Wave Visibility
+        /*
+          Fast, Slow, & Normal motion speeds
          */
-
-        toggleIncident.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent actionEvent) {
-                incidentCounter += 1;
-                if (incidentCounter % 2 == 1) {
-                    toggleIncident.setSelected(false);
-                    for(Circle c: travelList) {
-                        c.setVisible(false);
-                    }
-                }
-
-                if (incidentCounter % 2 == 0) {
-                    toggleIncident.setSelected(true);
-                    for(Circle c: travelList) {
-                        c.setVisible(true);
-                    }
-                }
-            }
+        normalMotion.setOnAction(actionEvent -> {
+            slowMotion.setSelected(false);
+            fastMotion.setSelected(false);
+            normalMotion.setSelected(true);
         });
 
-        toggleReflected.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent actionEvent) {
-                reflectedCounter += 1;
-                if(reflectedCounter % 2 == 1) {
-                    toggleReflected.setSelected(false);
-                    for(Circle c: reTravelList) {
-                        c.setVisible(false);
-                    }
-                }
-                if(reflectedCounter % 2 == 0) {
-                    toggleReflected.setSelected(true);
-                    for(Circle c: reTravelList) {
-                        c.setVisible(true);
-                    }
-                }
-            }
+        fastMotion.setOnAction(actionEvent -> {
+            slowMotion.setSelected(false);
+            normalMotion.setSelected(false);
+            fastMotion.setSelected(true);
         });
 
-        toggleStanding.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent actionEvent) {
-                standingCounter += 1;
-                if(standingCounter % 2 == 1) {
-                    toggleStanding.setSelected(false);
-                    for(Circle c: standList) {
-                        c.setVisible(false);
-                    }
-                }
-                if(standingCounter % 2 == 0) {
-                    toggleStanding.setSelected(true);
-                    for(Circle c: standList) {
-                        c.setVisible(true);
-                    }
-                }
-            }
+        slowMotion.setOnAction(actionEvent -> {
+            fastMotion.setSelected(false);
+            normalMotion.setSelected(false);
+            slowMotion.setSelected(true);
         });
 
-        /**
-         * Fast, Slow, & Normal motion speeds
-         */
-        normalMotion.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent actionEvent) {
-                slowMotion.setSelected(false);
-                fastMotion.setSelected(false);
-                normalMotion.setSelected(true);
-            }
-        });
-
-        fastMotion.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent actionEvent) {
-                slowMotion.setSelected(false);
-                normalMotion.setSelected(false);
-                fastMotion.setSelected(true);
-            }
-        });
-
-        slowMotion.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent actionEvent) {
-                fastMotion.setSelected(false);
-                normalMotion.setSelected(false);
-                slowMotion.setSelected(true);
-            }
-        });
-
-        /**
-         * Mode Number CheckMenuItems
+        /*
+          Mode Number CheckMenuItems
          */
 
         modeNumberAction(modeNumberOne, modeNumberTwo, modeNumberThree, modeNumberFour, modeNumberFive, modeNumberSix,
@@ -1056,8 +1011,8 @@ public class Ui extends Application {
         modeNumberAction(modeNumberSix, modeNumberOne, modeNumberTwo, modeNumberThree, modeNumberFour, modeNumberFive,
                 freqSldr, wavSpdSldr, modeNumberSixValue);
 
-        /**
-         * Equations and AnimationTimer
+        /*
+          Equations and AnimationTimer
          */
         AnimationTimer animateTimer = new AnimationTimer() {
             @Override
@@ -1067,8 +1022,6 @@ public class Ui extends Application {
                 lambda = v / f;
                 k = (2 * Math.PI) / lambda;
                 timeToReachEnd = stringLength / v;
-
-
                 periodTxt.setText("Period = " + String.format("%.3f", T) + " s");
                 omegaTxt.setText("Angular Frequency = " + String.format("%.3f", omega) + " rad/s");
                 lambdaTxt.setText("Wavelength = " + String.format("%.3f", lambda) + " cm");
@@ -1127,8 +1080,8 @@ public class Ui extends Application {
             }
         };
 
-        /**
-         * Setting up the Pause / Play button
+        /*
+          Setting up the Pause / Play button
          */
         playBtn.setOnAction(actionEvent -> {
             startPauseCounter += 1;
@@ -1193,11 +1146,9 @@ public class Ui extends Application {
 
         root.setCenter(wavesPane);
 
-        /**
-         * Brining it all together
-         */
+        //Bringing it all together
         Scene scene = new Scene(root, 1000, 650);
-        scene.getStylesheets().add(getClass().getResource("waves.css").toExternalForm());
+        scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("waves.css")).toExternalForm());
         stage.setTitle("Standing Wave Simulator");
         stage.setResizable(false);
         stage.setScene(scene);
@@ -1208,18 +1159,15 @@ public class Ui extends Application {
                                   CheckMenuItem modeNumberThree, CheckMenuItem modeNumberFour,
                                   CheckMenuItem modeNumberFive, CheckMenuItem modeNumberSix,
                                   Slider freqSldr, Slider wavSpdSldr, double modeNumberOneValue) {
-        modeNumberOne.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent actionEvent) {
-                freqSldr.setValue(0.50);
-                wavSpdSldr.setValue(modeNumberOneValue);
-                modeNumberOne.setSelected(true);
-                modeNumberTwo.setSelected(false);
-                modeNumberThree.setSelected(false);
-                modeNumberFour.setSelected(false);
-                modeNumberFive.setSelected(false);
-                modeNumberSix.setSelected(false);
-            }
+        modeNumberOne.setOnAction(actionEvent -> {
+            freqSldr.setValue(0.50);
+            wavSpdSldr.setValue(modeNumberOneValue);
+            modeNumberOne.setSelected(true);
+            modeNumberTwo.setSelected(false);
+            modeNumberThree.setSelected(false);
+            modeNumberFour.setSelected(false);
+            modeNumberFive.setSelected(false);
+            modeNumberSix.setSelected(false);
         });
     }
 
