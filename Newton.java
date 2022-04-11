@@ -1,4 +1,4 @@
-package com.example.physicssimulation;
+package com.example.physics;
 
 // TODO help window
 // TODO align text in imperial
@@ -155,17 +155,17 @@ public class Newton extends Application {
         navigationHBox.getChildren().addAll(menuBtn, titlesBox, homeBtn);
         navigationHBox.setAlignment(Pos.CENTER);
 
-        Label forceLabel = new Label("Applied Force (N):");
+        Label forceLabel = new Label("Applied Force [N]:");
         TextField forceTextField = new TextField();
         forceTextField.setPromptText("100 - 1000N");
         appliedForceHBox.getChildren().addAll(forceLabel,forceTextField);
 //forceHBoxSettings
-        Label massLabel = new Label("Mass (kg):");
+        Label massLabel = new Label( "Mass [kg]:             ");
         TextField massTextField = new TextField();
         massTextField.setPromptText("1 - 10kg");
         massHBox.getChildren().addAll(massLabel,massTextField);
 //massHBoxSettings
-        Label surfaceLabel = new Label("Friction Force (N):");
+        Label surfaceLabel = new Label("Friction Force [N]:");
         TextField frictionForceTextField = new TextField();
         frictionForceTextField.setPromptText("100 - 1,000N");
         frictionForceHBox.getChildren().addAll(surfaceLabel,frictionForceTextField);
@@ -306,7 +306,7 @@ public class Newton extends Application {
         root.getChildren().addAll(vbox,pane);
 
         Scene s = new Scene(root, 1000, 650);
-        s.getStylesheets().add(getClass().getResource("newton.css").toExternalForm());
+        s.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
         primaryStage.setScene(s);
         primaryStage.setTitle("Newton's 2nd Law Simulator");
         primaryStage.setResizable(false);
