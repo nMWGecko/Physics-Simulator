@@ -1,9 +1,7 @@
-package com.example.physics;
+package com.example.physicssimulation;
 
 // TODO help window
-// TODO align text in imperial
 
-import com.example.physicssimulation.Main;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.geometry.Insets;
@@ -245,10 +243,10 @@ public class Newton extends Application {
 
         for (int i = 0; i < 10000; i+= 500) {
             distanceLine = new Line(i + 200, 200, i + 200, 350);
-            distanceIndicator = new Text("" + i);
-            distanceIndicator.setX(i + 200);
-            distanceIndicator.setY(200);
-            distanceIndicator.setStyle("-fx-font-family: Verdana;");
+            distanceIndicator = new Text("" + i + "m");
+            distanceIndicator.setX(i + 196);
+            distanceIndicator.setY(190);
+            distanceIndicator.setStyle("-fx-font-family: Verdana; -fx-font-weight: bold");
             distanceLine.setStroke(Color.RED);
             distanceLine.getStrokeDashArray().addAll(25d, 10d);
             distanceLineArrayList.add(distanceLine);
@@ -257,10 +255,10 @@ public class Newton extends Application {
 
         for (int i = 0; i < 10000; i+= 500) {
             impDistanceLine = new Line((i / 1.09361) + 200, 200, (i / 1.09361) + 200, 350);
-            impDistanceIndicator = new Text("" + i);
-            impDistanceIndicator.setX((i / 1.09361) + 200);
-            impDistanceIndicator.setY(200);
-            impDistanceIndicator.setStyle("-fx-font-family: Verdana;");
+            impDistanceIndicator = new Text("" + i + "yd");
+            impDistanceIndicator.setX((i / 1.09361) + 196);
+            impDistanceIndicator.setY(190);
+            impDistanceIndicator.setStyle("-fx-font-family: Verdana; -fx-font-weight: bold");
             impDistanceLine.setStroke(Color.RED);
             impDistanceLine.getStrokeDashArray().addAll(25d, 10d);
             impDistanceLineArrayList.add(impDistanceLine);
@@ -306,7 +304,7 @@ public class Newton extends Application {
         root.getChildren().addAll(vbox,pane);
 
         Scene s = new Scene(root, 1000, 650);
-        s.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
+        s.getStylesheets().add(getClass().getResource("newton.css").toExternalForm());
         primaryStage.setScene(s);
         primaryStage.setTitle("Newton's 2nd Law Simulator");
         primaryStage.setResizable(false);
@@ -420,7 +418,6 @@ public class Newton extends Application {
 
                         if(totalTime + totalTimeWhenStopped <10){
                             timeDisplayLabel.setText("Time: 0" + String.format("%.2f", totalTime + totalTimeWhenStopped) + "s");
-                            System.out.println(time);
                         }
                         else if (totalTime + totalTimeWhenStopped > 10){
                             timeDisplayLabel.setText("Time: " + String.format("%.2f", totalTime + totalTimeWhenStopped) + "s");
@@ -430,12 +427,13 @@ public class Newton extends Application {
                             distanceDisplayLabel.setText("Distance: 000" + String.format("%.2f", (distance + distancePerFrame)* 1.09361) + "yd");
                         }
                         else if ((distance + distancePerFrame)* 1.09361 <100) {
-                            distanceDisplayLabel.setText("Distance: 00" + String.format("%.2f", distance + distancePerFrame) + "yd");
+                            distanceDisplayLabel.setText("Distance: 00" + String.format("%.2f", (distance + distancePerFrame)* 1.09361) + "yd");
                         }
                         else if ((distance + distancePerFrame)* 1.09361 <1000){
-                            distanceDisplayLabel.setText("Distance: 0" + String.format("%.2f", distance + distancePerFrame) + "yd");
-                        } else if((distance + distancePerFrame)* 1.09361 >1000){
-                            distanceDisplayLabel.setText("Distance: " + String.format("%.2f", distance + distancePerFrame) + "yd");
+                            System.out.println(distance + distancePerFrame);
+                            distanceDisplayLabel.setText("Distance: 0" + String.format("%.2f", (distance + distancePerFrame)* 1.09361) + "yd");
+                        } else {
+                            distanceDisplayLabel.setText("Distance: " + String.format("%.2f", (distance + distancePerFrame)* 1.09361) + "yd");
                         }
                     }
                     if ((speed + oppSpeed) < 0) {
