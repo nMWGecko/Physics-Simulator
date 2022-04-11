@@ -1,7 +1,7 @@
-package com.example.physics;
+package com.example.physicssimulation;
 
 // TODO help window
-// TODO align text in imperial
+
 
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
@@ -19,6 +19,9 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontPosture;
+import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import org.json.simple.JSONObject;
@@ -41,7 +44,7 @@ public class Newton extends Application {
     static ArrayList<Line> impDistanceLineArrayList = new ArrayList<>();
     static ArrayList<Text> distanceIndicatorArrayList = new ArrayList<>();
     static ArrayList<Text> impDistanceIndicatorArrayList = new ArrayList<>();
-    static String menuPic, homePic, helpPic, dusk, dayCar, day,god,skateboard, nMenuPic;
+    static String menuPic, homePic, helpPic, dusk, dayCar, day, nightCar,god,skateboard, nMenuPic;
     static int counter = 0;
     public Newton(Stage newtonStage) {
         start(newtonStage);
@@ -67,9 +70,8 @@ public class Newton extends Application {
 
         FlowPane root = new FlowPane();
         VBox vbox = new VBox(30);
-        HBox navigationHBox = new HBox(230);
+        HBox navigationHBox = new HBox(265);
         navigationHBox.setPadding(new Insets(10, 5, 0, 5));
-        Pane menuPane = new Pane();
         HBox controlHBox = new HBox(20);
         controlHBox.prefWidth(1000);
         controlHBox.setPadding(new Insets(0, 0, 0, 115));
@@ -79,7 +81,6 @@ public class Newton extends Application {
         VBox tfVbox = new VBox(3);
         tfVbox.setPadding(new Insets(10,0,0,0));
         VBox labelVBox = new VBox(20);
-        labelVBox.setPrefWidth(200);
         VBox buttonVbox = new VBox(20);
         buttonVbox.setPadding(new Insets(20, 5, 5, 10));
 
@@ -129,7 +130,6 @@ public class Newton extends Application {
         menuView.setFitHeight(25);
         menuBtn.setGraphic(menuView);
         menuBtn.setId("navigation");
-        menuPane.getChildren().addAll(menuBtn);
 //Menu Settings
         Image homeIcon = new Image(homePic);
         ImageView homeView = new ImageView(homeIcon);
@@ -139,23 +139,30 @@ public class Newton extends Application {
         homeBtn.setGraphic(homeView);
         homeBtn.setId("navigation");
 //home Button settings
-
+        Text title = new Text("Newton's 2nd Law Simulator");
+        title.setFont(Font.font("Verdana", FontWeight.BOLD, FontPosture.REGULAR, 20));
         Label warning = new Label();
         warning.setId("warning");
         warning.setVisible(false);
-        navigationHBox.getChildren().addAll(menuPane,warning,homeBtn );
+        VBox titlesBox = new VBox(5);
+        titlesBox.setAlignment(Pos.CENTER);
+        titlesBox.getChildren().addAll(title, warning);
+        navigationHBox.getChildren().addAll(menuBtn, titlesBox, homeBtn);
         navigationHBox.setAlignment(Pos.CENTER);
 
-        Label forceLabel = new Label("Applied Force (N):");
+        Label forceLabel = new Label("Applied Force [N]:");
         TextField forceTextField = new TextField();
+        forceTextField.setPromptText("1 - 1,000N");
         appliedForceHBox.getChildren().addAll(forceLabel,forceTextField);
 //forceHBoxSettings
-        Label massLabel = new Label("Mass (kg):");
+        Label massLabel = new Label("Mass [kg]:             ");
         TextField massTextField = new TextField();
+        massTextField.setPromptText("1 - 10kg");
         massHBox.getChildren().addAll(massLabel,massTextField);
 //massHBoxSettings
-        Label surfaceLabel = new Label("Friction Force (N):");
+        Label surfaceLabel = new Label("Friction Force [N]:");
         TextField frictionForceTextField = new TextField();
+        frictionForceTextField.setPromptText("1 - 1,000N");
         frictionForceHBox.getChildren().addAll(surfaceLabel,frictionForceTextField);
         tfVbox.getChildren().addAll(appliedForceHBox,massHBox,frictionForceHBox);
 //tfVBoxSettings
@@ -164,7 +171,6 @@ public class Newton extends Application {
         Label velocityDisplayLabel = new Label("Velocity: 0000.00km/h");
         velocityDisplayLabel.setTextFill(Color.RED);
         velocityHbox.getChildren().add(velocityDisplayLabel);
-
 
         Label accelerationDisplayLabel = new Label("Acceleration: 000.00m/s²");
         accelerationDisplayLabel.setTextFill(Color.ORANGE);
@@ -228,15 +234,14 @@ public class Newton extends Application {
         groundView.setFitWidth(10000);
         groundView.setFitHeight(400);
         pane.getChildren().addAll(groundView, line, objectView);
-        warning.setLayoutX(100);
-        warning.setLayoutY(3500);
+        warning.setLayoutY(10);
 
         for (int i = 0; i < 10000; i+= 500) {
             distanceLine = new Line(i + 200, 200, i + 200, 350);
-            distanceIndicator = new Text("" + i);
-            distanceIndicator.setX(i + 200);
-            distanceIndicator.setY(200);
-            distanceIndicator.setStyle("-fx-font-family: Verdana;");
+            distanceIndicator = new Text("" + i + "m");
+            distanceIndicator.setX(i + 196);
+            distanceIndicator.setY(190);
+            distanceIndicator.setStyle("-fx-font-family: Verdana; -fx-font-weight: bold");
             distanceLine.setStroke(Color.RED);
             distanceLine.getStrokeDashArray().addAll(25d, 10d);
             distanceLineArrayList.add(distanceLine);
@@ -245,10 +250,10 @@ public class Newton extends Application {
 
         for (int i = 0; i < 10000; i+= 500) {
             impDistanceLine = new Line((i / 1.09361) + 200, 200, (i / 1.09361) + 200, 350);
-            impDistanceIndicator = new Text("" + i);
-            impDistanceIndicator.setX((i / 1.09361) + 200);
-            impDistanceIndicator.setY(200);
-            impDistanceIndicator.setStyle("-fx-font-family: Verdana;");
+            impDistanceIndicator = new Text("" + i + "yd");
+            impDistanceIndicator.setX((i / 1.09361) + 196);
+            impDistanceIndicator.setY(190);
+            impDistanceIndicator.setStyle("-fx-font-family: Verdana; -fx-font-weight: bold");
             impDistanceLine.setStroke(Color.RED);
             impDistanceLine.getStrokeDashArray().addAll(25d, 10d);
             impDistanceLineArrayList.add(impDistanceLine);
@@ -294,7 +299,7 @@ public class Newton extends Application {
         root.getChildren().addAll(vbox,pane);
 
         Scene s = new Scene(root, 1000, 650);
-        s.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
+        s.getStylesheets().add(getClass().getResource("newton.css").toExternalForm());
         primaryStage.setScene(s);
         primaryStage.setTitle("Newton's 2nd Law Simulator");
         primaryStage.setResizable(false);
@@ -721,14 +726,14 @@ public class Newton extends Application {
             accTotalTimeWhenStopped = 0;
             decTotalTimeWhenStopped = 0;
             if (imperial.isSelected()) {
-                accelerationDisplayLabel.setText("Acceleration: 00" + String.format("%.2f", acceleration) + "ft/s²");
-                timeDisplayLabel.setText("Time: 0" + String.format("%.2f", time) + "s");
-                distanceDisplayLabel.setText("Distance: 000" + String.format("%.2f", distance) + "yd");
+                accelerationDisplayLabel.setText("Acceleration: " + String.format("%.2f", acceleration) + "ft/s²");
+                timeDisplayLabel.setText("Time: " + String.format("%.2f", time) + "s                   ");
+                distanceDisplayLabel.setText("Distance: " + String.format("%.2f", distance) + "yd           ");
             }
             if (metric.isSelected()) {
-                accelerationDisplayLabel.setText("Acceleration: 00" + String.format("%.2f", acceleration) + "m/s²");
-                timeDisplayLabel.setText("Time: 0" + String.format("%.2f", time) + "s");
-                distanceDisplayLabel.setText("Distance: 000" + String.format("%.2f", distance) + "m");
+                accelerationDisplayLabel.setText("Acceleration: " + String.format("%.2f", acceleration) + "m/s²");
+                timeDisplayLabel.setText("Time: " + String.format("%.2f", time) + "s                   ");
+                distanceDisplayLabel.setText("Distance: " + String.format("%.2f", distance) + "m           ");
             }
             timer2.start();
         });
@@ -736,12 +741,10 @@ public class Newton extends Application {
         imperial.setOnAction(actionEvent -> {
             metric.setSelected(false);
             imperial.setSelected(true);
-            velocityDisplayLabel.setText("Velocity: 0000.00mi/h");
-            accelerationDisplayLabel.setText("Acceleration: 000.00ft/s²");
-            distanceDisplayLabel.setText("Distance: 0000.00yd");
-            accelerationHbox.setPadding(new Insets(0, 3, 0, 0));
-            distanceHbox.setPadding(new Insets(0, 39, 0, 0));
-            velocityHbox.setPadding(new Insets(0, 25, 0, 0));
+            velocityDisplayLabel.setText("Velocity: 0.00mi/h        ");
+            accelerationDisplayLabel.setText("Acceleration: 0.00ft/s²");
+            distanceDisplayLabel.setText("Distance: " + String.format("%.2f", distance + distancePerFrame) + "yd");
+
             for (Line l : distanceLineArrayList) {
                 l.setVisible(false);
             }
@@ -761,13 +764,9 @@ public class Newton extends Application {
         metric.setOnAction(actionEvent -> {
             metric.setSelected(true);
             imperial.setSelected(false);
-            velocityDisplayLabel.setText("Velocity: 0000.00km/h");
-            accelerationDisplayLabel.setText("Acceleration: 000.00m/s²");
-            distanceDisplayLabel.setText("Distance: 0000.00m");
-            distanceHbox.setPadding(new Insets(0, 40, 0, 0));
-            accelerationHbox.setPadding(new Insets(0, 2, 0, 0));
-            velocityHbox.setPadding(new Insets(0, 20, 0, 0));
-
+            velocityDisplayLabel.setText("Velocity: 0.00km/h       ");
+            accelerationDisplayLabel.setText("Acceleration: 0.00m/s²");
+            distanceDisplayLabel.setText("Distance: " + String.format("%.2f", distance + distancePerFrame) + "m");
             for (Line l : distanceLineArrayList) {
                 l.setVisible(true);
             }
@@ -853,35 +852,34 @@ public class Newton extends Application {
         helpImageView.setFitHeight(500);
 
         Text text = new Text("""
-                Newton's Second law states:
+                Newton's Second law states that:
                 Time rate of change of the momentum of a body is equal
                 in both magnitude and direction to the force imposed on it.
                 The momentum of a body is equal to:
-                the product of its mass and its velocity. F=m*a
+                the product of its mass and its velocity (F = m * a).
                 
-                Furthermore, the First law dictates that:
-                If a body is at rest/moving at a constant speed in a straight line
-                it will remain at rest or keep moving in a straight line
-                at constant speed unless it is acted upon by a force
-                The Friction force is what allows the object to come to a stop.
+                Furthermore, Newton's First law states that:
+                If a body is at rest/moving at a constant speed, it will
+                remain at rest or keep moving at constant speed unless it
+                is acted upon by a force. In this case, the friction force
+                is what allows the object to come to a stop.
                 
-                The user can change the force, mass and friction force based on
-                their desired values, omitting decimal values and
-                within the accepted values within this simulator, by typing them
-                into the respective text bubbles.
+                The user can change the force, mass and friction force by
+                typing them into the respective text fields.
                 
                 Upon the clicking the start button, the simulation will apply the
-                aforementioned laws and slide the image across the screen forgo any
-                unaccepted values.
+                aforementioned laws and slide the object across the screen,
+                given that no unaccepted values are given by the user.
                 
-                1% of error is to be expected as Java does a poor job tracking time.
-                
+                NOTE: An error of <0.5% is to be expected, as due to factors
+                such as code architecture and decimal rounding, Java does not
+                provide a perfect, consistent way of tracking time.
                 
                 Accepted values:
-                F: Force (100 to 1000 N)
-                m: Mass  (1 to 10 kg)
-                Friction Force: (100 to 1000N)
-                
+                F: Force (100 to 1,000N)
+                m: Mass  (1 to 10kg)
+                Friction Force: (100 to 1,000N)
+                                
                 """);
         textPane.getChildren().add(text);
         text.setY(40);
@@ -899,8 +897,59 @@ public class Newton extends Application {
             }
         });
         homeBtn.setOnAction(actionEvent -> {
+            startBtn.setText("Play");
+            warning.setVisible(false);
+            if(darkMode.isSelected()) {
+                forceTextField.setStyle("-fx-background-color: #303030");
+                massTextField.setStyle("-fx-background-color: #303030");
+                frictionForceTextField.setStyle("-fx-background-color: #303030");
+            }else{
+                forceTextField.setStyle("-fx-background-color: White");
+                massTextField.setStyle("-fx-background-color: White");
+                frictionForceTextField.setStyle("-fx-background-color: White");
+            }
+            arrowHead.setFill(Color.LIGHTGREEN);
+            arrowTail.setFill(Color.LIGHTGREEN);
+            arrowHead.getPoints().setAll(0.0, 0.0, 30.0, 20.0, 0.0, 40.0);
+            arrowHead.setLayoutX(500);
+            arrowTail.setX(450);
+            arrowForceLabel.setText("0N");
+            forceTextField.setText("");
+            frictionForceTextField.setText("");
+            massTextField.setText("");
+            acceleration = 0.0;
+            time = 0.0;
+            decTime = 0.0;
+            deceleration = 0.0;
+            speed = 0.0;
+            prevSpeed = 0.0;
+            distance = 0.0;
+            prevDeltaX = 0.0;
+            oppSpeed = 0.0;
+            prevOppSpeed = 0.0;
+            accDistance = 0.0;
+            timeWhenStopped = 0.0;
+            counter = 0;
+            accTime = 0;
+            totalTime = 0;
+            distancePerFrame = 0;
+            totalTimeWhenStopped = 0;
+            accTimeWhenStopped = 0;
+            decTimeWhenStopped = 0;
+            accTotalTimeWhenStopped = 0;
+            decTotalTimeWhenStopped = 0;
+            if (imperial.isSelected()) {
+                accelerationDisplayLabel.setText("Acceleration: " + String.format("%.2f", acceleration) + "ft/s²");
+                timeDisplayLabel.setText("Time: " + String.format("%.2f", time) + "s                   ");
+                distanceDisplayLabel.setText("Distance: " + String.format("%.2f", distance) + "yd           ");
+            }
+            if (metric.isSelected()) {
+                accelerationDisplayLabel.setText("Acceleration: " + String.format("%.2f", acceleration) + "m/s²");
+                timeDisplayLabel.setText("Time: " + String.format("%.2f", time) + "s                   ");
+                distanceDisplayLabel.setText("Distance: " + String.format("%.2f", distance) + "m           ");
+            }
             primaryStage.close();
-            MainPage m = new MainPage();
+            Main m = new Main();
             m.start(new Stage());
 
         });
