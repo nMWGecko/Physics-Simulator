@@ -29,14 +29,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Objects;
 
-public class Ui extends Application {
+public class WaveSimBeta extends Application {
     static String menuPic, homePic, helpPic, nMenuPic;
     static Color omori = Color.web("#6c0ffe");
     static Circle c;
     static Timer timer;
     static Line vertGrid, horiGrid, xIndic, yIndic;
     static Text xL, yL;
-    static Font font = Font.font("Verdana", FontWeight.NORMAL, FontPosture.REGULAR, 14);
+    static Font font = Font.font("Times New Roman", FontWeight.NORMAL, FontPosture.REGULAR, 16);
     static Font axisTitleFont = Font.font("Verdana", FontWeight.NORMAL, FontPosture.REGULAR, 10);
 
     static ArrayList<Circle> standList = new ArrayList<>();
@@ -57,7 +57,7 @@ public class Ui extends Application {
     static double A, f, T, v, omega, lambda, k, timeToReachEnd, timeElapsed, timeWhenStopped, totalTimeWhenStopped;
     static Pane wavesPane;
 
-    Ui(Stage travelWaveStage) {
+    WaveSimBeta(Stage travelWaveStage) {
         start(travelWaveStage);
     }
 
@@ -115,7 +115,7 @@ public class Ui extends Application {
         toggleStanding.setSelected(true);
         raysVis.getItems().addAll(toggleIncident, toggleReflected, toggleStanding);
 
-        // Set 'mode numbers' (not accurate to actual values from mode # equation)
+        // Set "mode numbers" (not accurate to actual values from mode # equation)
         Menu modeNumber = new Menu("Mode Shapes");
         CheckMenuItem modeNumberOne = new CheckMenuItem("Mode Shape 1");
         CheckMenuItem modeNumberTwo = new CheckMenuItem("Mode Shape 2");
@@ -156,48 +156,44 @@ public class Ui extends Application {
         helpPane.setPadding(new Insets(10));
         VBox theoVbox = new VBox(10);
 
+        Text instructions = new Text("Instructions");
+        instructions.setFont(Font.font("Times New Roman", FontWeight.BOLD, FontPosture.REGULAR, 16));
+
         Text theoryTxt = new Text("""
-                Instructions
-               
-                    To interact with the standing wave simulation, simply press ‘start’ after adjusting the values on
-                amplitude, wave speed, and mode number sliders. Doing so will result in the formation of incident,
-                reflected, and standing waves. Additional features can be accessed through the hamburger menu, such as
-                switching between light mode and dark mode, displaying waves formed by mode numbers, and more.
+                    To interact with the standing wave simulation, simply press "start" after adjusting the values on amplitude, wave speed, and mode number sliders.
+                Doing so will result in the formation of incident, reflected, and standing waves. Additional features can be accessed through the hamburger menu, such
+                as switching between light mode and dark mode, displaying waves formed by mode numbers, and more.
 
                 As mentioned above, each slider has a parameter that it controls:
-                > Amplitude [m]: the maximum displacement or distance moved by a point on a vibrating body or wave
-                measured from its equilibrium position. It is equal to one-half the length of the vibration path.
-                > Wave Speed [m/s]: the distance the disturbance travels across a medium in a given amount of time.
-                It can be calculated by multiplying the frequency of a wave with its wavelength.
-                > Frequency [Hz]: the number of waves that pass a fixed point in a given amount of time. The hertz
-                measurement (abbreviated as Hz), is the number of waves that pass by per second.
+                > Amplitude [m]: the maximum displacement or distance moved by a point on a vibrating body or wave measured from its equilibrium position.
+                > Wave Speed [m/s]: the distance the disturbance travels across a medium in a given amount of time. It can be calculated by multiplying the frequency
+                   of a wave with its wavelength.
+                > Frequency [Hz]: the number of vibrations that a disturbance introduces to the medium per second.
                 """);
         theoryTxt.setFont(font);
 
         Text wavesEgDesc = new Text("Pictured below are visual representations of two travelling waves (green and " +
                 "blue) that form a standing wave (red).");
-        wavesEgDesc.setFont(font);
+        wavesEgDesc.setFont(Font.font("Times New Roman", FontWeight.NORMAL, FontPosture.ITALIC, 16));
 
         ImageView wavesEg = new ImageView(new Image(
-         "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5d/Waventerference.gif/620px-Waventerference.gif"));
+                "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5d/Waventerference.gif/620px-Waventerference.gif"));
         wavesEg.setFitWidth(980);
         wavesEg.setFitHeight(418.8709677419355);
 
+        Text whatAreWaves = new Text("What are standing waves and how are they created?");
+        whatAreWaves.setFont(Font.font("Times New Roman", FontWeight.BOLD, FontPosture.REGULAR, 16));
+
         Text theoryTxt2 = new Text("""
-                What are standing waves and how are they created?
-                
-                    First, consider that waves always originate from some sort of event or disturbance. When two waves
-                with the same amplitude and frequency move in opposite directions, they will respect the superposition
-                principle and create what is known as an interference pattern. To elaborate, these two linear waves will
-                either be added together or cancelled out.
+                   First, consider that waves always originate from some sort of event or disturbance. When two waves with the same amplitude and frequency move
+               in opposite directions, they will respect the superposition principle and create what is known as an interference pattern. To elaborate, these two linear
+               waves will either be added together or cancelled out.
 
-                    Interestingly enough, you might have even come across this phenomena without realising it yourself:
-               interference patterns are so common to our daily lives, and can be produced by waves in the water,
-               sound waves, or even light waves.
+                   Interestingly enough, you might have even come across this phenomena without realising it yourself: interference patterns are so common to our
+               daily lives, and can be produced by waves in the water, sound waves, or even light waves.
 
-                    Should you make the choice to further explore the concepts related to waves, a great starting point
-               would be to consult these interesting articles written by Stephen Cohen (on his website, The Engineer’s
-               Pulse, under the “For Physics Students“ section):
+                   Should you make the choice to further explore the concepts related to waves, a great starting point would be to consult these interesting articles
+               written by Stephen Cohen (on his website, The Engineer’s Pulse, under the “For Physics Students“ section):
                """);
         theoryTxt2.setFont(font);
 
@@ -208,29 +204,28 @@ public class Ui extends Application {
 
         Text theoEqn = new Text("""
                 
-                         Standing Wave: y(x, t) = 2Asin(kx)cos(ωt) [m]       Traveling Wave: y(x, t) = Asin(kx ± ωt) [m]
+                                                            Standing Wave: y(x, t) = 2Asin(kx)cos(ωt) [m]       Traveling Wave: y(x, t) = Asin(kx ± ωt) [m]
+                
+                                                                                              Wave Speed: v = λf [m/s]        Wave Number: k = 2π/λ [rad/m]
                  
-                                             Wave Speed: v = λf [m/s]        Wave Number: k = 2π/λ [rad/m]
-                 
-                                                         Angular Frequency: ⍵ = 2πf [rad/s]
+                                                                                                                   Angular Frequency: ⍵ = 2πf [rad/s]
                  
                 Where:
-                > x [m]: a particle's x-axis position at a certain time      > k [rad/m]: wave number
-                > y [m]: a particle's y-axis position at a certain time      > A [m]: amplitude
-                > ω [rad/s]: angular frequency                                     > t [s]: time elapsed
+                > x [m]: a particle's x-axis position at a certain time    > k [rad/m]: wave number
+                > y [m]: a particle's y-axis position at a certain time    > A [m]: amplitude
+                > ω [rad/s]: angular frequency                                      > t [s]: time elapsed
                 """);
         theoEqn.setFont(font);
 
         Line helpSeparator = new Line(0, 0, 1000, 0);
 
         Text sourcesTitle = new Text("Additional Sources Consulted");
-        sourcesTitle.setFont(font);
-        sourcesTitle.setUnderline(true);
+        sourcesTitle.setFont(Font.font("Times New Roman", FontWeight.BOLD, FontPosture.REGULAR, 16));
 
         Text profDaveRef = new Text("""
 
                 Youtube - Professor Dave Explains: Interference, Reflection, and Diffraction
-                 Consulted on 2022/02/27""");
+                Consulted on 2022/02/27""");
         profDaveRef.setFont(font);
         Hyperlink profDaveLink = new Hyperlink("www.youtube.com/watch?v=eW5VGGJuWtQ&t=195s");
         profDaveLink.setFont(font);
@@ -240,7 +235,7 @@ public class Ui extends Application {
         Text britAmpRef = new Text("""
 
                 Brittanica.com - Physics: Amplitude
-                 Consulted on 2022/02/27""");
+                Consulted on 2022/02/27""");
         britAmpRef.setFont(font);
         Hyperlink britAmpLink = new Hyperlink("www.britannica.com/science/amplitude-physics");
         britAmpLink.setFont(font);
@@ -250,14 +245,14 @@ public class Ui extends Application {
         Text britWaveRef = new Text("""
 
                 Brittanica.com - Physics: Standing Wave
-                 Consulted on 2022/02/27""");
+                Consulted on 2022/02/27""");
         britWaveRef.setFont(font);
         Hyperlink britWaveLink = new Hyperlink("www.britannica.com/science/standing-wave-physics");
         britWaveLink.setFont(font);
         britWaveLink.setTextFill(Color.DODGERBLUE);
         britWaveLink.setOnAction(actionEvent -> getHostServices().showDocument(britWaveLink.getText()));
 
-        theoVbox.getChildren().addAll(theoryTxt, wavesEgDesc, wavesEg, theoryTxt2, cohenBlog, theoEqn, helpSeparator,
+        theoVbox.getChildren().addAll(instructions, theoryTxt, wavesEgDesc, wavesEg, whatAreWaves, theoryTxt2, cohenBlog, theoEqn, helpSeparator,
                 sourcesTitle, profDaveRef, profDaveLink, britAmpRef, britAmpLink, britWaveRef, britWaveLink);
         helpPane.setContent(theoVbox);
 
@@ -306,13 +301,13 @@ public class Ui extends Application {
         ui.setAlignment(Pos.CENTER);
         controls.getChildren().add(ui);
 
-        Text coordinateTxt = new Text("Point Coordinates (x, y) = (           ,         )");
+        Text coordinateTxt = new Text("Point Coordinates (x, y) = (           ,           )");
         Text t = new Text("Resulting Standing Wave: ");
-        Text ampTxt = new Text("Amplitude = 0.000 cm");
-        Text periodTxt = new Text("Period = 0.000 s");
-        Text omegaTxt = new Text("Angular Frequency = 0.000 rad/s");
-        Text lambdaTxt = new Text("Wavelength = 0.000 cm");
-        Text kTxt = new Text("Wave Number = 0.000 rad/cm");
+        Text ampTxt = new Text("Amplitude = 0.00 cm");
+        Text periodTxt = new Text("Period = 0.00 s");
+        Text omegaTxt = new Text("Angular Frequency = 0.00 rad/s");
+        Text lambdaTxt = new Text("Wavelength = 0.00 cm");
+        Text kTxt = new Text("Wave Number = 0.00 rad/cm");
         t.setId("texts");
         ampTxt.setId("texts");
         coordinateTxt.setId("texts");
@@ -334,7 +329,7 @@ public class Ui extends Application {
                 Traveling Wave
                 Frequency [Hz]
                 """);
-        TextField freqTf = new TextField("0.000 Hz");
+        TextField freqTf = new TextField("0.00 Hz");
         freqTf.setAlignment(Pos.CENTER);
         freqTf.setEditable(false);
         Slider freqSldr = new Slider(0, 5, 0);
@@ -343,7 +338,7 @@ public class Ui extends Application {
 
         freqSldr.valueProperty().addListener((observableValue, number, t1) -> {
             f = freqSldr.getValue();
-            freqTf.setText(String.format("%.3f", freqSldr.getValue()) + " Hz");
+            freqTf.setText(String.format("%.2f", freqSldr.getValue()) + " Hz");
             if (startPauseCounter > 0 && Objects.equals(playBtn.getText(), "Play")) {
                 for (Circle c : standList) {
                     double sinTing = Math.sin(k * (c.getCenterX() - 30));
@@ -367,34 +362,34 @@ public class Ui extends Application {
             lambda = v / f;
             k = (2 * Math.PI) / lambda;
             timeToReachEnd = stringLength / v;
-            ampTxt.setText("Amplitude = " + String.format("%.3f", 2 * A) + " cm");
-            periodTxt.setText("Period = " + String.format("%.3f", T) + " s");
-            omegaTxt.setText("Angular Frequency = " + String.format("%.3f", omega) + " rad/s");
-            lambdaTxt.setText("Wavelength = " + String.format("%.3f", lambda) + " cm");
-            kTxt.setText("Wave Number = " + String.format("%.3f", k) + " rad/cm");
+            ampTxt.setText("Amplitude = " + String.format("%.2f", 2 * A) + " cm");
+            periodTxt.setText("Period = " + String.format("%.2f", T) + " s");
+            omegaTxt.setText("Angular Frequency = " + String.format("%.2f", omega) + " rad/s");
+            lambdaTxt.setText("Wavelength = " + String.format("%.2f", lambda) + " cm");
+            kTxt.setText("Wave Number = " + String.format("%.2f", k) + " rad/cm");
             if (Double.isInfinite(T)) {
-                periodTxt.setText("Period = 0.000 s");
+                periodTxt.setText("Period = 0.00 s");
             }
             if (Double.isInfinite(omega)) {
-                omegaTxt.setText("Angular Frequency = 0.000 rad/s");
+                omegaTxt.setText("Angular Frequency = 0.00 rad/s");
             }
             if (Double.isInfinite(lambda)) {
-                lambdaTxt.setText("Wavelength = 0.000 cm");
+                lambdaTxt.setText("Wavelength = 0.00 cm");
             }
             if (Double.isInfinite(k)) {
-                kTxt.setText("Wave Number = 0.000 rad/cm");
+                kTxt.setText("Wave Number = 0.00 rad/cm");
             }
             if (Double.isNaN(T)) {
-                periodTxt.setText("Period = 0.000 s");
+                periodTxt.setText("Period = 0.00 s");
             }
             if (Double.isNaN(omega)) {
-                omegaTxt.setText("Angular Frequency = 0.000 rad/s");
+                omegaTxt.setText("Angular Frequency = 0.00 rad/s");
             }
             if (Double.isNaN(lambda)) {
-                lambdaTxt.setText("Wavelength = 0.000 cm");
+                lambdaTxt.setText("Wavelength = 0.00 cm");
             }
             if (Double.isNaN(k)) {
-                kTxt.setText("Wave Number = 0.000 rad/cm");
+                kTxt.setText("Wave Number = 0.00 rad/cm");
             }
 
             modeNumberOne.setSelected(false);
@@ -413,7 +408,7 @@ public class Ui extends Application {
                    Traveling Wave
                 Wave Speed [cm/s]
                 """);
-        TextField wavSpdTf = new TextField("0.000 cm/s");
+        TextField wavSpdTf = new TextField("0.00 cm/s");
         wavSpdTf.setAlignment(Pos.CENTER);
         wavSpdTf.setEditable(false);
         Slider wavSpdSldr = new Slider(0, 1000, 0);
@@ -422,7 +417,7 @@ public class Ui extends Application {
 
         wavSpdSldr.valueProperty().addListener((observableValue, number, t1) -> {
             v = wavSpdSldr.getValue();
-            wavSpdTf.setText(String.format("%.3f", wavSpdSldr.getValue()) + " cm/s");
+            wavSpdTf.setText(String.format("%.2f", wavSpdSldr.getValue()) + " cm/s");
             if (startPauseCounter > 0 && Objects.equals(playBtn.getText(), "Play")) {
                 for (Circle c : standList) {
                     double sinTing = Math.sin(k * (c.getCenterX() - 30));
@@ -446,34 +441,34 @@ public class Ui extends Application {
             lambda = v / f;
             k = (2 * Math.PI) / lambda;
             timeToReachEnd = stringLength / v;
-            ampTxt.setText("Amplitude = " + String.format("%.3f", 2 * A) + " cm");
-            periodTxt.setText("Period = " + String.format("%.3f", T) + " s");
-            omegaTxt.setText("Angular Frequency = " + String.format("%.3f", omega) + " rad/s");
-            lambdaTxt.setText("Wavelength = " + String.format("%.3f", lambda) + " cm");
-            kTxt.setText("Wave Number = " + String.format("%.3f", k) + " rad/cm");
+            ampTxt.setText("Amplitude = " + String.format("%.2f", 2 * A) + " cm");
+            periodTxt.setText("Period = " + String.format("%.2f", T) + " s");
+            omegaTxt.setText("Angular Frequency = " + String.format("%.2f", omega) + " rad/s");
+            lambdaTxt.setText("Wavelength = " + String.format("%.2f", lambda) + " cm");
+            kTxt.setText("Wave Number = " + String.format("%.2f", k) + " rad/cm");
             if (Double.isInfinite(T)) {
-                periodTxt.setText("Period = 0.000 s");
+                periodTxt.setText("Period = 0.00 s");
             }
             if (Double.isInfinite(omega)) {
-                omegaTxt.setText("Angular Frequency = 0.000 rad/s");
+                omegaTxt.setText("Angular Frequency = 0.00 rad/s");
             }
             if (Double.isInfinite(lambda)) {
-                lambdaTxt.setText("Wavelength = 0.000 cm");
+                lambdaTxt.setText("Wavelength = 0.00 cm");
             }
             if (Double.isInfinite(k)) {
-                kTxt.setText("Wave Number = 0.000 rad/cm");
+                kTxt.setText("Wave Number = 0.00 rad/cm");
             }
             if (Double.isNaN(T)) {
-                periodTxt.setText("Period = 0.000 s");
+                periodTxt.setText("Period = 0.00 s");
             }
             if (Double.isNaN(omega)) {
-                omegaTxt.setText("Angular Frequency = 0.000 rad/s");
+                omegaTxt.setText("Angular Frequency = 0.00 rad/s");
             }
             if (Double.isNaN(lambda)) {
-                lambdaTxt.setText("Wavelength = 0.000 cm");
+                lambdaTxt.setText("Wavelength = 0.00 cm");
             }
             if (Double.isNaN(k)) {
-                kTxt.setText("Wave Number = 0.000 rad/cm");
+                kTxt.setText("Wave Number = 0.00 rad/cm");
             }
             modeNumberOne.setSelected(false);
             modeNumberTwo.setSelected(false);
@@ -491,7 +486,7 @@ public class Ui extends Application {
                 Traveling Wave
                 Amplitude [cm]
                 """);
-        TextField ampTf = new TextField("0.000 cm");
+        TextField ampTf = new TextField("0.00 cm");
         ampTf.setAlignment(Pos.CENTER);
         ampTf.setEditable(false);
         Slider ampSldr = new Slider(0, 60, 0);
@@ -500,7 +495,7 @@ public class Ui extends Application {
 
         ampSldr.valueProperty().addListener((observableValue, number, t1) -> {
             A = ampSldr.getValue();
-            ampTf.setText(String.format("%.3f", ampSldr.getValue()) + " cm");
+            ampTf.setText(String.format("%.2f", ampSldr.getValue()) + " cm");
             if (startPauseCounter > 0 && Objects.equals(playBtn.getText(), "Play")) {
                 for (Circle c : standList) {
                     double sinTing = Math.sin(k * (c.getCenterX() - 30));
@@ -524,34 +519,34 @@ public class Ui extends Application {
             lambda = v / f;
             k = (2 * Math.PI) / lambda;
             timeToReachEnd = stringLength / v;
-            ampTxt.setText("Amplitude = " + String.format("%.3f", 2 * A) + " cm");
-            periodTxt.setText("Period = " + String.format("%.3f", T) + " s");
-            omegaTxt.setText("Angular Frequency = " + String.format("%.3f", omega) + " rad/s");
-            lambdaTxt.setText("Wavelength = " + String.format("%.3f", lambda) + " cm");
-            kTxt.setText("Wave Number = " + String.format("%.3f", k) + " rad/cm");
+            ampTxt.setText("Amplitude = " + String.format("%.2f", 2 * A) + " cm");
+            periodTxt.setText("Period = " + String.format("%.2f", T) + " s");
+            omegaTxt.setText("Angular Frequency = " + String.format("%.2f", omega) + " rad/s");
+            lambdaTxt.setText("Wavelength = " + String.format("%.2f", lambda) + " cm");
+            kTxt.setText("Wave Number = " + String.format("%.2f", k) + " rad/cm");
             if (Double.isInfinite(T)) {
-                periodTxt.setText("Period = 0.000 s");
+                periodTxt.setText("Period = 0.00 s");
             }
             if (Double.isInfinite(omega)) {
-                omegaTxt.setText("Angular Frequency = 0.000 rad/s");
+                omegaTxt.setText("Angular Frequency = 0.00 rad/s");
             }
             if (Double.isInfinite(lambda)) {
-                lambdaTxt.setText("Wavelength = 0.000 cm");
+                lambdaTxt.setText("Wavelength = 0.00 cm");
             }
             if (Double.isInfinite(k)) {
-                kTxt.setText("Wave Number = 0.000 rad/cm");
+                kTxt.setText("Wave Number = 0.00 rad/cm");
             }
             if (Double.isNaN(T)) {
-                periodTxt.setText("Period = 0.000 s");
+                periodTxt.setText("Period = 0.00 s");
             }
             if (Double.isNaN(omega)) {
-                omegaTxt.setText("Angular Frequency = 0.000 rad/s");
+                omegaTxt.setText("Angular Frequency = 0.00 rad/s");
             }
             if (Double.isNaN(lambda)) {
-                lambdaTxt.setText("Wavelength = 0.000 cm");
+                lambdaTxt.setText("Wavelength = 0.00 cm");
             }
             if (Double.isNaN(k)) {
-                kTxt.setText("Wave Number = 0.000 rad/cm");
+                kTxt.setText("Wave Number = 0.00 rad/cm");
             }
         });
 
@@ -787,6 +782,8 @@ public class Ui extends Application {
             ampText.setFill(Color.BLACK);
             standLegTxt.setFill(Color.BLACK);
             coordinateTxt.setFill(Color.BLACK);
+            t.setFill(Color.BLACK);
+            ampTxt.setFill(Color.BLACK);
             periodTxt.setFill(Color.BLACK);
             omegaTxt.setFill(Color.BLACK);
             lambdaTxt.setFill(Color.BLACK);
@@ -798,8 +795,10 @@ public class Ui extends Application {
             //Text in Help window
             helpPane.setStyle("-fx-background-color: whitesmoke");
             theoVbox.setStyle("-fx-background-color: whitesmoke");
+            instructions.setFill(Color.WHITE);
             theoryTxt.setFill(Color.BLACK);
             wavesEgDesc.setFill(Color.BLACK);
+            whatAreWaves.setFill(Color.WHITE);
             theoryTxt2.setFill(Color.BLACK);
             theoEqn.setFill(Color.BLACK);
             sourcesTitle.setFill(Color.BLACK);
@@ -854,6 +853,8 @@ public class Ui extends Application {
             standLegTxt.setFill(Color.WHITE);
             coordinateTxt.setFill(Color.WHITE);
             hoverInstruction.setFill(Color.WHITE);
+            t.setFill(Color.WHITE);
+            ampTxt.setFill(Color.WHITE);
             periodTxt.setFill(Color.WHITE);
             omegaTxt.setFill(Color.WHITE);
             lambdaTxt.setFill(Color.WHITE);
@@ -867,8 +868,10 @@ public class Ui extends Application {
             //Text in the Help window
             helpPane.setStyle("-fx-background-color: #303030");
             theoVbox.setStyle("-fx-background-color: #303030");
+            instructions.setFill(Color.WHITE);
             theoryTxt.setFill(Color.WHITE);
             wavesEgDesc.setFill(Color.WHITE);
+            whatAreWaves.setFill(Color.WHITE);
             theoryTxt2.setFill(Color.WHITE);
             theoEqn.setFill(Color.WHITE);
             sourcesTitle.setFill(Color.WHITE);
@@ -1022,33 +1025,33 @@ public class Ui extends Application {
                 lambda = v / f;
                 k = (2 * Math.PI) / lambda;
                 timeToReachEnd = stringLength / v;
-                periodTxt.setText("Period = " + String.format("%.3f", T) + " s");
-                omegaTxt.setText("Angular Frequency = " + String.format("%.3f", omega) + " rad/s");
-                lambdaTxt.setText("Wavelength = " + String.format("%.3f", lambda) + " cm");
-                kTxt.setText("Wave Number = " + String.format("%.3f", k) + " rad/cm");
+                periodTxt.setText("Period = " + String.format("%.2f", T) + " s");
+                omegaTxt.setText("Angular Frequency = " + String.format("%.2f", omega) + " rad/s");
+                lambdaTxt.setText("Wavelength = " + String.format("%.2f", lambda) + " cm");
+                kTxt.setText("Wave Number = " + String.format("%.2f", k) + " rad/cm");
                 if (Double.isInfinite(T)) {
-                    periodTxt.setText("Period = 0.000 s");
+                    periodTxt.setText("Period = 0.00 s");
                 }
                 if (Double.isInfinite(omega)) {
-                    omegaTxt.setText("Angular Frequency = 0.000 rad/s");
+                    omegaTxt.setText("Angular Frequency = 0.00 rad/s");
                 }
                 if (Double.isInfinite(lambda)) {
-                    lambdaTxt.setText("Wavelength = 0.000 cm");
+                    lambdaTxt.setText("Wavelength = 0.00 cm");
                 }
                 if (Double.isInfinite(k)) {
-                    kTxt.setText("Wave Number = 0.000 rad/cm");
+                    kTxt.setText("Wave Number = 0.00 rad/cm");
                 }
                 if (Double.isNaN(T)) {
-                    periodTxt.setText("Period = 0.000 s");
+                    periodTxt.setText("Period = 0.00 s");
                 }
                 if (Double.isNaN(omega)) {
-                    omegaTxt.setText("Angular Frequency = 0.000 rad/s");
+                    omegaTxt.setText("Angular Frequency = 0.00 rad/s");
                 }
                 if (Double.isNaN(lambda)) {
-                    lambdaTxt.setText("Wavelength = 0.000 cm");
+                    lambdaTxt.setText("Wavelength = 0.00 cm");
                 }
                 if (Double.isNaN(k)) {
-                    kTxt.setText("Wave Number = 0.000 rad/cm");
+                    kTxt.setText("Wave Number = 0.00 rad/cm");
                 }
                 if(normalMotion.isSelected()) {
                     timeElapsed = timer.elapsed();
@@ -1114,35 +1117,35 @@ public class Ui extends Application {
             }
         });
 
-        homeBtn.setOnAction(actionEvent -> {
-            stage.close();
-            Main m = new Main();
-            m.start(new Stage());
-            animateTimer.stop();
-            startPauseCounter = 0;
-            incidentCounter = 0;
-            reflectedCounter = 0;
-            A = 0;
-            f = 0;
-            T = 0;
-            v = 0;
-            omega = 0;
-            lambda = 0;
-            k = 0;
-            timeToReachEnd = 0;
-            timeElapsed = 0;
-            timeWhenStopped = 0;
-            totalTimeWhenStopped = 0;
-            for (Circle c : travelList) {
-                c.setCenterY(192);
-            }
-            for (Circle c : reTravelList) {
-                c.setCenterY(192);
-            }
-            for (Circle c : standList) {
-                c.setCenterY(192);
-            }
-        });
+//        homeBtn.setOnAction(actionEvent -> {
+//            stage.close();
+//            MainPage m = new MainPage();
+//            m.start(new Stage());
+//            animateTimer.stop();
+//            startPauseCounter = 0;
+//            incidentCounter = 0;
+//            reflectedCounter = 0;
+//            A = 0;
+//            f = 0;
+//            T = 0;
+//            v = 0;
+//            omega = 0;
+//            lambda = 0;
+//            k = 0;
+//            timeToReachEnd = 0;
+//            timeElapsed = 0;
+//            timeWhenStopped = 0;
+//            totalTimeWhenStopped = 0;
+//            for (Circle c : travelList) {
+//                c.setCenterY(192);
+//            }
+//            for (Circle c : reTravelList) {
+//                c.setCenterY(192);
+//            }
+//            for (Circle c : standList) {
+//                c.setCenterY(192);
+//            }
+//        });
 
         root.setCenter(wavesPane);
 
@@ -1175,11 +1178,11 @@ public class Ui extends Application {
         for (Circle c : standList) {
             c.setOnMouseEntered(mouseEvent -> {
                 coordinateTxt.setText("Point Coordinates (x, y) = (" + String.format("%.2f",
-                        (c.getCenterX() - 30)) + ", " + String.format("%.2f",  (192 - c.getCenterY())) + ")");
+                        (c.getCenterX() - 30)) + ", " + String.format("%.2f", (192 - c.getCenterY())) + ")");
                 coordinateTxt.setLayoutX(350);
             });
             c.setOnMouseExited(mouseEvent -> {
-                coordinateTxt.setText("Point Coordinates (x, y) = (           ,         )");
+                coordinateTxt.setText("Point Coordinates (x, y) = (           ,           )");
                 coordinateTxt.setLayoutX(350);
             });
         }
