@@ -807,6 +807,7 @@ public class Newton extends Application {
             objectView.setImage(dayCarImg);
             groundView.setImage(dayImg);
             separator.setStyle("-fx-stroke:White;");
+            title.setFill(Color.BLACK);
             darkMode.setSelected(false);
 
 
@@ -823,6 +824,7 @@ public class Newton extends Application {
             surfaceLabel.setStyle("-fx-text-fill: white");
             separator.setStyle("-fx-stroke:#01014b;");
             groundView.setImage(duskImg);
+            title.setFill(Color.WHITE);
             lightMode.setSelected(false);
 
         });
