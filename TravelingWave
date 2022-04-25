@@ -36,7 +36,7 @@ public class WaveSimBeta extends Application {
     static Timer timer;
     static Line vertGrid, horiGrid, xIndic, yIndic;
     static Text xL, yL;
-    static Font font = Font.font("Times New Roman", FontWeight.NORMAL, FontPosture.REGULAR, 16);
+    static Font font = Font.font("Verdana", FontWeight.NORMAL, FontPosture.REGULAR, 16);
     static Font axisTitleFont = Font.font("Verdana", FontWeight.NORMAL, FontPosture.REGULAR, 10);
 
     static ArrayList<Circle> standList = new ArrayList<>();
@@ -157,24 +157,26 @@ public class WaveSimBeta extends Application {
         VBox theoVbox = new VBox(10);
 
         Text instructions = new Text("Instructions");
-        instructions.setFont(Font.font("Times New Roman", FontWeight.BOLD, FontPosture.REGULAR, 16));
+        instructions.setFont(Font.font("Verdana", FontWeight.BOLD, FontPosture.REGULAR, 16));
 
         Text theoryTxt = new Text("""
-                    To interact with the standing wave simulation, simply press "start" after adjusting the values on amplitude, wave speed, and mode number sliders.
-                Doing so will result in the formation of incident, reflected, and standing waves. Additional features can be accessed through the hamburger menu, such
-                as switching between light mode and dark mode, displaying waves formed by mode numbers, and more.
+                    To interact with the standing wave simulation, simply press "start" after adjusting the values on amplitude, wave
+                speed, and mode number sliders. Doing so will result in the formation of incident, reflected, and standing waves.
+                Additional features can be accessed through the hamburger menu, such as switching between light mode and
+                dark mode, displaying waves formed by mode numbers, and more.
 
                 As mentioned above, each slider has a parameter that it controls:
-                > Amplitude [m]: the maximum displacement or distance moved by a point on a vibrating body or wave measured from its equilibrium position.
-                > Wave Speed [m/s]: the distance the disturbance travels across a medium in a given amount of time. It can be calculated by multiplying the frequency
-                   of a wave with its wavelength.
+                > Amplitude [m]: the maximum displacement or distance moved by a point on a vibrating body or wave measured
+                    from its equilibrium position.
+                > Wave Speed [m/s]: the distance the disturbance travels across a medium in a given amount of time. It can be
+                    calculated by multiplying the frequency of a wave with its wavelength.
                 > Frequency [Hz]: the number of vibrations that a disturbance introduces to the medium per second.
                 """);
         theoryTxt.setFont(font);
 
         Text wavesEgDesc = new Text("Pictured below are visual representations of two travelling waves (green and " +
                 "blue) that form a standing wave (red).");
-        wavesEgDesc.setFont(Font.font("Times New Roman", FontWeight.NORMAL, FontPosture.ITALIC, 16));
+        wavesEgDesc.setFont(Font.font("Verdana", FontWeight.NORMAL, FontPosture.ITALIC, 16));
 
         ImageView wavesEg = new ImageView(new Image(
                 "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5d/Waventerference.gif/620px-Waventerference.gif"));
@@ -182,18 +184,20 @@ public class WaveSimBeta extends Application {
         wavesEg.setFitHeight(418.8709677419355);
 
         Text whatAreWaves = new Text("What are standing waves and how are they created?");
-        whatAreWaves.setFont(Font.font("Times New Roman", FontWeight.BOLD, FontPosture.REGULAR, 16));
+        whatAreWaves.setFont(Font.font("Verdana", FontWeight.BOLD, FontPosture.REGULAR, 16));
 
         Text theoryTxt2 = new Text("""
-                   First, consider that waves always originate from some sort of event or disturbance. When two waves with the same amplitude and frequency move
-               in opposite directions, they will respect the superposition principle and create what is known as an interference pattern. To elaborate, these two linear
-               waves will either be added together or cancelled out.
+                   First, consider that waves always originate from some sort of event or disturbance. When two waves with the same
+               amplitude and frequency move in opposite directions, they will respect the superposition principle and create what is
+               known as an interference pattern. To elaborate, these two linear waves will either be added together or cancelled out.
 
-                   Interestingly enough, you might have even come across this phenomena without realising it yourself: interference patterns are so common to our
-               daily lives, and can be produced by waves in the water, sound waves, or even light waves.
+                   Interestingly enough, you might have even come across this phenomena without realising it yourself: interference
+               patterns are so common to our daily lives, and can be produced by waves in the water, sound waves, or even light
+               waves.
 
-                   Should you make the choice to further explore the concepts related to waves, a great starting point would be to consult these interesting articles
-               written by Stephen Cohen (on his website, The Engineer’s Pulse, under the “For Physics Students“ section):
+                   Should you make the choice to further explore the concepts related to waves, a great starting point would be to
+               consult these interesting articles written by Stephen Cohen (on his website, The Engineer’s Pulse, under the “For
+               Physics Students“ section):
                """);
         theoryTxt2.setFont(font);
 
@@ -204,23 +208,23 @@ public class WaveSimBeta extends Application {
 
         Text theoEqn = new Text("""
                 
-                                                            Standing Wave: y(x, t) = 2Asin(kx)cos(ωt) [m]       Traveling Wave: y(x, t) = Asin(kx ± ωt) [m]
+                                Standing Wave: y(x, t) = 2Asin(kx)cos(ωt) [m]       Traveling Wave: y(x, t) = Asin(kx ± ωt) [m]
                 
-                                                                                              Wave Speed: v = λf [m/s]        Wave Number: k = 2π/λ [rad/m]
+                                                                Wave Speed: v = λf [m/s]        Wave Number: k = 2π/λ [rad/m]
                  
-                                                                                                                   Angular Frequency: ⍵ = 2πf [rad/s]
+                                                                                    Angular Frequency: ⍵ = 2πf [rad/s]
                  
                 Where:
                 > x [m]: a particle's x-axis position at a certain time    > k [rad/m]: wave number
                 > y [m]: a particle's y-axis position at a certain time    > A [m]: amplitude
-                > ω [rad/s]: angular frequency                                      > t [s]: time elapsed
+                > ω [rad/s]: angular frequency                                   > t [s]: time elapsed
                 """);
         theoEqn.setFont(font);
 
         Line helpSeparator = new Line(0, 0, 1000, 0);
 
         Text sourcesTitle = new Text("Additional Sources Consulted");
-        sourcesTitle.setFont(Font.font("Times New Roman", FontWeight.BOLD, FontPosture.REGULAR, 16));
+        sourcesTitle.setFont(Font.font("Verdana", FontWeight.BOLD, FontPosture.REGULAR, 16));
 
         Text profDaveRef = new Text("""
 
@@ -1117,35 +1121,35 @@ public class WaveSimBeta extends Application {
             }
         });
 
-//        homeBtn.setOnAction(actionEvent -> {
-//            stage.close();
-//            MainPage m = new MainPage();
-//            m.start(new Stage());
-//            animateTimer.stop();
-//            startPauseCounter = 0;
-//            incidentCounter = 0;
-//            reflectedCounter = 0;
-//            A = 0;
-//            f = 0;
-//            T = 0;
-//            v = 0;
-//            omega = 0;
-//            lambda = 0;
-//            k = 0;
-//            timeToReachEnd = 0;
-//            timeElapsed = 0;
-//            timeWhenStopped = 0;
-//            totalTimeWhenStopped = 0;
-//            for (Circle c : travelList) {
-//                c.setCenterY(192);
-//            }
-//            for (Circle c : reTravelList) {
-//                c.setCenterY(192);
-//            }
-//            for (Circle c : standList) {
-//                c.setCenterY(192);
-//            }
-//        });
+        homeBtn.setOnAction(actionEvent -> {
+            stage.close();
+            MainPage m = new MainPage();
+            m.start(new Stage());
+            animateTimer.stop();
+            startPauseCounter = 0;
+            incidentCounter = 0;
+            reflectedCounter = 0;
+            A = 0;
+            f = 0;
+            T = 0;
+            v = 0;
+            omega = 0;
+            lambda = 0;
+            k = 0;
+            timeToReachEnd = 0;
+            timeElapsed = 0;
+            timeWhenStopped = 0;
+            totalTimeWhenStopped = 0;
+            for (Circle c : travelList) {
+                c.setCenterY(192);
+            }
+            for (Circle c : reTravelList) {
+                c.setCenterY(192);
+            }
+            for (Circle c : standList) {
+                c.setCenterY(192);
+            }
+        });
 
         root.setCenter(wavesPane);
 
