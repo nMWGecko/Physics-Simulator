@@ -1,20 +1,25 @@
-package com.example.project;
+package djangounchained.physics;
 
 import javafx.animation.Interpolator;
 import javafx.animation.PathTransition;
 import javafx.animation.Timeline;
 import javafx.application.Application;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontPosture;
+import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -25,13 +30,12 @@ import org.json.simple.parser.ParseException;
 import java.io.FileReader;
 import java.io.IOException;
 
-
 public class MainPage extends Application {
 
     public static void main(String[] args) {
         launch(args);
     }
-    static String newtonSim,girl,wavesPic;
+    static String newtonSim, girl, wavesPic;
 
     @Override
     public void start(Stage primaryStage) {
@@ -170,7 +174,7 @@ public class MainPage extends Application {
 
         Scene s = new Scene(root, 1000, 650);
         root.setStyle("-fx-background-color: linear-gradient(from 25% 25% to 100% 100%, #0f0c29, #302b63, #313149FF)");
-        s.getStylesheets().add(getClass().getResource("main.css").toExternalForm());
+        s.getStylesheets().add(getClass().getResource("waves.css").toExternalForm());
         primaryStage.setScene(s);
         primaryStage.setTitle("Physics Learning Tool");
         primaryStage.setResizable(false);
@@ -180,7 +184,7 @@ public class MainPage extends Application {
 
         waves.setOnAction(actionEvent -> {
             if (!wavesStage.isShowing() && !newtonStage.isShowing() && !creditStage.isShowing() ) {
-                Waves w = new Waves(wavesStage);
+                WaveSimBeta w = new WaveSimBeta(wavesStage);
                 primaryStage.close();
             }
         });
@@ -230,13 +234,18 @@ public class MainPage extends Application {
             }
         });
 
-        Pane root2 = new Pane();
+        ScrollPane root2 = new ScrollPane();
+        root2.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        root2.setPadding(new Insets(10));
         root2.setStyle("-fx-background-color: " +
                 "linear-gradient(from 25% 25% to 100% 100%, #0f0c29, #302b63, #313149FF)");
-        Scene s2 = new Scene(root2, 1000, 500);
-        creditStage.setScene(s2);
-        creditStage.setTitle("About us");
-        creditStage.setResizable(false);
+        VBox abtUsVbox = new VBox(10);
+        abtUsVbox.setStyle("-fx-background-color: " +
+                "linear-gradient(from 25% 25% to 100% 100%, #0f0c29, #302b63, #313149FF)");
+
+        Text abtUsTitle = new Text("About Us");
+        abtUsTitle.setFont(Font.font("Verdana", FontWeight.BOLD, FontPosture.REGULAR, 16));
+        abtUsTitle.setFill(Color.WHITE);
 
         Text longtext = new Text("""
                 Django Unchained is composed of, Laurenz Marius Gomez, Jatin Kalsi, Guiliano Verdone, and Joshua Vilda.
@@ -250,12 +259,27 @@ public class MainPage extends Application {
                 copyright protected material for the purpose of research, private study,
                 education, satire, parody, criticism,review or news reporting,
                 provided that what you do with the work is ‘fair’.
+                
+                
+                References:
+                
+                
+                
+                
+                
+                
+                
+                
                 """);
         longtext.setFill(Color.WHITE);
-        longtext.setY(100);
-        longtext.setX(30);
-        longtext.setStyle("-fx-font-family: 'Comic Sans MS'; -fx-font-size: 17");
-        root2.getChildren().add(longtext);
+        longtext.setStyle("-fx-font-family: 'Verdana'; -fx-font-size: 17");
+        abtUsVbox.getChildren().addAll(abtUsTitle, longtext);
+        root2.setContent(abtUsVbox);
+
+        Scene s2 = new Scene(root2, 1000, 500);
+        creditStage.setScene(s2);
+        creditStage.setTitle("About Us");
+        creditStage.setResizable(false);
 
 
         authors.setOnAction(actionEvent -> {
