@@ -35,7 +35,7 @@ public class MainPage extends Application {
     public static void main(String[] args) {
         launch(args);
     }
-    static String newtonSim, girl, wavesPic;
+    static String mainStageIcon, helpStageIcon, newtonSim, girl, wavesPic;
 
     @Override
     public void start(Stage primaryStage) {
@@ -43,6 +43,8 @@ public class MainPage extends Application {
         try {
             Object o = jsonParser.parse(new FileReader(this.getClass().getClassLoader().getResource("index.json").getFile()));
             JSONObject jsonObject = (JSONObject) o;
+            mainStageIcon = (String) jsonObject.get("mainStageIcon");
+            helpStageIcon = (String) jsonObject.get("helpStageIcon");
             newtonSim = (String) jsonObject.get("newton");
             girl = (String)  jsonObject.get("girl");
             wavesPic = (String) jsonObject.get("wavesPic");
@@ -176,6 +178,7 @@ public class MainPage extends Application {
         s.getStylesheets().add(getClass().getResource("main.css").toExternalForm());
         primaryStage.setScene(s);
         primaryStage.setTitle("Physics Learning Tool");
+        primaryStage.getIcons().add(new Image(mainStageIcon));
         primaryStage.setResizable(false);
         primaryStage.show();
 
@@ -283,6 +286,7 @@ public class MainPage extends Application {
         Scene s2 = new Scene(root2, 1000, 500);
         creditStage.setScene(s2);
         creditStage.setTitle("About Us");
+        creditStage.getIcons().add(new Image(helpStageIcon));
         creditStage.setResizable(false);
 
 
