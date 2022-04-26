@@ -43,17 +43,21 @@ public class Newton extends Application {
     static ArrayList<Line> impDistanceLineArrayList = new ArrayList<>();
     static ArrayList<Text> distanceIndicatorArrayList = new ArrayList<>();
     static ArrayList<Text> impDistanceIndicatorArrayList = new ArrayList<>();
-    static String menuPic, homePic, helpPic, dusk, dayCar, day,motorbike,skateboard, nMenuPic;
+    static String mainStageIcon, helpStageIcon, menuPic, homePic, helpPic, dusk, dayCar, day,motorbike,skateboard, nMenuPic;
     static int counter = 0;
+
     public Newton(Stage newtonStage) {
         start(newtonStage);
     }
+
     @Override
     public void start(Stage primaryStage) {
         JSONParser jsonParser = new JSONParser();
         try {
             Object o = jsonParser.parse(new FileReader(this.getClass().getClassLoader().getResource("index.json").getFile()));
             JSONObject jsonObject = (JSONObject) o;
+            mainStageIcon = (String) jsonObject.get("mainStageIcon");
+            helpStageIcon = (String) jsonObject.get("helpStageIcon");
             menuPic = (String) jsonObject.get("menuIcon");
             homePic = (String) jsonObject.get("homeIcon");
             helpPic = (String) jsonObject.get("newtonSecondStagePic");
@@ -307,6 +311,7 @@ public class Newton extends Application {
         s.getStylesheets().add(getClass().getResource("newton.css").toExternalForm());
         primaryStage.setScene(s);
         primaryStage.setTitle("Newton's 2nd Law Simulator");
+        primaryStage.getIcons().add(new Image(mainStageIcon));
         primaryStage.setResizable(false);
         primaryStage.show();
 
@@ -858,6 +863,7 @@ public class Newton extends Application {
         Stage newtonHelpStage = new Stage();
         newtonHelpStage.setScene(s2);
         newtonHelpStage.setTitle("Help");
+        newtonHelpStage.getIcons().add(new Image(helpStageIcon));
         newtonHelpStage.setResizable(false);
         Image helpImage = new Image(helpPic);
         ImageView helpImageView = new ImageView();
