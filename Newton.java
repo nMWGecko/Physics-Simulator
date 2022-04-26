@@ -1,4 +1,4 @@
-package com.example.physicssimulation;
+package djangounchained.physics;
 
 // TODO help window
 
@@ -43,7 +43,7 @@ public class Newton extends Application {
     static ArrayList<Line> impDistanceLineArrayList = new ArrayList<>();
     static ArrayList<Text> distanceIndicatorArrayList = new ArrayList<>();
     static ArrayList<Text> impDistanceIndicatorArrayList = new ArrayList<>();
-    static String menuPic, homePic, helpPic, dusk, dayCar, day,god,skateboard, nMenuPic;
+    static String menuPic, homePic, helpPic, dusk, dayCar, day,motorbike,skateboard, nMenuPic;
     static int counter = 0;
     public Newton(Stage newtonStage) {
         start(newtonStage);
@@ -60,8 +60,8 @@ public class Newton extends Application {
             dusk = (String) jsonObject.get("dusk");
             dayCar = (String) jsonObject.get("dayCar");
             day = (String) jsonObject.get("day");
-            god = (String) jsonObject.get("god");
-            skateboard = (String) jsonObject.get("board");
+            motorbike = (String) jsonObject.get("motorbike");
+            skateboard = (String) jsonObject.get("skateboard");
             nMenuPic = (String ) jsonObject.get("nMenuIcon");
         } catch (ParseException | IOException e) {
             e.printStackTrace();
@@ -213,7 +213,7 @@ public class Newton extends Application {
 
 
         Image dayCarImg = new Image(dayCar);
-        Image godImg = new Image(god);
+        Image motorbikeImg = new Image(motorbike);
         Image skateboardImg = new Image(skateboard);
 
         ImageView objectView = new ImageView(dayCarImg);
@@ -832,7 +832,7 @@ public class Newton extends Application {
         godObject.setOnAction(actionEvent -> {
             objectView.setX(70);
             objectView.setY(0);
-            objectView.setImage(godImg);
+            objectView.setImage(motorbikeImg);
             carObject.setSelected(false);
             skateboardObject.setSelected(false);
         });
@@ -869,7 +869,7 @@ public class Newton extends Application {
                 Time rate of change of the momentum of a body is equal
                 in both magnitude and direction to the force imposed on it.
                 The momentum of a body is equal to:
-                the product of its mass and its velocity. F=m*a
+                the product of its mass and its velocity. F= ma
                 
                 Furthermore, the First law dictates that:
                 If a body is at rest/moving at a constant speed in a straight line
@@ -883,10 +883,11 @@ public class Newton extends Application {
                 into the respective text bubbles.
                 
                 Upon the clicking the start button, the simulation will apply the
-                aforementioned laws and slide the image across the screen forgo any
-                unaccepted values.
+                aforementioned laws and slide the image across the screen forgo
+                any unaccepted values.
                 
-                1% of error is to be expected as Java does a poor job tracking time.
+                1% of error is to be expected as Java does a poor job tracking
+                time.
                 
                 
                 Accepted values:
@@ -912,9 +913,9 @@ public class Newton extends Application {
         });
         homeBtn.setOnAction(actionEvent -> {
             primaryStage.close();
-            Main m = new Main();
+            MainPage m = new MainPage();
             m.start(new Stage());
-
+            newtonHelpStage.close();
         });
 
         showForcesOn.setOnAction(actionEvent -> {
