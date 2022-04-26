@@ -32,7 +32,7 @@ import java.util.Objects;
 import static javafx.application.Platform.exit;
 
 public class WaveSimBeta extends Application {
-    static String menuPic, homePic, helpPic, nMenuPic;
+    static String mainStageIcon, helpStageIcon, menuPic, homePic, helpPic, nMenuPic;
     static Color omori = Color.web("#6c0ffe");
     static Circle c;
     static Timer timer;
@@ -64,7 +64,7 @@ public class WaveSimBeta extends Application {
     }
 
     @Override
-    public void start(Stage stage) {
+    public void start(Stage primaryStage) {
         Button playBtn = new Button("Play");
         playBtn.setId("controlButton");
         wavesPane = new Pane();
@@ -79,6 +79,8 @@ public class WaveSimBeta extends Application {
             Object o = jsonParser.parse(new FileReader(Objects.requireNonNull(
                     this.getClass().getClassLoader().getResource("index.json")).getFile()));
             JSONObject jsonObject = (JSONObject) o;
+            mainStageIcon = (String) jsonObject.get("mainStageIcon");
+            helpStageIcon = (String) jsonObject.get("helpStageIcon");
             menuPic = (String) jsonObject.get("menuIcon");
             homePic = (String) jsonObject.get("homeIcon");
             helpPic = (String) jsonObject.get("newtonSecondStagePic");
@@ -265,6 +267,7 @@ public class WaveSimBeta extends Application {
         Scene theoryScene = new Scene(helpPane, 1000, 650);
         Stage secondaryStage = new Stage();
         secondaryStage.setTitle("Standing Waves Simulator - Help");
+        secondaryStage.getIcons().add(new Image(helpStageIcon));
         secondaryStage.setResizable(false);
         secondaryStage.setScene(theoryScene);
         menuHelp.setOnAction(actionEvent -> secondaryStage.show());
@@ -1125,7 +1128,7 @@ public class WaveSimBeta extends Application {
         });
 
         homeBtn.setOnAction(actionEvent -> {
-            stage.close();
+            primaryStage.close();
             MainPage m = new MainPage();
             m.start(new Stage());
             animateTimer.stop();
@@ -1160,10 +1163,11 @@ public class WaveSimBeta extends Application {
         //Bringing it all together
         Scene scene = new Scene(root, 1000, 650);
         scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("waves.css")).toExternalForm());
-        stage.setTitle("Standing Wave Simulator");
-        stage.setResizable(false);
-        stage.setScene(scene);
-        stage.show();
+        primaryStage.setTitle("Standing Wave Simulator");
+        primaryStage.getIcons().add(new Image(mainStageIcon));
+        primaryStage.setResizable(false);
+        primaryStage.setScene(scene);
+        primaryStage.show();
     }
 
     private void modeNumberAction(CheckMenuItem modeNumberOne, CheckMenuItem modeNumberTwo,
