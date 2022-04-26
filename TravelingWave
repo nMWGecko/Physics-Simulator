@@ -29,6 +29,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Objects;
 
+import static javafx.application.Platform.exit;
+
 public class WaveSimBeta extends Application {
     static String menuPic, homePic, helpPic, nMenuPic;
     static Color omori = Color.web("#6c0ffe");
@@ -269,6 +271,7 @@ public class WaveSimBeta extends Application {
 
         //Additional Settings
         MenuItem exitProgram = new MenuItem("Exit Program");
+        exitProgram.setOnAction(actionEvent -> exit());
         MenuButton menuBtn = new MenuButton("Menu", null, settings, menuHelp, exitProgram);
         Image menuIcon = new Image(menuPic);
         Image nMenuIcon = new Image(nMenuPic);
@@ -1149,6 +1152,7 @@ public class WaveSimBeta extends Application {
             for (Circle c : standList) {
                 c.setCenterY(192);
             }
+            secondaryStage.close();
         });
 
         root.setCenter(wavesPane);
