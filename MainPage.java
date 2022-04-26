@@ -8,6 +8,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
@@ -138,7 +139,7 @@ public class MainPage extends Application {
         wpt2.play();
 
 
-        Button authors = new Button("About Us ");
+        Button authors = new Button("About Us");
         authors.setLayoutX(650);
         authors.setLayoutY(500);
 
@@ -174,7 +175,7 @@ public class MainPage extends Application {
 
         Scene s = new Scene(root, 1000, 650);
         root.setStyle("-fx-background-color: linear-gradient(from 25% 25% to 100% 100%, #0f0c29, #302b63, #313149FF)");
-        s.getStylesheets().add(getClass().getResource("waves.css").toExternalForm());
+        s.getStylesheets().add(getClass().getResource("main.css").toExternalForm());
         primaryStage.setScene(s);
         primaryStage.setTitle("Physics Learning Tool");
         primaryStage.setResizable(false);
@@ -272,7 +273,8 @@ public class MainPage extends Application {
                 
                 """);
         longtext.setFill(Color.WHITE);
-        longtext.setStyle("-fx-font-family: 'Verdana'; -fx-font-size: 17");
+        longtext.setStyle("-fx-font-family: 'Verdana'; -fx-font-size: 16");
+
         abtUsVbox.getChildren().addAll(abtUsTitle, longtext);
         root2.setContent(abtUsVbox);
 
