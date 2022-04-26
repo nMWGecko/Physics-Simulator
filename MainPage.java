@@ -8,7 +8,6 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
@@ -138,7 +137,6 @@ public class MainPage extends Application {
         wpt2.setInterpolator(Interpolator.LINEAR);
         wpt2.play();
 
-
         Button authors = new Button("About Us");
         authors.setLayoutX(650);
         authors.setLayoutY(500);
@@ -180,8 +178,6 @@ public class MainPage extends Application {
         primaryStage.setTitle("Physics Learning Tool");
         primaryStage.setResizable(false);
         primaryStage.show();
-
-
 
         waves.setOnAction(actionEvent -> {
             if (!wavesStage.isShowing() && !newtonStage.isShowing() && !creditStage.isShowing() ) {
@@ -249,12 +245,13 @@ public class MainPage extends Application {
         abtUsTitle.setFill(Color.WHITE);
 
         Text longtext = new Text("""
-                Django Unchained is composed of, Laurenz Marius Gomez, Jatin Kalsi, Guiliano Verdone, and Joshua Vilda.
-                We're currently students of Vanier College in the Computer Science and Math in our 4th semester.
-                Collectively, we decided to create two simulators in regards to physic principles we learned during our time here.
+                Django Unchained is composed of Laurenz Marius Gomez, Jatin Kalsi, Guiliano Verdone, and Joshua Vilda.  At this time,
+                we are students of Vanier College in the Computer Science and Math in our 4th semester.Collectively, we decided 
+                to create two simulators in regards to 
+                physic principles we learned during our time here.      
+                                                             
                 Waves Simulator: Laurenz Marius Gomez & Guiliano Verdone
                 Newton Simulator: Jatin Kalsi & Joshua Vilda
-                Email 419NigerianPrinceEA@hotmail.com if you come across any bugs
                 All photos are used with Fair Dealing.
                 The fair dealing exception in the Copyright Act allows us to use other people’s
                 copyright protected material for the purpose of research, private study,
@@ -263,14 +260,19 @@ public class MainPage extends Application {
                 
                 
                 References:
-                
-                
-                
-                
-                
-                
-                
-                
+
+                  Menu Icon: https://www.freeiconspng.com/uploads/menu-icon-2.png
+                  Alternate Menu Icon: https://i.imgur.com/3sgLf8b.png
+                  Home Icon: https://www.freeiconspng.com/uploads/home-icon-png-31.png
+                  
+                  For Newton Simulator:
+                  2nd Stage Picture: https://energywavetheory.com/wp-content/uploads/2019/10/newtons-second-law-fma.jpg
+                  Dusk Background: https://i.imgur.com/1d7Vqui.png
+                  Daytime Car: https://i.imgur.com/8vqYSm0.png
+                  Daytime: https://i.imgur.com/4E6BxOw.png
+                  Skateboard: https://i.imgur.com/VhMIQGh.png
+                  Motorbike: https://i.imgur.com/c2OpH6w.png
+             
                 """);
         longtext.setFill(Color.WHITE);
         longtext.setStyle("-fx-font-family: 'Verdana'; -fx-font-size: 16");
