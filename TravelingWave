@@ -595,7 +595,7 @@ public class WaveSimBeta extends Application {
 
         HBox refTravLeg = new HBox(10);
         Line refTravLine = new Line(30, 30, 40, 30);
-        refTravLine.setStroke(Color.ORANGERED);
+        refTravLine.setStroke(Color.CRIMSON);
         refTravLine.setStrokeWidth(5);
         Text refTravLegTxt = new Text("Reflected Traveling Wave");
         refTravLegTxt.setId("texts");
@@ -642,7 +642,7 @@ public class WaveSimBeta extends Application {
             wavesPane.getChildren().add(horiGrid);
         }
 
-        for(int i = 30; i <= 990; i += 20) {
+        for(int i = 30; i <= 970; i += 20) {
             vertGrid = new Line(i, 72, i, wavesPane.getPrefHeight() - 73);
             vertGrid.setStroke(Color.LIGHTGRAY);
             vLineList.add(vertGrid);
@@ -749,7 +749,7 @@ public class WaveSimBeta extends Application {
           Creating the reflected traveling wave
          */
         for(int i = 30; i <= 970; i++) {
-            c = new Circle(i, wavesPane.getPrefHeight()/2, 2, Color.ORANGERED);
+            c = new Circle(i, wavesPane.getPrefHeight()/2, 2, Color.CRIMSON);
             reTravelList.add(c);
         }
         for(Circle c: reTravelList) {
@@ -774,7 +774,7 @@ public class WaveSimBeta extends Application {
             root.setStyle("-fx-background-color: white");
 
             inciTravLine.setStroke(Color.CORNFLOWERBLUE);
-            refTravLine.setStroke(Color.ORANGERED);
+            refTravLine.setStroke(Color.CRIMSON);
             standLine.setStroke(Color.DARKMAGENTA);
             separator.setStroke(Color.BLACK);
             xAxis.setStroke(Color.BLACK);
@@ -840,7 +840,7 @@ public class WaveSimBeta extends Application {
                 c.setStroke(Color.CORNFLOWERBLUE);
             }
             for (Circle c : reTravelList) {
-                c.setStroke(Color.MAROON);
+                c.setStroke(Color.CRIMSON);
             }
             for (Circle c : standList) {
                 c.setStroke(Color.DARKMAGENTA);
