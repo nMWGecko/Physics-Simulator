@@ -187,6 +187,11 @@ public class WaveSimBeta extends Application {
         wavesEg.setFitWidth(980);
         wavesEg.setFitHeight(418.8709677419355);
 
+        Hyperlink wavesEgLink = new Hyperlink("https://commons.wikimedia.org/wiki/File:Waventerference.gif");
+        wavesEgLink.setFont(font);
+        wavesEgLink.setTextFill(Color.DODGERBLUE);
+        wavesEgLink.setOnAction(actionEvent -> getHostServices().showDocument(wavesEgLink.getText()));
+
         Text whatAreWaves = new Text("What are standing waves and how are they created?");
         whatAreWaves.setFont(Font.font("Verdana", FontWeight.BOLD, FontPosture.REGULAR, 16));
 
@@ -260,7 +265,7 @@ public class WaveSimBeta extends Application {
         britWaveLink.setTextFill(Color.DODGERBLUE);
         britWaveLink.setOnAction(actionEvent -> getHostServices().showDocument(britWaveLink.getText()));
 
-        theoVbox.getChildren().addAll(instructions, theoryTxt, wavesEgDesc, wavesEg, whatAreWaves, theoryTxt2, cohenBlog, theoEqn, helpSeparator,
+        theoVbox.getChildren().addAll(instructions, theoryTxt, wavesEgDesc, wavesEg, wavesEgLink, whatAreWaves, theoryTxt2, cohenBlog, theoEqn, helpSeparator,
                 sourcesTitle, profDaveRef, profDaveLink, britAmpRef, britAmpLink, britWaveRef, britWaveLink);
         helpPane.setContent(theoVbox);
 
